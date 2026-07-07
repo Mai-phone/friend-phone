@@ -4393,6 +4393,20 @@ body.is-standalone .app-window {
     height: var(--app-stable-height, 100dvh) !important;
 }
 
+/* iOS standalone (added to home screen): window.innerHeight at cold launch
+   can under-report (excluding the home-indicator inset) and iOS may never
+   fire a corrective resize, leaving --app-stable-height short and a black
+   letterbox band at the bottom. Pin the shell to the real dynamic viewport;
+   the iOS keyboard overlays without resizing the layout viewport, so 100dvh
+   stays stable while typing. */
+@supports (height: 100dvh) {
+    body.ios-like-device.is-standalone,
+    body.ios-like-device.is-standalone #iphone-screen,
+    body.ios-like-device.is-standalone .app-window {
+        height: 100dvh !important;
+    }
+}
+
 /* Native Android WebView is already a real phone surface. Never show the
    desktop simulator shell on wider Android screens. */
 body.is-native-android-app,
@@ -38294,13 +38308,16 @@ body.line-theme-qq #chat-list-container .cl-pin-mark {
     transition-delay: 0s, 0s;
 }
 
-/* Phone snoop subpages use the same top offset as the desktop/status bar. */
+/* Phone snoop subpages use the same top offset as the desktop/status bar.
+   Keep the hardware safe-area even when the simulated status bar is hidden:
+   on iOS standalone the real status bar floats transparently over the page,
+   so zeroing --app-page-top would push nav bars under the clock. */
 html.hide-app-status-bar,
 body.hide-app-status-bar {
     --status-bar-top-gap: 0px;
     --status-bar-height: 0px;
-    --app-status-space: 0px;
-    --app-page-top: 0px;
+    --app-status-space: max(var(--safe-top), 0px);
+    --app-page-top: max(var(--safe-top), 0px);
 }
 
 body.hide-app-status-bar #global-status-bar {
@@ -159491,6 +159508,10 @@ document.addEventListener('focusout', () => {
     scheduleKeyboardCheck([180, 720]);
 });
 checkFullscreen();
+// iOS standalone under-reports innerHeight at cold launch and may not fire a
+// corrective resize — re-measure a few times while the shell settles.
+scheduleKeyboardCheck([250, 700, 1500]);
+window.addEventListener('pageshow', () => scheduleKeyboardCheck([120, 500]));
 registerPwaServiceWorker();
 
 if ($('chat-input')) {
