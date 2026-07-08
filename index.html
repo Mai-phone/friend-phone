@@ -73585,6 +73585,15 @@ body.watch-cinema-active {
             <div class="status-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 14c4-5 8 5 12 0"></path><path d="M4 9c4-5 8 5 12 0"></path><path d="M19 7v10"></path></svg></div>
             <div><div class="status-label">心绪余温</div><div class="status-value" id="disp-afterglow">--</div></div>
         </div>
+        <div class="status-info-row" id="status-affection-row" onclick="event.stopPropagation();CharStatus.showAffectionLog()" style="cursor:pointer;">
+            <div class="status-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"></path><path d="M12 8v5"></path><path d="M9.5 10.5h5"></path></svg></div>
+            <div style="flex:1;min-width:0;">
+                <div class="status-label" style="display:flex;align-items:center;gap:8px;">好感度
+                    <span id="aff-visible-toggle" onclick="event.stopPropagation();CharStatus.toggleAffectionVisible()" style="font-size:10px;padding:2px 8px;border-radius:99px;background:#EEF1F4;color:#9AA1AB;cursor:pointer;">ta 不知道</span>
+                </div>
+                <div class="status-value" id="disp-affection">--</div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -75484,7 +75493,7 @@ body.watch-cinema-active {
             <span class="settings-version-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10"></path><path d="M7 12h7"></path><path d="M7 17h5"></path><rect x="4" y="3" width="16" height="18" rx="3"></rect></svg>
             </span>
-                    <span class="settings-row-copy"><b>当前版本</b><small><span data-app-version>v2026.07.08.1</span> · <span data-app-version-note>当前本地版本</span></small></span>
+                    <span class="settings-row-copy"><b>当前版本</b><small><span data-app-version>v2026.07.08.2</span> · <span data-app-version-note>当前本地版本</span></small></span>
         </div>
         <button class="settings-row-card" onclick="Settings.openHelp()">
             <span class="settings-row-icon">
@@ -75659,7 +75668,7 @@ body.watch-cinema-active {
         <div class="settings-help-hero">
             <div class="settings-help-hero-top">
                 <div class="settings-help-kicker">小手机更新公告</div>
-                <div class="settings-version-pill" data-app-version>v2026.07.08.1</div>
+                <div class="settings-version-pill" data-app-version>v2026.07.08.2</div>
             </div>
             <div class="settings-help-hero-title">2026-06-04 内测更新</div>
             <div class="settings-help-hero-text">这次主要更新IOS适配、相册、生图、微信/QQ 皮肤、窥视（查手机）、Ta 的电脑、资料卡和介绍一些聊天基础操作。界面更顺眼、操作更直觉，也减少低配手机上的卡顿发热（或许）</div>
@@ -76372,9 +76381,9 @@ const $ = i => document.getElementById(i);
 const createElement = (t,c,h,f) => { let e=document.createElement(t); if(c)e.className=c; if(h)e.innerHTML=h; if(f)e.onclick=f; return e; };
 
 const AppVersion = {
-    value: 'v2026.07.08.1',
+    value: 'v2026.07.08.2',
     date: '2026-07-08',
-    label: 'v2026.07.08.1',
+    label: 'v2026.07.08.2',
     note: '当前本地版本',
     apply() {
         document.querySelectorAll('[data-app-version]').forEach(el => {
@@ -80267,7 +80276,7 @@ function parseStatusFromXml(xmlStr) {
     let inner = extractXmlBlock(xmlStr, 'status');
     if (!inner) return null;
     let s = {};
-    ['loc', 'cloth', 'mind', 'mood', 'pose', 'presence', 'activity', 'scene', 'toward', 'afterglow', 'next'].forEach(k => {
+    ['loc', 'cloth', 'mind', 'mood', 'pose', 'presence', 'activity', 'scene', 'toward', 'afterglow', 'next', 'aff', 'aff_why'].forEach(k => {
         let r = new RegExp(`<${k}>([\\s\\S]*?)</${k}>`, 'i');
         let m = inner.match(r);
         if (m) s[k] = decodeXmlEntities(m[1]).trim();
@@ -84119,11 +84128,17 @@ const Contacts = {
         cList.innerHTML = `
             <div class="qq-contacts-shell">
                 <div class="qq-contacts-head">
-                    <button class="qq-contacts-owner-avatar-btn" type="button" aria-label="返回桌面">
+                    <button class="qq-contacts-owner-avatar-btn" type="button" aria-label="打开我的资料">
                         <img class="qq-contacts-owner-avatar" src="${Utils.escapeHtml(ownerAvatar)}" alt="">
                     </button>
                     <div class="qq-contacts-title">联系人</div>
                     <div class="qq-contacts-actions">
+                        <button class="line-qq-head-home" type="button" aria-label="返回桌面" title="返回桌面">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M3.5 11.5 12 4l8.5 7.5"></path>
+                                <path d="M5.8 10.2V20h4.5v-5.2h3.4V20h4.5v-9.8"></path>
+                            </svg>
+                        </button>
                         <button class="qq-contacts-add" type="button" aria-label="新增联系人">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" y1="8" x2="19" y2="14"></line><line x1="16" y1="11" x2="22" y2="11"></line></svg>
                         </button>
@@ -84143,8 +84158,10 @@ const Contacts = {
             </div>`;
         let addBtn = cList.querySelector('.qq-contacts-add');
         if (addBtn) addBtn.onclick = () => this.openCreateMenu();
-        let homeBtn = cList.querySelector('.qq-contacts-owner-avatar-btn');
+        let homeBtn = cList.querySelector('.qq-contacts-head .line-qq-head-home');
         if (homeBtn) homeBtn.onclick = () => App.goHome();
+        let avatarBtn = cList.querySelector('.qq-contacts-owner-avatar-btn');
+        if (avatarBtn) avatarBtn.onclick = () => LineApp.openMe();
         let shortcutNew = cList.querySelector('[data-shortcut="new"]');
         if (shortcutNew) shortcutNew.onclick = () => this.new();
         let shortcutShake = cList.querySelector('[data-shortcut="shake"]');
@@ -92995,6 +93012,14 @@ Format exactly: <msg type="emoticon">exact_listed_name</msg>. Do not use {{emoti
     _statusPromptForContext(c, userDisplay) {
         let s = c && c.status || {};
         let latestLabel = `${userDisplay} 最新气泡`;
+        let aff = (typeof CharStatus !== 'undefined' && CharStatus.ensureAffection) ? CharStatus.ensureAffection(c) : null;
+        let affBlock = aff ? `
+== AFFECTION 好感度 ==
+你心里对 ${userDisplay} 有一杆真实的秤。每次输出 <status> 时，在里面附带这一轮互动带来的变化：
+<aff>一个 -5 到 +5 的整数，这轮没什么波动就写 0</aff>
+<aff_why>一句话写清这轮为什么加、为什么减或为什么没变，是你此刻真实的心理活动，不是客套</aff_why>
+波动多少由你作为这个人的真实感受决定：日常闲聊多半是 0 或 ±1，真正戳中你或伤到你才有更大的波动。这是你私下的心理账本，不是奖惩任务，不要为了讨好或惩罚而变动。${aff.visibleToChar ? `\n${userDisplay} 能感知到这杆秤，当前读数 ${aff.score}/100，这个数值是你们关系的当前事实之一。` : `\n${userDisplay} 看不到这杆秤，不要在聊天里主动提起数值或加减。`}
+== END AFFECTION ==` : '';
         let statusBlock = `
 == CURRENT CHARACTER STATUS (MUST maintain continuity, only change if plot requires) ==
 Location: ${s.loc || '未知'}
@@ -93025,7 +93050,7 @@ Do not make the visible fields repeat location/outfit/pose in new words.`;
         let statusCtx = c && c.hasUserCheckedStatus
             ? `[System: ${userDisplay}刚刚查看了你的此刻状态卡。ta 看到的是你的此刻镜头、空气读数、对 ${userDisplay} 的反应、没说出口和心绪余温，不是地点/衣着/姿势清单，也不是下一步行动指令。]`
             : '';
-        return this._weightedPromptBlock('status', 'Current Character Status', `${statusBlock}\n${statusCtx}`, `状态卡用于保持连续性；如果与${latestLabel}冲突，${latestLabel}优先。`);
+        return this._weightedPromptBlock('status', 'Current Character Status', `${statusBlock}\n${affBlock}\n${statusCtx}`, `状态卡用于保持连续性；如果与${latestLabel}冲突，${latestLabel}优先。`);
     },
     _sceneNarrationContext(c) {
         let userDisplay = this._userDisplayName(c, 'User');
@@ -93058,6 +93083,7 @@ Do not make the visible fields repeat location/outfit/pose in new words.`;
             ? LifeOS.getChatContext(c.id)
             : `${typeof LifeOS !== 'undefined' && LifeOS.getPeriodPrompt ? LifeOS.getPeriodPrompt() : ''}\n${typeof LifeOS !== 'undefined' && LifeOS.getGoalPrompt ? LifeOS.getGoalPrompt(c.id) : ''}`;
         let characterLifeCtx = (typeof CharacterLife !== 'undefined' && CharacterLife.getChatContext) ? CharacterLife.getChatContext(c) : '';
+        let companionCtx = (typeof GameWatch !== 'undefined' && GameWatch.getChatContext) ? GameWatch.getChatContext(c) : '';
         let relationshipGraphCtx = (typeof RelationshipGraph !== 'undefined' && RelationshipGraph.getChatContext) ? RelationshipGraph.getChatContext(c) : '';
         let birthdayCtx = (typeof BirthdayWishes !== 'undefined' && BirthdayWishes.getChatContext) ? BirthdayWishes.getChatContext(c) : '';
         let memoriesRaw = (typeof Memory !== 'undefined' && Memory.getPassiveContext) ? Memory.getPassiveContext(c) : '';
@@ -93093,7 +93119,7 @@ Do not make the visible fields repeat location/outfit/pose in new words.`;
         let memoryDirective = `\n[Memory Mechanism]\n如果这次对话中有你（${c.name}）想暂时记住、帮助当前聊天连续的事（重要承诺、${userDisplay} 透露的关键信息、关系转折、情感节点等），在回复**最末尾**追加：\n<remember>简短的一句话短期记忆</remember>\n不要每次都加，仅在你真心觉得值得记下时使用。这个标签 ${userDisplay} 不会看到；它默认是短期便条，清空聊天窗口时会一起删除。`;
         let sections = {
             base: `${baseSys}\n${altIdentityCtx}\n${modelCtx}\n${relationshipModeCtx}\n${this._narratorDirective(c, '第三人称')}\n${this._writingStyleContext(c)}\n${personaStr}\nDiary:${c.diary || ''}`,
-            status: `${timeAware}\n${weatherInfo}\n${lifeCtx}\n${characterLifeCtx}\n${relationshipGraphCtx}\n${birthdayCtx}\n${latestUserOverrideCtx}\n${foodDeliveryCtx}\n${this._statusPromptForContext(c, userDisplay)}`,
+            status: `${timeAware}\n${weatherInfo}\n${lifeCtx}\n${characterLifeCtx}\n${companionCtx}\n${relationshipGraphCtx}\n${birthdayCtx}\n${latestUserOverrideCtx}\n${foodDeliveryCtx}\n${this._statusPromptForContext(c, userDisplay)}`,
             world: this._worldContext(this._worldTextForContact(c)),
             memory: `${this._memoryContext(memoriesRaw)}\n${this._sceneNarrationContext(c)}`,
             app: this._appContext(appContextRaw),
@@ -95885,6 +95911,7 @@ ${(typeof Chat !== 'undefined' && Chat._guardrailsPrompt) ? Chat._guardrailsProm
         let characterLifeCtx = (typeof CharacterLife !== 'undefined' && CharacterLife.getChatContext)
             ? CharacterLife.getChatContext(c)
             : '';
+        let companionCtx = (typeof GameWatch !== 'undefined' && GameWatch.getChatContext) ? GameWatch.getChatContext(c) : '';
         let relationshipGraphCtx = (typeof RelationshipGraph !== 'undefined' && RelationshipGraph.getChatContext)
             ? RelationshipGraph.getChatContext(c)
             : '';
@@ -95953,7 +95980,7 @@ ${(typeof Chat !== 'undefined' && Chat._guardrailsPrompt) ? Chat._guardrailsProm
         let relationshipModeCtx = this._affectionModePrompt(c);
         let writingStyleCtx = this._writingStyleContext(c);
         let altMainSideChannelCtx = this._altMainSideChannelDirective(c);
-        let sys=`${baseSys}\n${altIdentityCtx}\n${modelCtx}\n${relationshipModeCtx}\n${narratorInst}\n${writingStyleCtx}\n${timeAware}\n${weatherInfo}\n${sleepCtx}\n${lifeCtx}\n${characterLifeCtx}\n${relationshipGraphCtx}\n${birthdayCtx}\n${personaStr}\nDiary:${c.diary||''}\n${latestUserOverrideCtx}\n${foodDeliveryCtx}\n${statusPrompt}\n${worldCtx}\n${sceneNarrationCtx}\n${memoriesCtx}\n${appContextCtx}\n${webSearchPromptCtx}\n${altMainSideChannelCtx}\n${transferCtx}\n${emoticonCtx}\n${imageInputCtx}\n${pendingAvatarCtx}\n${aiBlockDirective}\n${this._callControlDirective(c)}\n${this._groupInviteDirective(c)}\n${this._bilingualDirective(c)}\n${this._htmlCardDirective(c)}\n${this._chatScreenshotDirective(c)}\n${this._doodleDirective(c)}\n${(typeof ImageClient !== 'undefined') ? ImageClient.getDirective('chat', c) : ''}\n${memoryDirective}\n\n[一起听]\n如果你此刻想主动邀请 ${userDisplay} 一起听歌，可以在回复中插入一次 [MUSIC_INV:歌名 - 歌手]。歌由你按自己人设和此刻心情选择，不需要从 ${userDisplay} 歌单里挑。只有你真的想邀请时才用，不要为了完成任务硬用。\n\n${this._guardrailsPrompt()}`;
+        let sys=`${baseSys}\n${altIdentityCtx}\n${modelCtx}\n${relationshipModeCtx}\n${narratorInst}\n${writingStyleCtx}\n${timeAware}\n${weatherInfo}\n${sleepCtx}\n${lifeCtx}\n${characterLifeCtx}\n${companionCtx}\n${relationshipGraphCtx}\n${birthdayCtx}\n${personaStr}\nDiary:${c.diary||''}\n${latestUserOverrideCtx}\n${foodDeliveryCtx}\n${statusPrompt}\n${worldCtx}\n${sceneNarrationCtx}\n${memoriesCtx}\n${appContextCtx}\n${webSearchPromptCtx}\n${altMainSideChannelCtx}\n${transferCtx}\n${emoticonCtx}\n${imageInputCtx}\n${pendingAvatarCtx}\n${aiBlockDirective}\n${this._callControlDirective(c)}\n${this._groupInviteDirective(c)}\n${this._bilingualDirective(c)}\n${this._htmlCardDirective(c)}\n${this._chatScreenshotDirective(c)}\n${this._doodleDirective(c)}\n${(typeof ImageClient !== 'undefined') ? ImageClient.getDirective('chat', c) : ''}\n${memoryDirective}\n\n[一起听]\n如果你此刻想主动邀请 ${userDisplay} 一起听歌，可以在回复中插入一次 [MUSIC_INV:歌名 - 歌手]。歌由你按自己人设和此刻心情选择，不需要从 ${userDisplay} 歌单里挑。只有你真的想邀请时才用，不要为了完成任务硬用。\n\n${this._guardrailsPrompt()}`;
 
         let contextLimit = c.contextLimit || 20;
         // Convert history to API messages, merging consecutive same-role messages
@@ -96777,8 +96804,89 @@ const CharStatus = {
             changedFields
         };
     },
+    // ===== 好感度：AI 每轮在 <status> 里回传 <aff>±N</aff> + <aff_why>理由</aff_why> =====
+    _affectionInitial(c) {
+        let map = { honeymoon: 75, married: 80, cohabiting: 72, ambiguous: 55, coldwar: 35, broken: 25 };
+        let v = (typeof Chat !== 'undefined' && Chat._relationshipStatusValue) ? Chat._relationshipStatusValue(c) : '';
+        return map[v] !== undefined ? map[v] : 40;
+    },
+    ensureAffection(c) {
+        if (!c || c.isGroup) return null;
+        if (!c.affection || typeof c.affection !== 'object') {
+            c.affection = { score: this._affectionInitial(c), visibleToChar: false, log: [] };
+        }
+        if (!Array.isArray(c.affection.log)) c.affection.log = [];
+        if (!Number.isFinite(Number(c.affection.score))) c.affection.score = this._affectionInitial(c);
+        c.affection.score = Math.max(0, Math.min(100, Math.round(Number(c.affection.score))));
+        return c.affection;
+    },
+    _applyAffection(c, parsedStatus, timestamp) {
+        try {
+            if (!c || c.isGroup || !parsedStatus) return;
+            let rawDelta = parsedStatus.aff;
+            if (rawDelta === undefined || rawDelta === null || String(rawDelta).trim() === '') return;
+            let delta = Math.round(Number(String(rawDelta).replace(/[^\d.+-]/g, '')));
+            if (!Number.isFinite(delta)) return;
+            delta = Math.max(-5, Math.min(5, delta));
+            let aff = this.ensureAffection(c);
+            if (!aff) return;
+            let prev = Number(aff.score) || 0;
+            let next = Math.max(0, Math.min(100, prev + delta));
+            let applied = next - prev;
+            aff.score = next;
+            aff.updatedAt = Number(timestamp) || Date.now();
+            let reason = String(parsedStatus.aff_why || '').replace(/\s+/g, ' ').trim().slice(0, 80);
+            if (applied !== 0 || reason) {
+                aff.log.push({ time: aff.updatedAt, delta: applied, reason, score: next });
+                if (aff.log.length > 200) aff.log = aff.log.slice(-200);
+            }
+        } catch (e) { console.warn('affection apply failed', e); }
+    },
+    toggleAffectionVisible() {
+        let target = this._target();
+        let aff = this.ensureAffection(target.contact);
+        if (!aff) return;
+        aff.visibleToChar = !aff.visibleToChar;
+        DB.save();
+        this.render();
+        Toast.show(aff.visibleToChar ? '现在 ta 能感知到这杆秤了' : '好感度已对 ta 隐藏，只有你能看');
+    },
+    showAffectionLog() {
+        let target = this._target();
+        let aff = this.ensureAffection(target.contact);
+        if (!aff) return;
+        let old = document.getElementById('affection-log-modal');
+        if (old) old.remove();
+        let rows = (aff.log || []).slice(-60).reverse().map(e => {
+            let sign = e.delta > 0 ? `+${e.delta}` : String(e.delta);
+            let color = e.delta > 0 ? '#C2506D' : (e.delta < 0 ? '#5B7A9D' : '#9AA1AB');
+            let when = (typeof Utils !== 'undefined' && Utils.formatDate) ? Utils.formatDate(e.time) : new Date(e.time).toLocaleString();
+            return `<div style="display:flex;gap:12px;padding:11px 2px;border-bottom:1px solid rgba(15,20,26,.05);">
+                <b style="min-width:32px;color:${color};font-size:14px;font-variant-numeric:tabular-nums;">${sign}</b>
+                <div style="flex:1;min-width:0;">
+                    <div style="font-size:13px;color:#0F141A;line-height:1.55;">${Utils.escapeHtml(e.reason || '（没说理由）')}</div>
+                    <div style="margin-top:3px;font-size:11px;color:#9AA1AB;">${Utils.escapeHtml(when)} · ${e.score}/100</div>
+                </div>
+            </div>`;
+        }).join('') || '<div style="padding:36px 0;text-align:center;color:#9AA1AB;font-size:13px;">还没有波动记录，多聊聊看</div>';
+        let overlay = document.createElement('div');
+        overlay.id = 'affection-log-modal';
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:12500;background:rgba(15,20,26,.45);display:flex;align-items:flex-end;justify-content:center;';
+        overlay.innerHTML = `
+            <div onclick="event.stopPropagation()" style="width:100%;max-width:430px;max-height:70%;background:#fff;border-radius:22px 22px 0 0;display:flex;flex-direction:column;overflow:hidden;">
+                <div style="padding:16px 18px 10px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+                    <b style="font-size:15px;color:#0F141A;">好感度记录 · 当前 ${aff.score}/100</b>
+                    <span style="font-size:12px;color:#9AA1AB;">${aff.visibleToChar ? 'ta 知道这杆秤' : '只有你能看'}</span>
+                </div>
+                <div style="flex:1;overflow-y:auto;padding:0 18px 28px;">${rows}</div>
+            </div>`;
+        overlay.onclick = () => overlay.remove();
+        document.body.appendChild(overlay);
+    },
     applyParsedStatus(prevStatus = {}, parsedStatus = {}, name = 'ta', contact = null, timestamp = null) {
         let checkedAt = Number(timestamp || chatTimeNow(contact) || Date.now());
+        // 好感度结算独立于状态卡查重：就算五模块被判重复拒收，这轮的好感波动仍然真实
+        this._applyAffection(contact, parsedStatus, checkedAt);
         let cleaned = this.cleanStatus({
             ...parsedStatus,
             updatedAt: parsedStatus.updatedAt || checkedAt
@@ -96860,6 +96968,25 @@ const CharStatus = {
         $('disp-mood').innerText = status.mood || '--';
         let afterglowEl = $('disp-afterglow') || $('disp-next');
         if (afterglowEl) afterglowEl.innerText = status.afterglow || status.next || '--';
+        let affRow = $('status-affection-row');
+        if (affRow) {
+            let aff = this.ensureAffection(target.contact);
+            if (aff) {
+                affRow.style.display = '';
+                let last = (aff.log || []).length ? aff.log[aff.log.length - 1] : null;
+                let lastTxt = last ? `　最近 ${last.delta > 0 ? '+' : ''}${last.delta}${last.reason ? ' · ' + last.reason : ''}` : '';
+                let affEl = $('disp-affection');
+                if (affEl) affEl.innerText = `${aff.score}/100${lastTxt}`;
+                let tg = $('aff-visible-toggle');
+                if (tg) {
+                    tg.innerText = aff.visibleToChar ? 'ta 知道' : 'ta 不知道';
+                    tg.style.background = aff.visibleToChar ? '#E8E3F5' : '#EEF1F4';
+                    tg.style.color = aff.visibleToChar ? '#6B5CA8' : '#9AA1AB';
+                }
+            } else {
+                affRow.style.display = 'none';
+            }
+        }
         this._setMeta(target, this.refreshing);
     },
     maybeAutoRefresh() {},
@@ -121538,6 +121665,7 @@ const GameWatch = {
         window.addEventListener('focus', () => this._resumeActiveLoop());
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden) this._resumeActiveLoop();
+            else this._onPageHidden();
         });
         this._initd = true;
     },
@@ -122444,6 +122572,7 @@ const GameWatch = {
             this._stopHelperSession();
             return;
         }
+        this._writeCompanionMemory(s);
         this._saveSession({
             active: false,
             auto: false,
@@ -122455,6 +122584,55 @@ const GameWatch = {
         this._hideNativeCompanion();
         Toast.show('陪玩弹幕已结束');
         this.render();
+    },
+
+    // 陪伴结束后把这段时光写回聊天记录——否则回到聊天框角色对刚才的陪伴完全失忆，
+    // 陪伴就失去了变成共同回忆的意义
+    _writeCompanionMemory(s) {
+        try {
+            if (!s || !Array.isArray(s.bullets) || !s.bullets.length) return;
+            let sessionLines = s.bullets.filter(b => b && b.text && (!s.sessionId || !b.sessionId || String(b.sessionId) === String(s.sessionId)));
+            if (!sessionLines.length) return;
+            let startedAt = Number(s.startedAt || 0);
+            let mins = startedAt ? Math.max(1, Math.round((Date.now() - startedAt) / 60000)) : 0;
+            let label = this._isNativeCompanionMode(s) ? '悬浮窗' : '弹幕席';
+            let viewers = this._viewerContacts(s);
+            let multi = viewers.length > 1;
+            viewers.forEach(c => {
+                if (!c || !Array.isArray(c.history)) return;
+                let name = c.remark || c.name || 'TA';
+                let own = multi ? sessionLines.filter(b => b.name === name) : sessionLines;
+                if (!own.length) return;
+                let owner = (typeof getDisplayUserName === 'function') ? getDisplayUserName(c, '机主') : ((DB.d.ownerProfile && DB.d.ownerProfile.name) || '机主');
+                let quotes = own.slice(-6).map(b => `「${String(b.text).slice(0, 30)}」`).join('');
+                c.history.push({
+                    role: 'system',
+                    type: 'narration',
+                    content: `${name} 刚才在${label}里陪 ${owner} 玩了${mins ? mins + '分钟' : '一会儿'}手机，期间说过：${quotes}`,
+                    time: Date.now(),
+                    isRead: true,
+                    companionLog: true
+                });
+            });
+            DB.save();
+        } catch (e) { console.warn('companion memory write failed', e); }
+    },
+
+    // 主聊天进行中时，让角色知道自己此刻正开着陪伴（chat.js 组 prompt 时调用）
+    getChatContext(c) {
+        try {
+            let s = this._session();
+            if (!s || !s.active || !c || c.isGroup) return '';
+            if (!(s.viewerIds || []).map(String).includes(String(c.id))) return '';
+            let name = c.remark || c.name || 'TA';
+            let lines = (s.bullets || [])
+                .filter(b => b && b.text && (!b.name || b.name === name))
+                .slice(-8)
+                .map(b => `- ${String(b.text).slice(0, 40)}`)
+                .join('\n');
+            let mode = this._isNativeCompanionMode(s) ? '手机悬浮窗陪伴' : '一起看画面';
+            return `[Ongoing Companion Session]\n你（${name}）此刻同时也在${mode}里陪着对方，这和当前聊天是同一时间线。${lines ? `这期间你在悬浮气泡里说过：\n${lines}` : '陪伴刚开始，还没说过话。'}\n聊天时可以自然衔接这段正在发生的陪伴，不要装作不知道。\n[/Ongoing Companion Session]`;
+        } catch (e) { return ''; }
     },
 
     toggleAuto() {
@@ -123197,6 +123375,15 @@ http://192.168.1.23:8787/phone
             name: b && b.name || '',
             text: b && b.text || ''
         })).filter(b => b.text);
+        // 把网页端的 system prompt 原文下发给安卓后台兜底用，
+        // 消除 Java 里那份手抄 prompt 的漂移（改这边一处就够）
+        try {
+            let viewers = this._viewerContacts(s);
+            if (viewers.length) {
+                payload.sysPromptVision = this._nativeCompanionVisionPrompt(viewers, s, { count: 1 }, {}).systemPrompt;
+                payload.sysPromptBlind = this._nativeCompanionPrompt(viewers, s, { count: 1 }, { noVision: true }).systemPrompt;
+            }
+        } catch (_) {}
         return payload;
     },
 
@@ -123261,6 +123448,20 @@ http://192.168.1.23:8787/phone
         this._tick();
     },
 
+    // 切后台时网页会被安卓冻结：在途生成会卡死、busy 牌子摘不掉，
+    // 悬浮窗备胎看到 busy 就干等——用户必须切回网页气泡才弹得出来。
+    // 所以页面一隐藏就立刻缴械：作废在途结果、摘掉 busy、把活儿完全让给安卓原生兜底。
+    _fgSeq: 0,
+    _onPageHidden() {
+        let s = this._session();
+        if (!s.active || !this._isNativeCompanionMode(s)) return;
+        this._fgSeq++;
+        if (s.generating) this._saveSession({ generating: false });
+        try {
+            if (this._hasNativeCompanion() && window.AndroidCompanion.setBusy) window.AndroidCompanion.setBusy(false);
+        } catch (_) {}
+    },
+
     _tick() {
         let s = this._session();
         if (!s.active) {
@@ -123293,6 +123494,8 @@ http://192.168.1.23:8787/phone
 
     _tickNativeCompanion(s = this._session()) {
         this._clearStaleGenerating(s);
+        // 网页在后台时不从 JS 发起生成——冻结中途会卡死请求；交给安卓原生定时器兜底
+        if (document.hidden) return;
         if (!s.auto || s.generating || this._connecting) return;
         this._openNativeCompanion({ silent: true });
         let now = Date.now();
@@ -123339,6 +123542,7 @@ http://192.168.1.23:8787/phone
             cfg.windowMs = Math.max(cfg.windowMs || 0, cfg.count * 5200);
         }
         let sessionId = s.sessionId || '';
+        let fgSeq = this._fgSeq;
         this._saveSession({ generating: true, lastError: '', lastGenerateAt: Date.now() });
         try {
             let raw;
@@ -123372,6 +123576,8 @@ http://192.168.1.23:8787/phone
             }
             let current = this._session();
             if (!current.active || String(current.sessionId || '') !== String(sessionId || '')) return;
+            // 生成期间页面隐藏过：结果已作废（busy 已被 _onPageHidden 摘掉、原生兜底可能已接手），静默丢弃防止双份
+            if (nativeMode && fgSeq !== this._fgSeq) return;
             let parsed = this._parseBullets(raw, viewers, cfg.count);
             if (!parsed.length) throw new Error('AI 没有生成可用弹幕');
             this._scheduleBullets(parsed, viewers, cfg);
@@ -123456,7 +123662,7 @@ ${multi ? '<bullet name="角色名">一句弹幕</bullet>' : '<bullet>一句弹�
         let systemPrompt = `[手机悬浮陪玩]
 你在 ${userDisplay} 的手机悬浮窗里陪 ta 玩手机、刷视频、打游戏或做别的事。
 这次没有拿到实时画面。不要假装看到了具体 app、视频、风景、动物、战况或屏幕内容。
-写成很短的陪伴气泡，像在旁边轻轻接话、打气、提醒休息或随口吐槽。
+你就像真的待在 ta 身边一样，以你的人设想说什么说什么。
 不要解释系统机制。
 ${multi ? '现在有多个角色一起陪伴。允许短短接彼此的话，但每句仍然像悬浮气泡。' : '现在只有一个角色陪伴，输出时不要带名字。'}
 不要输出 JSON，不要输出 Markdown。
@@ -123468,7 +123674,7 @@ ${viewerBlocks}`;
 最近气泡：
 ${recent}
 
-请生成 ${cfg.count} 条中文悬浮气泡。每条 6-28 个字，下一句会隔约 5 秒弹出。
+请生成 ${cfg.count} 条中文悬浮气泡。气泡很小，装不下长句。
 ${multi ? `每条必须带 name 属性，name 只能从这些名字里选：${viewers.map(c => c.remark || c.name || 'TA').join('、')}。` : '不要写 name 属性。'}
 输出格式只用：
 ${multi ? '<bullet name="角色名">一句气泡</bullet>' : '<bullet>一句气泡</bullet>'}
@@ -123498,14 +123704,14 @@ ${multi ? '<bullet name="角色名">一句气泡</bullet>' : '<bullet>一句气�
 只根据截图中确实能看到的内容、角色人设、最近气泡和可选聊天记录回应。
 不要编造截图外的声音、下一秒剧情、视频内容或游戏战况；看不清就说得含蓄一点。
 不要说“截图”“识图结果”“系统看到”，也不要解释机制。
-气泡要短，像陪在旁边随口冒出来的一句。
+你就像真的凑在 ta 手机旁边一起看一样，以你的人设想说什么说什么。
 ${multi ? '现在有多个角色一起陪伴。允许他们短短接彼此的话，但每句仍要围绕当前屏幕或最近气泡。' : '现在只有一个角色陪伴，输出时不要带名字。'}
 不要输出 JSON，不要输出 Markdown。
 [/手机悬浮陪伴识图]
 
 陪伴角色：
 ${viewerBlocks}`;
-        let userPrompt = `${firstLine ? `${userDisplay}现在要你陪ta玩手机/刷抖音/打游戏，请根据你的人设回复。\n` : ''}${chatContext ? `最近主聊天记录：\n${chatContext}\n\n` : ''}请看当前手机画面，生成 ${cfg.count} 条中文悬浮气泡。每条 6-28 个字，下一句会隔约 5 秒弹出。
+        let userPrompt = `${firstLine ? `${userDisplay}现在要你陪ta玩手机/刷抖音/打游戏，请根据你的人设回复。\n` : ''}${chatContext ? `最近主聊天记录：\n${chatContext}\n\n` : ''}请看当前手机画面，生成 ${cfg.count} 条中文悬浮气泡。气泡很小，装不下长句。
 最近气泡：
 ${recent}
 
@@ -147277,6 +147483,10 @@ export default {
     },
     _downloadExportText(text, filename) {
         try {
+            // iOS PWA: a[download] 会弹系统下载面板并短暂挂起 app,挂起瞬间
+            // iOS 可能谎报缩小的 innerHeight;先冻结稳定视口,缩小值不被采纳
+            // (冻结期内增长仍然照常采纳,不影响正常恢复)。
+            if (typeof holdStableViewport === 'function') holdStableViewport(3000);
             let b = new Blob([text], { type: 'application/json;charset=utf-8' });
             let u = URL.createObjectURL(b);
             let a = document.createElement('a');
@@ -159409,9 +159619,11 @@ checkFullscreen();
 // iOS standalone under-reports innerHeight at cold launch and may not fire a
 // corrective resize — re-measure a few times while the shell settles.
 scheduleKeyboardCheck([250, 700, 1500, 3000, 6000]);
-window.addEventListener('pageshow', () => scheduleKeyboardCheck([120, 500, 1500]));
+// iOS 挂起恢复(分享面板/切后台/导出文件)后 innerHeight 可能长时间卡在小值,
+// 补测长尾要和冷启动一样长,否则黑条要等下次交互才自愈。
+window.addEventListener('pageshow', () => scheduleKeyboardCheck([120, 500, 1500, 3000, 6000]));
 document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') scheduleKeyboardCheck([120, 500]);
+    if (document.visibilityState === 'visible') scheduleKeyboardCheck([120, 500, 1500, 3000, 6000]);
 });
 registerPwaServiceWorker();
 
