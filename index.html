@@ -16,7 +16,14 @@
 <link rel="icon" type="image/png" sizes="512x512" href="assets/icon-512.png">
 <meta name="theme-color" content="#000000">
 <title>AI OS (Line Pro v13)</title>
-<script src="https://cdn.jsdelivr.net/npm/localforage@1.10.0/dist/localforage.min.js"></script>
+<script>/* js/vendor/localforage.min.js */
+/*!
+    localForage -- Offline Storage, Improved
+    Version 1.10.0
+    https://localforage.github.io/localForage
+    (c) 2013-2017 Mozilla, Apache License 2.0
+*/
+!function(a){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=a();else if("function"==typeof define&&define.amd)define([],a);else{var b;b="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self?self:this,b.localforage=a()}}(function(){return function a(b,c,d){function e(g,h){if(!c[g]){if(!b[g]){var i="function"==typeof require&&require;if(!h&&i)return i(g,!0);if(f)return f(g,!0);var j=new Error("Cannot find module '"+g+"'");throw j.code="MODULE_NOT_FOUND",j}var k=c[g]={exports:{}};b[g][0].call(k.exports,function(a){var c=b[g][1][a];return e(c||a)},k,k.exports,a,b,c,d)}return c[g].exports}for(var f="function"==typeof require&&require,g=0;g<d.length;g++)e(d[g]);return e}({1:[function(a,b,c){(function(a){"use strict";function c(){k=!0;for(var a,b,c=l.length;c;){for(b=l,l=[],a=-1;++a<c;)b[a]();c=l.length}k=!1}function d(a){1!==l.push(a)||k||e()}var e,f=a.MutationObserver||a.WebKitMutationObserver;if(f){var g=0,h=new f(c),i=a.document.createTextNode("");h.observe(i,{characterData:!0}),e=function(){i.data=g=++g%2}}else if(a.setImmediate||void 0===a.MessageChannel)e="document"in a&&"onreadystatechange"in a.document.createElement("script")?function(){var b=a.document.createElement("script");b.onreadystatechange=function(){c(),b.onreadystatechange=null,b.parentNode.removeChild(b),b=null},a.document.documentElement.appendChild(b)}:function(){setTimeout(c,0)};else{var j=new a.MessageChannel;j.port1.onmessage=c,e=function(){j.port2.postMessage(0)}}var k,l=[];b.exports=d}).call(this,"undefined"!=typeof global?global:"undefined"!=typeof self?self:"undefined"!=typeof window?window:{})},{}],2:[function(a,b,c){"use strict";function d(){}function e(a){if("function"!=typeof a)throw new TypeError("resolver must be a function");this.state=s,this.queue=[],this.outcome=void 0,a!==d&&i(this,a)}function f(a,b,c){this.promise=a,"function"==typeof b&&(this.onFulfilled=b,this.callFulfilled=this.otherCallFulfilled),"function"==typeof c&&(this.onRejected=c,this.callRejected=this.otherCallRejected)}function g(a,b,c){o(function(){var d;try{d=b(c)}catch(b){return p.reject(a,b)}d===a?p.reject(a,new TypeError("Cannot resolve promise with itself")):p.resolve(a,d)})}function h(a){var b=a&&a.then;if(a&&("object"==typeof a||"function"==typeof a)&&"function"==typeof b)return function(){b.apply(a,arguments)}}function i(a,b){function c(b){f||(f=!0,p.reject(a,b))}function d(b){f||(f=!0,p.resolve(a,b))}function e(){b(d,c)}var f=!1,g=j(e);"error"===g.status&&c(g.value)}function j(a,b){var c={};try{c.value=a(b),c.status="success"}catch(a){c.status="error",c.value=a}return c}function k(a){return a instanceof this?a:p.resolve(new this(d),a)}function l(a){var b=new this(d);return p.reject(b,a)}function m(a){function b(a,b){function d(a){g[b]=a,++h!==e||f||(f=!0,p.resolve(j,g))}c.resolve(a).then(d,function(a){f||(f=!0,p.reject(j,a))})}var c=this;if("[object Array]"!==Object.prototype.toString.call(a))return this.reject(new TypeError("must be an array"));var e=a.length,f=!1;if(!e)return this.resolve([]);for(var g=new Array(e),h=0,i=-1,j=new this(d);++i<e;)b(a[i],i);return j}function n(a){function b(a){c.resolve(a).then(function(a){f||(f=!0,p.resolve(h,a))},function(a){f||(f=!0,p.reject(h,a))})}var c=this;if("[object Array]"!==Object.prototype.toString.call(a))return this.reject(new TypeError("must be an array"));var e=a.length,f=!1;if(!e)return this.resolve([]);for(var g=-1,h=new this(d);++g<e;)b(a[g]);return h}var o=a(1),p={},q=["REJECTED"],r=["FULFILLED"],s=["PENDING"];b.exports=e,e.prototype.catch=function(a){return this.then(null,a)},e.prototype.then=function(a,b){if("function"!=typeof a&&this.state===r||"function"!=typeof b&&this.state===q)return this;var c=new this.constructor(d);if(this.state!==s){g(c,this.state===r?a:b,this.outcome)}else this.queue.push(new f(c,a,b));return c},f.prototype.callFulfilled=function(a){p.resolve(this.promise,a)},f.prototype.otherCallFulfilled=function(a){g(this.promise,this.onFulfilled,a)},f.prototype.callRejected=function(a){p.reject(this.promise,a)},f.prototype.otherCallRejected=function(a){g(this.promise,this.onRejected,a)},p.resolve=function(a,b){var c=j(h,b);if("error"===c.status)return p.reject(a,c.value);var d=c.value;if(d)i(a,d);else{a.state=r,a.outcome=b;for(var e=-1,f=a.queue.length;++e<f;)a.queue[e].callFulfilled(b)}return a},p.reject=function(a,b){a.state=q,a.outcome=b;for(var c=-1,d=a.queue.length;++c<d;)a.queue[c].callRejected(b);return a},e.resolve=k,e.reject=l,e.all=m,e.race=n},{1:1}],3:[function(a,b,c){(function(b){"use strict";"function"!=typeof b.Promise&&(b.Promise=a(2))}).call(this,"undefined"!=typeof global?global:"undefined"!=typeof self?self:"undefined"!=typeof window?window:{})},{2:2}],4:[function(a,b,c){"use strict";function d(a,b){if(!(a instanceof b))throw new TypeError("Cannot call a class as a function")}function e(){try{if("undefined"!=typeof indexedDB)return indexedDB;if("undefined"!=typeof webkitIndexedDB)return webkitIndexedDB;if("undefined"!=typeof mozIndexedDB)return mozIndexedDB;if("undefined"!=typeof OIndexedDB)return OIndexedDB;if("undefined"!=typeof msIndexedDB)return msIndexedDB}catch(a){return}}function f(){try{if(!ua||!ua.open)return!1;var a="undefined"!=typeof openDatabase&&/(Safari|iPhone|iPad|iPod)/.test(navigator.userAgent)&&!/Chrome/.test(navigator.userAgent)&&!/BlackBerry/.test(navigator.platform),b="function"==typeof fetch&&-1!==fetch.toString().indexOf("[native code");return(!a||b)&&"undefined"!=typeof indexedDB&&"undefined"!=typeof IDBKeyRange}catch(a){return!1}}function g(a,b){a=a||[],b=b||{};try{return new Blob(a,b)}catch(f){if("TypeError"!==f.name)throw f;for(var c="undefined"!=typeof BlobBuilder?BlobBuilder:"undefined"!=typeof MSBlobBuilder?MSBlobBuilder:"undefined"!=typeof MozBlobBuilder?MozBlobBuilder:WebKitBlobBuilder,d=new c,e=0;e<a.length;e+=1)d.append(a[e]);return d.getBlob(b.type)}}function h(a,b){b&&a.then(function(a){b(null,a)},function(a){b(a)})}function i(a,b,c){"function"==typeof b&&a.then(b),"function"==typeof c&&a.catch(c)}function j(a){return"string"!=typeof a&&(console.warn(a+" used as a key, but it is not a string."),a=String(a)),a}function k(){if(arguments.length&&"function"==typeof arguments[arguments.length-1])return arguments[arguments.length-1]}function l(a){for(var b=a.length,c=new ArrayBuffer(b),d=new Uint8Array(c),e=0;e<b;e++)d[e]=a.charCodeAt(e);return c}function m(a){return new va(function(b){var c=a.transaction(wa,Ba),d=g([""]);c.objectStore(wa).put(d,"key"),c.onabort=function(a){a.preventDefault(),a.stopPropagation(),b(!1)},c.oncomplete=function(){var a=navigator.userAgent.match(/Chrome\/(\d+)/),c=navigator.userAgent.match(/Edge\//);b(c||!a||parseInt(a[1],10)>=43)}}).catch(function(){return!1})}function n(a){return"boolean"==typeof xa?va.resolve(xa):m(a).then(function(a){return xa=a})}function o(a){var b=ya[a.name],c={};c.promise=new va(function(a,b){c.resolve=a,c.reject=b}),b.deferredOperations.push(c),b.dbReady?b.dbReady=b.dbReady.then(function(){return c.promise}):b.dbReady=c.promise}function p(a){var b=ya[a.name],c=b.deferredOperations.pop();if(c)return c.resolve(),c.promise}function q(a,b){var c=ya[a.name],d=c.deferredOperations.pop();if(d)return d.reject(b),d.promise}function r(a,b){return new va(function(c,d){if(ya[a.name]=ya[a.name]||B(),a.db){if(!b)return c(a.db);o(a),a.db.close()}var e=[a.name];b&&e.push(a.version);var f=ua.open.apply(ua,e);b&&(f.onupgradeneeded=function(b){var c=f.result;try{c.createObjectStore(a.storeName),b.oldVersion<=1&&c.createObjectStore(wa)}catch(c){if("ConstraintError"!==c.name)throw c;console.warn('The database "'+a.name+'" has been upgraded from version '+b.oldVersion+" to version "+b.newVersion+', but the storage "'+a.storeName+'" already exists.')}}),f.onerror=function(a){a.preventDefault(),d(f.error)},f.onsuccess=function(){var b=f.result;b.onversionchange=function(a){a.target.close()},c(b),p(a)}})}function s(a){return r(a,!1)}function t(a){return r(a,!0)}function u(a,b){if(!a.db)return!0;var c=!a.db.objectStoreNames.contains(a.storeName),d=a.version<a.db.version,e=a.version>a.db.version;if(d&&(a.version!==b&&console.warn('The database "'+a.name+"\" can't be downgraded from version "+a.db.version+" to version "+a.version+"."),a.version=a.db.version),e||c){if(c){var f=a.db.version+1;f>a.version&&(a.version=f)}return!0}return!1}function v(a){return new va(function(b,c){var d=new FileReader;d.onerror=c,d.onloadend=function(c){var d=btoa(c.target.result||"");b({__local_forage_encoded_blob:!0,data:d,type:a.type})},d.readAsBinaryString(a)})}function w(a){return g([l(atob(a.data))],{type:a.type})}function x(a){return a&&a.__local_forage_encoded_blob}function y(a){var b=this,c=b._initReady().then(function(){var a=ya[b._dbInfo.name];if(a&&a.dbReady)return a.dbReady});return i(c,a,a),c}function z(a){o(a);for(var b=ya[a.name],c=b.forages,d=0;d<c.length;d++){var e=c[d];e._dbInfo.db&&(e._dbInfo.db.close(),e._dbInfo.db=null)}return a.db=null,s(a).then(function(b){return a.db=b,u(a)?t(a):b}).then(function(d){a.db=b.db=d;for(var e=0;e<c.length;e++)c[e]._dbInfo.db=d}).catch(function(b){throw q(a,b),b})}function A(a,b,c,d){void 0===d&&(d=1);try{var e=a.db.transaction(a.storeName,b);c(null,e)}catch(e){if(d>0&&(!a.db||"InvalidStateError"===e.name||"NotFoundError"===e.name))return va.resolve().then(function(){if(!a.db||"NotFoundError"===e.name&&!a.db.objectStoreNames.contains(a.storeName)&&a.version<=a.db.version)return a.db&&(a.version=a.db.version+1),t(a)}).then(function(){return z(a).then(function(){A(a,b,c,d-1)})}).catch(c);c(e)}}function B(){return{forages:[],db:null,dbReady:null,deferredOperations:[]}}function C(a){function b(){return va.resolve()}var c=this,d={db:null};if(a)for(var e in a)d[e]=a[e];var f=ya[d.name];f||(f=B(),ya[d.name]=f),f.forages.push(c),c._initReady||(c._initReady=c.ready,c.ready=y);for(var g=[],h=0;h<f.forages.length;h++){var i=f.forages[h];i!==c&&g.push(i._initReady().catch(b))}var j=f.forages.slice(0);return va.all(g).then(function(){return d.db=f.db,s(d)}).then(function(a){return d.db=a,u(d,c._defaultConfig.version)?t(d):a}).then(function(a){d.db=f.db=a,c._dbInfo=d;for(var b=0;b<j.length;b++){var e=j[b];e!==c&&(e._dbInfo.db=d.db,e._dbInfo.version=d.version)}})}function D(a,b){var c=this;a=j(a);var d=new va(function(b,d){c.ready().then(function(){A(c._dbInfo,Aa,function(e,f){if(e)return d(e);try{var g=f.objectStore(c._dbInfo.storeName),h=g.get(a);h.onsuccess=function(){var a=h.result;void 0===a&&(a=null),x(a)&&(a=w(a)),b(a)},h.onerror=function(){d(h.error)}}catch(a){d(a)}})}).catch(d)});return h(d,b),d}function E(a,b){var c=this,d=new va(function(b,d){c.ready().then(function(){A(c._dbInfo,Aa,function(e,f){if(e)return d(e);try{var g=f.objectStore(c._dbInfo.storeName),h=g.openCursor(),i=1;h.onsuccess=function(){var c=h.result;if(c){var d=c.value;x(d)&&(d=w(d));var e=a(d,c.key,i++);void 0!==e?b(e):c.continue()}else b()},h.onerror=function(){d(h.error)}}catch(a){d(a)}})}).catch(d)});return h(d,b),d}function F(a,b,c){var d=this;a=j(a);var e=new va(function(c,e){var f;d.ready().then(function(){return f=d._dbInfo,"[object Blob]"===za.call(b)?n(f.db).then(function(a){return a?b:v(b)}):b}).then(function(b){A(d._dbInfo,Ba,function(f,g){if(f)return e(f);try{var h=g.objectStore(d._dbInfo.storeName);null===b&&(b=void 0);var i=h.put(b,a);g.oncomplete=function(){void 0===b&&(b=null),c(b)},g.onabort=g.onerror=function(){var a=i.error?i.error:i.transaction.error;e(a)}}catch(a){e(a)}})}).catch(e)});return h(e,c),e}function G(a,b){var c=this;a=j(a);var d=new va(function(b,d){c.ready().then(function(){A(c._dbInfo,Ba,function(e,f){if(e)return d(e);try{var g=f.objectStore(c._dbInfo.storeName),h=g.delete(a);f.oncomplete=function(){b()},f.onerror=function(){d(h.error)},f.onabort=function(){var a=h.error?h.error:h.transaction.error;d(a)}}catch(a){d(a)}})}).catch(d)});return h(d,b),d}function H(a){var b=this,c=new va(function(a,c){b.ready().then(function(){A(b._dbInfo,Ba,function(d,e){if(d)return c(d);try{var f=e.objectStore(b._dbInfo.storeName),g=f.clear();e.oncomplete=function(){a()},e.onabort=e.onerror=function(){var a=g.error?g.error:g.transaction.error;c(a)}}catch(a){c(a)}})}).catch(c)});return h(c,a),c}function I(a){var b=this,c=new va(function(a,c){b.ready().then(function(){A(b._dbInfo,Aa,function(d,e){if(d)return c(d);try{var f=e.objectStore(b._dbInfo.storeName),g=f.count();g.onsuccess=function(){a(g.result)},g.onerror=function(){c(g.error)}}catch(a){c(a)}})}).catch(c)});return h(c,a),c}function J(a,b){var c=this,d=new va(function(b,d){if(a<0)return void b(null);c.ready().then(function(){A(c._dbInfo,Aa,function(e,f){if(e)return d(e);try{var g=f.objectStore(c._dbInfo.storeName),h=!1,i=g.openKeyCursor();i.onsuccess=function(){var c=i.result;if(!c)return void b(null);0===a?b(c.key):h?b(c.key):(h=!0,c.advance(a))},i.onerror=function(){d(i.error)}}catch(a){d(a)}})}).catch(d)});return h(d,b),d}function K(a){var b=this,c=new va(function(a,c){b.ready().then(function(){A(b._dbInfo,Aa,function(d,e){if(d)return c(d);try{var f=e.objectStore(b._dbInfo.storeName),g=f.openKeyCursor(),h=[];g.onsuccess=function(){var b=g.result;if(!b)return void a(h);h.push(b.key),b.continue()},g.onerror=function(){c(g.error)}}catch(a){c(a)}})}).catch(c)});return h(c,a),c}function L(a,b){b=k.apply(this,arguments);var c=this.config();a="function"!=typeof a&&a||{},a.name||(a.name=a.name||c.name,a.storeName=a.storeName||c.storeName);var d,e=this;if(a.name){var f=a.name===c.name&&e._dbInfo.db,g=f?va.resolve(e._dbInfo.db):s(a).then(function(b){var c=ya[a.name],d=c.forages;c.db=b;for(var e=0;e<d.length;e++)d[e]._dbInfo.db=b;return b});d=a.storeName?g.then(function(b){if(b.objectStoreNames.contains(a.storeName)){var c=b.version+1;o(a);var d=ya[a.name],e=d.forages;b.close();for(var f=0;f<e.length;f++){var g=e[f];g._dbInfo.db=null,g._dbInfo.version=c}return new va(function(b,d){var e=ua.open(a.name,c);e.onerror=function(a){e.result.close(),d(a)},e.onupgradeneeded=function(){e.result.deleteObjectStore(a.storeName)},e.onsuccess=function(){var a=e.result;a.close(),b(a)}}).then(function(a){d.db=a;for(var b=0;b<e.length;b++){var c=e[b];c._dbInfo.db=a,p(c._dbInfo)}}).catch(function(b){throw(q(a,b)||va.resolve()).catch(function(){}),b})}}):g.then(function(b){o(a);var c=ya[a.name],d=c.forages;b.close();for(var e=0;e<d.length;e++){d[e]._dbInfo.db=null}return new va(function(b,c){var d=ua.deleteDatabase(a.name);d.onerror=function(){var a=d.result;a&&a.close(),c(d.error)},d.onblocked=function(){console.warn('dropInstance blocked for database "'+a.name+'" until all open connections are closed')},d.onsuccess=function(){var a=d.result;a&&a.close(),b(a)}}).then(function(a){c.db=a;for(var b=0;b<d.length;b++)p(d[b]._dbInfo)}).catch(function(b){throw(q(a,b)||va.resolve()).catch(function(){}),b})})}else d=va.reject("Invalid arguments");return h(d,b),d}function M(){return"function"==typeof openDatabase}function N(a){var b,c,d,e,f,g=.75*a.length,h=a.length,i=0;"="===a[a.length-1]&&(g--,"="===a[a.length-2]&&g--);var j=new ArrayBuffer(g),k=new Uint8Array(j);for(b=0;b<h;b+=4)c=Da.indexOf(a[b]),d=Da.indexOf(a[b+1]),e=Da.indexOf(a[b+2]),f=Da.indexOf(a[b+3]),k[i++]=c<<2|d>>4,k[i++]=(15&d)<<4|e>>2,k[i++]=(3&e)<<6|63&f;return j}function O(a){var b,c=new Uint8Array(a),d="";for(b=0;b<c.length;b+=3)d+=Da[c[b]>>2],d+=Da[(3&c[b])<<4|c[b+1]>>4],d+=Da[(15&c[b+1])<<2|c[b+2]>>6],d+=Da[63&c[b+2]];return c.length%3==2?d=d.substring(0,d.length-1)+"=":c.length%3==1&&(d=d.substring(0,d.length-2)+"=="),d}function P(a,b){var c="";if(a&&(c=Ua.call(a)),a&&("[object ArrayBuffer]"===c||a.buffer&&"[object ArrayBuffer]"===Ua.call(a.buffer))){var d,e=Ga;a instanceof ArrayBuffer?(d=a,e+=Ia):(d=a.buffer,"[object Int8Array]"===c?e+=Ka:"[object Uint8Array]"===c?e+=La:"[object Uint8ClampedArray]"===c?e+=Ma:"[object Int16Array]"===c?e+=Na:"[object Uint16Array]"===c?e+=Pa:"[object Int32Array]"===c?e+=Oa:"[object Uint32Array]"===c?e+=Qa:"[object Float32Array]"===c?e+=Ra:"[object Float64Array]"===c?e+=Sa:b(new Error("Failed to get type for BinaryArray"))),b(e+O(d))}else if("[object Blob]"===c){var f=new FileReader;f.onload=function(){var c=Ea+a.type+"~"+O(this.result);b(Ga+Ja+c)},f.readAsArrayBuffer(a)}else try{b(JSON.stringify(a))}catch(c){console.error("Couldn't convert value into a JSON string: ",a),b(null,c)}}function Q(a){if(a.substring(0,Ha)!==Ga)return JSON.parse(a);var b,c=a.substring(Ta),d=a.substring(Ha,Ta);if(d===Ja&&Fa.test(c)){var e=c.match(Fa);b=e[1],c=c.substring(e[0].length)}var f=N(c);switch(d){case Ia:return f;case Ja:return g([f],{type:b});case Ka:return new Int8Array(f);case La:return new Uint8Array(f);case Ma:return new Uint8ClampedArray(f);case Na:return new Int16Array(f);case Pa:return new Uint16Array(f);case Oa:return new Int32Array(f);case Qa:return new Uint32Array(f);case Ra:return new Float32Array(f);case Sa:return new Float64Array(f);default:throw new Error("Unkown type: "+d)}}function R(a,b,c,d){a.executeSql("CREATE TABLE IF NOT EXISTS "+b.storeName+" (id INTEGER PRIMARY KEY, key unique, value)",[],c,d)}function S(a){var b=this,c={db:null};if(a)for(var d in a)c[d]="string"!=typeof a[d]?a[d].toString():a[d];var e=new va(function(a,d){try{c.db=openDatabase(c.name,String(c.version),c.description,c.size)}catch(a){return d(a)}c.db.transaction(function(e){R(e,c,function(){b._dbInfo=c,a()},function(a,b){d(b)})},d)});return c.serializer=Va,e}function T(a,b,c,d,e,f){a.executeSql(c,d,e,function(a,g){g.code===g.SYNTAX_ERR?a.executeSql("SELECT name FROM sqlite_master WHERE type='table' AND name = ?",[b.storeName],function(a,h){h.rows.length?f(a,g):R(a,b,function(){a.executeSql(c,d,e,f)},f)},f):f(a,g)},f)}function U(a,b){var c=this;a=j(a);var d=new va(function(b,d){c.ready().then(function(){var e=c._dbInfo;e.db.transaction(function(c){T(c,e,"SELECT * FROM "+e.storeName+" WHERE key = ? LIMIT 1",[a],function(a,c){var d=c.rows.length?c.rows.item(0).value:null;d&&(d=e.serializer.deserialize(d)),b(d)},function(a,b){d(b)})})}).catch(d)});return h(d,b),d}function V(a,b){var c=this,d=new va(function(b,d){c.ready().then(function(){var e=c._dbInfo;e.db.transaction(function(c){T(c,e,"SELECT * FROM "+e.storeName,[],function(c,d){for(var f=d.rows,g=f.length,h=0;h<g;h++){var i=f.item(h),j=i.value;if(j&&(j=e.serializer.deserialize(j)),void 0!==(j=a(j,i.key,h+1)))return void b(j)}b()},function(a,b){d(b)})})}).catch(d)});return h(d,b),d}function W(a,b,c,d){var e=this;a=j(a);var f=new va(function(f,g){e.ready().then(function(){void 0===b&&(b=null);var h=b,i=e._dbInfo;i.serializer.serialize(b,function(b,j){j?g(j):i.db.transaction(function(c){T(c,i,"INSERT OR REPLACE INTO "+i.storeName+" (key, value) VALUES (?, ?)",[a,b],function(){f(h)},function(a,b){g(b)})},function(b){if(b.code===b.QUOTA_ERR){if(d>0)return void f(W.apply(e,[a,h,c,d-1]));g(b)}})})}).catch(g)});return h(f,c),f}function X(a,b,c){return W.apply(this,[a,b,c,1])}function Y(a,b){var c=this;a=j(a);var d=new va(function(b,d){c.ready().then(function(){var e=c._dbInfo;e.db.transaction(function(c){T(c,e,"DELETE FROM "+e.storeName+" WHERE key = ?",[a],function(){b()},function(a,b){d(b)})})}).catch(d)});return h(d,b),d}function Z(a){var b=this,c=new va(function(a,c){b.ready().then(function(){var d=b._dbInfo;d.db.transaction(function(b){T(b,d,"DELETE FROM "+d.storeName,[],function(){a()},function(a,b){c(b)})})}).catch(c)});return h(c,a),c}function $(a){var b=this,c=new va(function(a,c){b.ready().then(function(){var d=b._dbInfo;d.db.transaction(function(b){T(b,d,"SELECT COUNT(key) as c FROM "+d.storeName,[],function(b,c){var d=c.rows.item(0).c;a(d)},function(a,b){c(b)})})}).catch(c)});return h(c,a),c}function _(a,b){var c=this,d=new va(function(b,d){c.ready().then(function(){var e=c._dbInfo;e.db.transaction(function(c){T(c,e,"SELECT key FROM "+e.storeName+" WHERE id = ? LIMIT 1",[a+1],function(a,c){var d=c.rows.length?c.rows.item(0).key:null;b(d)},function(a,b){d(b)})})}).catch(d)});return h(d,b),d}function aa(a){var b=this,c=new va(function(a,c){b.ready().then(function(){var d=b._dbInfo;d.db.transaction(function(b){T(b,d,"SELECT key FROM "+d.storeName,[],function(b,c){for(var d=[],e=0;e<c.rows.length;e++)d.push(c.rows.item(e).key);a(d)},function(a,b){c(b)})})}).catch(c)});return h(c,a),c}function ba(a){return new va(function(b,c){a.transaction(function(d){d.executeSql("SELECT name FROM sqlite_master WHERE type='table' AND name <> '__WebKitDatabaseInfoTable__'",[],function(c,d){for(var e=[],f=0;f<d.rows.length;f++)e.push(d.rows.item(f).name);b({db:a,storeNames:e})},function(a,b){c(b)})},function(a){c(a)})})}function ca(a,b){b=k.apply(this,arguments);var c=this.config();a="function"!=typeof a&&a||{},a.name||(a.name=a.name||c.name,a.storeName=a.storeName||c.storeName);var d,e=this;return d=a.name?new va(function(b){var d;d=a.name===c.name?e._dbInfo.db:openDatabase(a.name,"","",0),b(a.storeName?{db:d,storeNames:[a.storeName]}:ba(d))}).then(function(a){return new va(function(b,c){a.db.transaction(function(d){function e(a){return new va(function(b,c){d.executeSql("DROP TABLE IF EXISTS "+a,[],function(){b()},function(a,b){c(b)})})}for(var f=[],g=0,h=a.storeNames.length;g<h;g++)f.push(e(a.storeNames[g]));va.all(f).then(function(){b()}).catch(function(a){c(a)})},function(a){c(a)})})}):va.reject("Invalid arguments"),h(d,b),d}function da(){try{return"undefined"!=typeof localStorage&&"setItem"in localStorage&&!!localStorage.setItem}catch(a){return!1}}function ea(a,b){var c=a.name+"/";return a.storeName!==b.storeName&&(c+=a.storeName+"/"),c}function fa(){var a="_localforage_support_test";try{return localStorage.setItem(a,!0),localStorage.removeItem(a),!1}catch(a){return!0}}function ga(){return!fa()||localStorage.length>0}function ha(a){var b=this,c={};if(a)for(var d in a)c[d]=a[d];return c.keyPrefix=ea(a,b._defaultConfig),ga()?(b._dbInfo=c,c.serializer=Va,va.resolve()):va.reject()}function ia(a){var b=this,c=b.ready().then(function(){for(var a=b._dbInfo.keyPrefix,c=localStorage.length-1;c>=0;c--){var d=localStorage.key(c);0===d.indexOf(a)&&localStorage.removeItem(d)}});return h(c,a),c}function ja(a,b){var c=this;a=j(a);var d=c.ready().then(function(){var b=c._dbInfo,d=localStorage.getItem(b.keyPrefix+a);return d&&(d=b.serializer.deserialize(d)),d});return h(d,b),d}function ka(a,b){var c=this,d=c.ready().then(function(){for(var b=c._dbInfo,d=b.keyPrefix,e=d.length,f=localStorage.length,g=1,h=0;h<f;h++){var i=localStorage.key(h);if(0===i.indexOf(d)){var j=localStorage.getItem(i);if(j&&(j=b.serializer.deserialize(j)),void 0!==(j=a(j,i.substring(e),g++)))return j}}});return h(d,b),d}function la(a,b){var c=this,d=c.ready().then(function(){var b,d=c._dbInfo;try{b=localStorage.key(a)}catch(a){b=null}return b&&(b=b.substring(d.keyPrefix.length)),b});return h(d,b),d}function ma(a){var b=this,c=b.ready().then(function(){for(var a=b._dbInfo,c=localStorage.length,d=[],e=0;e<c;e++){var f=localStorage.key(e);0===f.indexOf(a.keyPrefix)&&d.push(f.substring(a.keyPrefix.length))}return d});return h(c,a),c}function na(a){var b=this,c=b.keys().then(function(a){return a.length});return h(c,a),c}function oa(a,b){var c=this;a=j(a);var d=c.ready().then(function(){var b=c._dbInfo;localStorage.removeItem(b.keyPrefix+a)});return h(d,b),d}function pa(a,b,c){var d=this;a=j(a);var e=d.ready().then(function(){void 0===b&&(b=null);var c=b;return new va(function(e,f){var g=d._dbInfo;g.serializer.serialize(b,function(b,d){if(d)f(d);else try{localStorage.setItem(g.keyPrefix+a,b),e(c)}catch(a){"QuotaExceededError"!==a.name&&"NS_ERROR_DOM_QUOTA_REACHED"!==a.name||f(a),f(a)}})})});return h(e,c),e}function qa(a,b){if(b=k.apply(this,arguments),a="function"!=typeof a&&a||{},!a.name){var c=this.config();a.name=a.name||c.name,a.storeName=a.storeName||c.storeName}var d,e=this;return d=a.name?new va(function(b){b(a.storeName?ea(a,e._defaultConfig):a.name+"/")}).then(function(a){for(var b=localStorage.length-1;b>=0;b--){var c=localStorage.key(b);0===c.indexOf(a)&&localStorage.removeItem(c)}}):va.reject("Invalid arguments"),h(d,b),d}function ra(a,b){a[b]=function(){var c=arguments;return a.ready().then(function(){return a[b].apply(a,c)})}}function sa(){for(var a=1;a<arguments.length;a++){var b=arguments[a];if(b)for(var c in b)b.hasOwnProperty(c)&&($a(b[c])?arguments[0][c]=b[c].slice():arguments[0][c]=b[c])}return arguments[0]}var ta="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(a){return typeof a}:function(a){return a&&"function"==typeof Symbol&&a.constructor===Symbol&&a!==Symbol.prototype?"symbol":typeof a},ua=e();"undefined"==typeof Promise&&a(3);var va=Promise,wa="local-forage-detect-blob-support",xa=void 0,ya={},za=Object.prototype.toString,Aa="readonly",Ba="readwrite",Ca={_driver:"asyncStorage",_initStorage:C,_support:f(),iterate:E,getItem:D,setItem:F,removeItem:G,clear:H,length:I,key:J,keys:K,dropInstance:L},Da="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",Ea="~~local_forage_type~",Fa=/^~~local_forage_type~([^~]+)~/,Ga="__lfsc__:",Ha=Ga.length,Ia="arbf",Ja="blob",Ka="si08",La="ui08",Ma="uic8",Na="si16",Oa="si32",Pa="ur16",Qa="ui32",Ra="fl32",Sa="fl64",Ta=Ha+Ia.length,Ua=Object.prototype.toString,Va={serialize:P,deserialize:Q,stringToBuffer:N,bufferToString:O},Wa={_driver:"webSQLStorage",_initStorage:S,_support:M(),iterate:V,getItem:U,setItem:X,removeItem:Y,clear:Z,length:$,key:_,keys:aa,dropInstance:ca},Xa={_driver:"localStorageWrapper",_initStorage:ha,_support:da(),iterate:ka,getItem:ja,setItem:pa,removeItem:oa,clear:ia,length:na,key:la,keys:ma,dropInstance:qa},Ya=function(a,b){return a===b||"number"==typeof a&&"number"==typeof b&&isNaN(a)&&isNaN(b)},Za=function(a,b){for(var c=a.length,d=0;d<c;){if(Ya(a[d],b))return!0;d++}return!1},$a=Array.isArray||function(a){return"[object Array]"===Object.prototype.toString.call(a)},_a={},ab={},bb={INDEXEDDB:Ca,WEBSQL:Wa,LOCALSTORAGE:Xa},cb=[bb.INDEXEDDB._driver,bb.WEBSQL._driver,bb.LOCALSTORAGE._driver],db=["dropInstance"],eb=["clear","getItem","iterate","key","keys","length","removeItem","setItem"].concat(db),fb={description:"",driver:cb.slice(),name:"localforage",size:4980736,storeName:"keyvaluepairs",version:1},gb=function(){function a(b){d(this,a);for(var c in bb)if(bb.hasOwnProperty(c)){var e=bb[c],f=e._driver;this[c]=f,_a[f]||this.defineDriver(e)}this._defaultConfig=sa({},fb),this._config=sa({},this._defaultConfig,b),this._driverSet=null,this._initDriver=null,this._ready=!1,this._dbInfo=null,this._wrapLibraryMethodsWithReady(),this.setDriver(this._config.driver).catch(function(){})}return a.prototype.config=function(a){if("object"===(void 0===a?"undefined":ta(a))){if(this._ready)return new Error("Can't call config() after localforage has been used.");for(var b in a){if("storeName"===b&&(a[b]=a[b].replace(/\W/g,"_")),"version"===b&&"number"!=typeof a[b])return new Error("Database version must be a number.");this._config[b]=a[b]}return!("driver"in a&&a.driver)||this.setDriver(this._config.driver)}return"string"==typeof a?this._config[a]:this._config},a.prototype.defineDriver=function(a,b,c){var d=new va(function(b,c){try{var d=a._driver,e=new Error("Custom driver not compliant; see https://mozilla.github.io/localForage/#definedriver");if(!a._driver)return void c(e);for(var f=eb.concat("_initStorage"),g=0,i=f.length;g<i;g++){var j=f[g];if((!Za(db,j)||a[j])&&"function"!=typeof a[j])return void c(e)}(function(){for(var b=function(a){return function(){var b=new Error("Method "+a+" is not implemented by the current driver"),c=va.reject(b);return h(c,arguments[arguments.length-1]),c}},c=0,d=db.length;c<d;c++){var e=db[c];a[e]||(a[e]=b(e))}})();var k=function(c){_a[d]&&console.info("Redefining LocalForage driver: "+d),_a[d]=a,ab[d]=c,b()};"_support"in a?a._support&&"function"==typeof a._support?a._support().then(k,c):k(!!a._support):k(!0)}catch(a){c(a)}});return i(d,b,c),d},a.prototype.driver=function(){return this._driver||null},a.prototype.getDriver=function(a,b,c){var d=_a[a]?va.resolve(_a[a]):va.reject(new Error("Driver not found."));return i(d,b,c),d},a.prototype.getSerializer=function(a){var b=va.resolve(Va);return i(b,a),b},a.prototype.ready=function(a){var b=this,c=b._driverSet.then(function(){return null===b._ready&&(b._ready=b._initDriver()),b._ready});return i(c,a,a),c},a.prototype.setDriver=function(a,b,c){function d(){g._config.driver=g.driver()}function e(a){return g._extend(a),d(),g._ready=g._initStorage(g._config),g._ready}function f(a){return function(){function b(){for(;c<a.length;){var f=a[c];return c++,g._dbInfo=null,g._ready=null,g.getDriver(f).then(e).catch(b)}d();var h=new Error("No available storage method found.");return g._driverSet=va.reject(h),g._driverSet}var c=0;return b()}}var g=this;$a(a)||(a=[a]);var h=this._getSupportedDrivers(a),j=null!==this._driverSet?this._driverSet.catch(function(){return va.resolve()}):va.resolve();return this._driverSet=j.then(function(){var a=h[0];return g._dbInfo=null,g._ready=null,g.getDriver(a).then(function(a){g._driver=a._driver,d(),g._wrapLibraryMethodsWithReady(),g._initDriver=f(h)})}).catch(function(){d();var a=new Error("No available storage method found.");return g._driverSet=va.reject(a),g._driverSet}),i(this._driverSet,b,c),this._driverSet},a.prototype.supports=function(a){return!!ab[a]},a.prototype._extend=function(a){sa(this,a)},a.prototype._getSupportedDrivers=function(a){for(var b=[],c=0,d=a.length;c<d;c++){var e=a[c];this.supports(e)&&b.push(e)}return b},a.prototype._wrapLibraryMethodsWithReady=function(){for(var a=0,b=eb.length;a<b;a++)ra(this,eb[a])},a.prototype.createInstance=function(b){return new a(b)},a}(),hb=new gb;b.exports=hb},{3:3}]},{},[4])(4)});</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 <style>/* css/00_vars.css */
@@ -3737,6 +3744,10 @@ input, textarea { user-select: text; touch-action: auto; -webkit-user-select: te
 html { overflow: hidden; width: 100%; max-width: 100vw; height: 100%; height: 100vh; height: var(--app-stable-height, 100dvh); overscroll-behavior: none; }
 body { position: relative; margin: 0; padding: 0; font-family: var(--app-font-family); background: #222; height: 100vh; height: var(--app-stable-height, 100dvh); overflow: hidden; color: var(--text-main); font-size: 16px !important; display: flex; justify-content: center; align-items: center; width: 100%; max-width: 100vw; overscroll-behavior: none; }
 body.keyboard-open { height: var(--app-stable-height, 100vh) !important; }
+/* 真机全屏时画布底色跟 app 底栏一致：即使视口高度短暂量小，
+   露出的缝隙也是浅色而不是黑条（黑色 #222 只留给桌面外壳预览） */
+html:not(.phone-shell-preview) { background: #F2F4F6; }
+html:not(.phone-shell-preview) body { background: #F2F4F6; }
 
 /* iOS 原生惯性滚动（legacy 属性，新版 Safari 已默认，但加上无害） */
 .scroll-content, #chat-messages, .reading-paper, .res-chat-list, .post-detail-view, .post-scroll, .cd-list-edit-container, .bottom-sheet-content {
@@ -70909,7 +70920,18 @@ body:not(.line-theme-wechat):not(.line-theme-qq) #sub-chat-room .nav-bar {
 body:not(.line-theme-wechat):not(.line-theme-qq) #global-status-bar {
     border-radius: 0 !important;
     overflow: visible !important;
-}</style>
+}
+
+/* ===== 精简特效模式（设置 → 精简特效）=====
+   backdrop-filter 全项目 360+ 处，低端机卡顿发热耗电主力。
+   lite-mode 下按聊天气泡已有的先例一刀全切。 */
+body.lite-mode *:not(#lite-boost):not(#lite-boost2),
+body.lite-mode *:not(#lite-boost):not(#lite-boost2)::before,
+body.lite-mode *:not(#lite-boost):not(#lite-boost2)::after {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+</style>
     <style>/* css/16_bead_studio.css */
 /* Bead Studio: photo-to-bead co-crafting tool inside the chat drawer. */
 .bead-studio-window {
@@ -75996,6 +76018,10 @@ body.watch-cinema-active {
                     <span><b>应用内状态栏</b><small>iOS 添加到桌面后建议关闭，避免双状态栏</small></span>
                     <div id="app-status-toggle" class="snoop-toggle" role="switch" aria-checked="true"></div>
                 </div>
+                <div class="secondary-toggle-row button-row" onclick="Appearance.toggleLiteMode(event)">
+                    <span><b>精简特效</b><small>关闭全部毛玻璃模糊，老手机更流畅、更省电</small></span>
+                    <div id="lite-mode-toggle" class="snoop-toggle" role="switch" aria-checked="false"></div>
+                </div>
             </div>
         </section>
 
@@ -77009,10 +77035,21 @@ if (typeof window !== 'undefined') window.ContentPolicy = ContentPolicy;
 const Utils = {
     fileToBase64(f, cb) {
         if (!f) return;
+        // 大图自动压缩再入库——壁纸/图标/表情包/聊天背景等所有调用点统一受益，
+        // 否则 20MB 原图会变成 27MB 字符串进 DB，喂大整库拷贝的每一次开销。
+        // gif/svg 跳过（重编码会杀动画/矢量），小文件直接原样返回。
+        let type = String(f.type || '').toLowerCase();
+        let compressible = /^image\/(jpe?g|png|webp|bmp)$/.test(type);
+        if (!compressible || (f.size || 0) <= 300 * 1024) return this._fileToBase64Raw(f, cb);
+        this.imageFileToChatDataUrl(f, { preserveTransparency: /png|webp/.test(type) })
+            .then(res => cb(res && res.dataUrl ? res.dataUrl : ''))
+            .catch(() => this._fileToBase64Raw(f, cb));
+    },
+    _fileToBase64Raw(f, cb) {
+        if (!f) return;
         let r = new FileReader();
         r.readAsDataURL(f);
         r.onload = e => {
-            // Updated to return raw data without compression
             cb(e.target.result);
         }
     },
@@ -77038,7 +77075,7 @@ const Utils = {
         return n + 'B';
     },
     async imageFileToChatDataUrl(file, options = {}) {
-        let original = await new Promise(resolve => this.fileToBase64(file, resolve));
+        let original = await new Promise(resolve => this._fileToBase64Raw(file, resolve));
         let maxDataUrlLength = options.maxDataUrlLength || 2.2 * 1024 * 1024;
         if (!file || !/^image\//i.test(file.type || '') || String(original || '').length <= maxDataUrlLength) {
             return { dataUrl: original, compressed: false, originalBytes: file && file.size || this.dataUrlBytes(original), bytes: this.dataUrlBytes(original) };
@@ -78037,6 +78074,7 @@ const DB = {
         stickerSearch: { endpoint: '', recent: [] }
     },
     async init() {
+        this._initTabLock();
         if(this.d.myWallet === undefined) { this.d.myWallet = 520; this.save(); }
         try {
             // Try localforage first, but allow the sync backup to recover a newer
@@ -78056,7 +78094,7 @@ const DB = {
             }
             if (chosen) {
                 this.d = chosen;
-                if (!data || restoredFrom !== 'localforage') {
+                if ((!data || restoredFrom !== 'localforage') && !this._readOnly) {
                     try { await localforage.setItem(this.key, this.d); } catch(e) { console.warn("Restore writeback failed", e); }
                     console.log(`Restored data from ${restoredFrom}`);
                 }
@@ -78064,8 +78102,11 @@ const DB = {
                 this.seed();
             }
         } catch(e) {
-            console.error("Load failed, resetting DB", e);
-            this.seed();
+            // 加载失败时绝不 seed()——空种子档会带着最新时间戳覆盖三层备份，
+            // 用户存档就此蒸发。改为阻断页面，不写任何存储，让用户刷新重试。
+            console.error("Load failed, blocking to protect existing saves", e);
+            this._fatalLoadError(e);
+            return;
         }
         this._requestPersistentStorage();
         this.ensureUserPersonas();
@@ -78396,6 +78437,80 @@ const DB = {
             }).catch(() => {});
         } catch(e) {}
     },
+    _loadFailed: false,
+    // --- 双开保护：localStorage 心跳锁 ---
+    // 两个窗口各持整库内存副本会互相覆盖存档，后开的窗口进只读模式。
+    tabLockKey: 'xiaoshouji_tab_lock_v1',
+    _tabId: null,
+    _tabLockTimer: null,
+    _readOnly: false,
+    _initTabLock() {
+        try {
+            if (typeof localStorage === 'undefined' || typeof window === 'undefined') return;
+            this._tabId = 'tab_' + Date.now() + '_' + Math.floor(Math.random() * 1e6);
+            let lock = null;
+            try { lock = JSON.parse(localStorage.getItem(this.tabLockKey) || 'null'); } catch(e) {}
+            let fresh = lock && lock.id && lock.id !== this._tabId && Number(lock.at || 0) > Date.now() - 10000;
+            if (fresh) {
+                this._enterReadOnlyMode();
+                return;
+            }
+            this._claimTabLock();
+        } catch(e) { console.warn('Tab lock init failed', e); }
+    },
+    _claimTabLock() {
+        let beat = () => {
+            try { localStorage.setItem(this.tabLockKey, JSON.stringify({ id: this._tabId, at: Date.now() })); } catch(e) {}
+        };
+        beat();
+        if (this._tabLockTimer) clearInterval(this._tabLockTimer);
+        this._tabLockTimer = setInterval(beat, 3000);
+        window.addEventListener('pagehide', () => this._releaseTabLock());
+    },
+    _releaseTabLock() {
+        try {
+            if (this._tabLockTimer) { clearInterval(this._tabLockTimer); this._tabLockTimer = null; }
+            let lock = JSON.parse(localStorage.getItem(this.tabLockKey) || 'null');
+            if (lock && lock.id === this._tabId) localStorage.removeItem(this.tabLockKey);
+        } catch(e) {}
+    },
+    _enterReadOnlyMode() {
+        this._readOnly = true;
+        try {
+            let overlay = document.createElement('div');
+            overlay.id = 'db-tab-lock-warning';
+            overlay.style.cssText = 'position:fixed;inset:0;z-index:99998;background:rgba(15,20,26,.48);display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;';
+            overlay.innerHTML = `
+                <div style="max-width:420px;width:100%;background:#fff;border-radius:22px;padding:26px 22px;box-shadow:0 18px 60px rgba(15,20,26,.24);text-align:center;">
+                    <div style="font-size:17px;font-weight:800;color:#0F141A;">另一个窗口正开着小手机</div>
+                    <div style="margin-top:10px;font-size:13px;line-height:1.7;color:#5B6470;">同时开两个窗口会互相覆盖存档。这个窗口已进入<b>只读模式</b>：可以浏览，但所有改动都不会保存。</div>
+                    <button onclick="document.getElementById('db-tab-lock-warning').remove()" style="margin-top:18px;width:100%;border:none;border-radius:14px;padding:13px;background:#0F141A;color:#fff;font-weight:700;font-size:14px;">知道了，只读浏览</button>
+                    <button onclick="localStorage.removeItem(DB.tabLockKey);location.reload()" style="margin-top:10px;width:100%;border:1px solid rgba(15,20,26,.14);border-radius:14px;padding:12px;background:#fff;color:#5B6470;font-weight:700;font-size:13px;">我已关闭其它窗口，重新加载接管</button>
+                </div>`;
+            let attach = () => (document.body || document.documentElement).appendChild(overlay);
+            if (document.body) attach();
+            else window.addEventListener('DOMContentLoaded', attach, { once: true });
+        } catch(e) { console.warn('Tab lock warning render failed', e); }
+    },
+    _fatalLoadError(err) {
+        this._loadFailed = true;
+        try {
+            let detail = String(err && (err.message || err) || '未知错误');
+            let overlay = document.createElement('div');
+            overlay.id = 'db-fatal-load-error';
+            overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#EEF1F4;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;';
+            overlay.innerHTML = `
+                <div style="max-width:420px;width:100%;background:#fff;border-radius:22px;padding:26px 22px;box-shadow:0 18px 60px rgba(15,20,26,.14);text-align:center;">
+                    <div style="font-size:17px;font-weight:800;color:#0F141A;">存档加载失败</div>
+                    <div style="margin-top:10px;font-size:13px;line-height:1.7;color:#5B6470;">为了保护你的数据，这次没有写入任何内容，存档原样保留在本机。<br>请检查网络后刷新重试；如果反复出现，请截图这段信息：</div>
+                    <div style="margin-top:12px;font-size:11px;line-height:1.6;color:#9AA1AB;word-break:break-all;background:#F7F9FB;border-radius:12px;padding:10px;text-align:left;">${detail.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+                    <button onclick="location.reload()" style="margin-top:18px;width:100%;border:none;border-radius:14px;padding:13px;background:#0F141A;color:#fff;font-weight:700;font-size:14px;">刷新重试</button>
+                </div>`;
+            (document.body || document.documentElement).appendChild(overlay);
+        } catch(e2) {
+            console.error('Failed to render fatal load error page', e2);
+        }
+    },
     saveTimer: null,
     saveIdleHandle: null,
     compactBackupTimer: null,
@@ -78448,11 +78563,14 @@ const DB = {
     _shouldPreferBackup(candidate, current) {
         if (!candidate || typeof candidate !== 'object') return false;
         if (!current || typeof current !== 'object') return true;
+        let candidateScore = this._backupScore(candidate);
+        let currentScore = this._backupScore(current);
+        // 内容量守卫：现存档有实质内容而候选档内容少一个量级以上时，
+        // 即使候选时间戳更新也拒绝——防止空/残档凭新时间戳覆盖真档
+        if (currentScore >= 1000 && candidateScore < currentScore / 10) return false;
         let candidateAt = Number(candidate.__savedAt || 0);
         let currentAt = Number(current.__savedAt || 0);
         if (candidateAt > currentAt) return true;
-        let candidateScore = this._backupScore(candidate);
-        let currentScore = this._backupScore(current);
         return currentScore < 1000 && candidateScore >= 1000 && candidateScore > currentScore + 120;
     },
     _stampSave() {
@@ -78497,12 +78615,14 @@ const DB = {
         return out;
     },
     _writeCompactStorageBackup() {
+        if (this._loadFailed || this._readOnly) return false;
         let text = '';
         try {
             if (typeof localStorage === 'undefined') return false;
             let compact = this._compactCloneForBackup(this.d);
             text = JSON.stringify(compact);
             localStorage.setItem(this.compactBackupKey, text);
+            this._lastCompactBackupAt = Date.now();
             return true;
         } catch(e) {
             if (!text) {
@@ -78512,6 +78632,7 @@ const DB = {
             try {
                 localStorage.removeItem(this.key);
                 localStorage.setItem(this.compactBackupKey, text);
+                this._lastCompactBackupAt = Date.now();
                 return true;
             } catch(fallbackError) {
                 console.warn("Compact emergency backup failed", fallbackError);
@@ -78520,6 +78641,7 @@ const DB = {
         }
     },
     _writeLocalStorageBackup() {
+        if (this._loadFailed || this._readOnly) return false;
         try {
             if (typeof localStorage === 'undefined') return false;
             localStorage.setItem(this.key, JSON.stringify(this.d));
@@ -78535,15 +78657,33 @@ const DB = {
         return this._writeLocalStorageBackup();
     },
     async _writeStorage() {
+        if (this._loadFailed || this._readOnly) return false;
         this._stampSave();
         try {
             await localforage.setItem(this.key, this.d);
+            this._saveFailStreak = 0;
             return true;
         } catch(e) {
             console.error("Save failed", e);
-            this._writeLocalStorageBackup();
+            let backedUp = this._writeLocalStorageBackup();
+            this._saveFailStreak++;
+            if (!backedUp || this._saveFailStreak >= 2) this._notifySaveFailure(!backedUp);
             return false;
         }
+    },
+    _saveFailStreak: 0,
+    _lastSaveFailToastAt: 0,
+    _notifySaveFailure(critical) {
+        let now = Date.now();
+        if (now - this._lastSaveFailToastAt < 30000) return;
+        this._lastSaveFailToastAt = now;
+        try {
+            if (typeof Toast !== 'undefined' && Toast.show) {
+                Toast.show(critical
+                    ? '存档写入失败，紧急备份也失败了！数据可能不会保存，请立即到 设置 → 数据备份 导出存档'
+                    : '存档写入不稳定，为防丢失请到 设置 → 数据备份 导出一份存档');
+            }
+        } catch(e) {}
     },
     _queueSaveWaiter(seq) {
         return new Promise(resolve => {
@@ -78573,12 +78713,18 @@ const DB = {
         if (this.compactBackupTimer) clearTimeout(this.compactBackupTimer);
         this.compactBackupTimer = null;
     },
+    // compact 备份是同步整库深拷贝 + stringify，DB 大了以后每条消息都做一次是
+    // 「越用越卡」主力之一。降频到最少 60s 一次；pagehide/saveNow 仍然立即写。
+    compactBackupMinInterval: 60000,
+    _lastCompactBackupAt: 0,
     _scheduleCompactBackup() {
         this._clearCompactBackupTimer();
+        let sinceLast = Date.now() - this._lastCompactBackupAt;
+        let wait = Math.max(this.compactBackupDelay, this.compactBackupMinInterval - sinceLast);
         this.compactBackupTimer = setTimeout(() => {
             this.compactBackupTimer = null;
             this.saveEmergencyBackup({ compactOnly: true });
-        }, this.compactBackupDelay);
+        }, wait);
     },
     _scheduleSaveFlush(delay) {
         this._clearScheduledSave();
@@ -79072,6 +79218,56 @@ const AIClient = {
     },
     _stripErrorPrefix(text) {
         return String(text || '').trim();
+    },
+    // ===== AI 回复清洗（全项目统一入口，别再各自手抄）=====
+    // 用法：AIClient.parseJsonReply(reply)                → 对象或数组，失败 throw
+    //       AIClient.parseJsonReply(reply, {expect:'array'})  → 只认数组（含 {list:[...]} 包裹）
+    //       AIClient.parseJsonReply(reply, {fallback: null})  → 失败返回 fallback 不 throw
+    stripCodeFence(text) {
+        return String(text || '')
+            .replace(/```(?:json|json5|javascript|js|xml|html|txt|text|md|markdown)?/gi, '')
+            .replace(/```/g, '')
+            .trim();
+    },
+    extractJsonText(text, expect = 'any') {
+        let s = this.stripCodeFence(text);
+        if (!s) return '';
+        let candidates = [];
+        if (expect !== 'object') {
+            let a = s.indexOf('['), b = s.lastIndexOf(']');
+            if (a >= 0 && b > a) candidates.push(s.slice(a, b + 1));
+        }
+        if (expect !== 'array') {
+            let a = s.indexOf('{'), b = s.lastIndexOf('}');
+            if (a >= 0 && b > a) candidates.push(s.slice(a, b + 1));
+        }
+        // 整体本身可能就是合法 JSON（无围栏无废话）
+        candidates.unshift(s);
+        return candidates;
+    },
+    parseJsonReply(reply, options = {}) {
+        let expect = options.expect || 'any';
+        let hasFallback = Object.prototype.hasOwnProperty.call(options, 'fallback');
+        let candidates = this.extractJsonText(reply, expect);
+        let matches = v => {
+            if (expect === 'array') return Array.isArray(v);
+            if (expect === 'object') return !!v && typeof v === 'object' && !Array.isArray(v);
+            return !!v && typeof v === 'object';
+        };
+        for (let text of (candidates || [])) {
+            try {
+                let parsed = JSON.parse(text);
+                if (matches(parsed)) return parsed;
+                // 常见包裹：期望数组但 AI 包了一层对象
+                if (expect === 'array' && parsed && typeof parsed === 'object') {
+                    for (let k of ['list', 'items', 'data', 'results']) {
+                        if (Array.isArray(parsed[k])) return parsed[k];
+                    }
+                }
+            } catch (e) {}
+        }
+        if (hasFallback) return options.fallback;
+        throw new Error('AI 返回格式异常');
     },
     _networkError(err, url, label = 'API 请求') {
         let name = err && err.name ? String(err.name) : 'NetworkError';
@@ -80043,10 +80239,7 @@ function stripXmlCdataEnvelope(text) {
 }
 
 function cleanAiTransportEnvelope(text) {
-    return stripXmlCdataEnvelope(decodeXmlEntities(String(text ?? ''))
-        .replace(/```(?:xml|html)?/gi, '')
-        .replace(/```/g, '')
-        .trim());
+    return stripXmlCdataEnvelope(AIClient.stripCodeFence(decodeXmlEntities(String(text ?? ''))));
 }
 
 function parseXmlAttrs(attrText = '') {
@@ -81916,7 +82109,7 @@ const Appearance = {
     ti: null,
     _themeColorSaveTimer: null,
     _desktopCardOpacitySaveTimer: null,
-    init() { this._migrateLegacyTheme(); this.apply(this.d().theme); this.applyLineTheme(this.d().lineTheme); this.applyW(); this.applyDesktopCardOpacity(); this.applyI(); this.applyShell(); this.applyStatusBar(); this.updateFont(this.d().font || '',0); this.updateScale(this.d().fontScale||1,0); },
+    init() { this._migrateLegacyTheme(); this.apply(this.d().theme); this.applyLineTheme(this.d().lineTheme); this.applyW(); this.applyDesktopCardOpacity(); this.applyI(); this.applyShell(); this.applyStatusBar(); this.applyLiteMode(); this.updateFont(this.d().font || '',0); this.updateScale(this.d().fontScale||1,0); },
     d() { return DB.d },
     _normalizeTheme(t) { return (t === 'mono' || t === 'qq') ? 'default' : (t || 'default'); },
     _normalizeHexColor(v) {
@@ -82245,6 +82438,22 @@ const Appearance = {
         this.d().phoneShell = !this.d().phoneShell;
         this.applyShell(1);
         Toast.show(this.d().phoneShell ? '已开启手机外壳' : '已关闭手机外壳');
+    },
+    applyLiteMode(a=0) {
+        let on = !!this.d().liteMode;
+        document.body.classList.toggle('lite-mode', on);
+        let sw = $('lite-mode-toggle');
+        if(sw) {
+            sw.classList.toggle('on', on);
+            sw.setAttribute('aria-checked', on ? 'true' : 'false');
+        }
+        if(a) DB.save();
+    },
+    toggleLiteMode(e) {
+        if(e) e.stopPropagation();
+        this.d().liteMode = !this.d().liteMode;
+        this.applyLiteMode(1);
+        Toast.show(this.d().liteMode ? '已开启精简特效，更流畅省电' : '已恢复完整特效');
     },
     _defaultShowAppStatusBar() {
         let standalone = typeof isStandaloneDisplayMode === 'function' && isStandaloneDisplayMode();
@@ -82845,7 +83054,7 @@ ${shared.latest}
   }
 
   _parseGroupDirectorReply(group, raw) {
-    let text = String(raw || '').replace(/```xml/gi, '').replace(/```/g, '').trim();
+    let text = AIClient.stripCodeFence(raw);
     if (!text) return [];
     let messages = [];
     let source = typeof extractXmlBlock === 'function' ? (extractXmlBlock(text, 'reply') || text) : text;
@@ -82908,7 +83117,7 @@ ${shared.latest}
   }
 
   _parseMemberReply(group, member, contact, raw) {
-    let text = String(raw || '').replace(/```xml/g, '').replace(/```/g, '').trim();
+    let text = AIClient.stripCodeFence(raw);
     if (!text || /^\[?NO[_\s-]?REPLY\]?$/i.test(text)) return null;
 
     let status = typeof parseStatusFromXml !== 'undefined' ? parseStatusFromXml(text) : null;
@@ -86652,10 +86861,7 @@ function normalizeAiHtmlCardTargetToken(value) {
 function stripAiHtmlCardTransport(value) {
     let s = String(value || '').trim();
     if (typeof decodeXmlEntities === 'function') s = decodeXmlEntities(s);
-    s = s
-        .replace(/^\s*```(?:html|xml)?\s*/i, '')
-        .replace(/\s*```\s*$/i, '')
-        .trim();
+    s = AIClient.stripCodeFence(s);
     for (let i = 0; i < 3; i++) {
         let next = s
             .replace(/^\s*<!\[CDATA\[\s*/i, '')
@@ -86755,9 +86961,7 @@ function cleanAiHtmlCardPayload(text) {
 function cleanAiHtmlCardCaptionText(text) {
     let source = String(text || '');
     if (typeof decodeXmlEntities === 'function') source = decodeXmlEntities(source);
-    return source
-        .replace(/```(?:xml|html)?/gi, '')
-        .replace(/```/g, '')
+    return AIClient.stripCodeFence(source)
         .replace(/<!\[CDATA\[/gi, '')
         .replace(/\]\]>/g, '')
         .replace(/\[\/?html\]/gi, '')
@@ -88542,7 +88746,7 @@ const MessageRenderer = {
             // Real Image (Base64 or URL) -> Show directly
             return {
                 html: `<div class="chat-img-shell">
-                    <img src="${Utils.escapeHtml(m.content)}" class="chat-img" draggable="false" style="cursor:pointer;-webkit-touch-callout:default;user-select:none">
+                    <img src="${Utils.escapeHtml(m.content)}" class="chat-img" loading="lazy" decoding="async" draggable="false" style="cursor:pointer;-webkit-touch-callout:default;user-select:none">
                 </div>`,
                 bubbleClass: null,
                 clearQuote: false
@@ -88577,7 +88781,7 @@ const MessageRenderer = {
         if (m.content && /^data:image\//.test(String(m.content))) {
             return {
                 html: `<div class="chat-screenshot-message-shell">
-                    <img src="${Utils.escapeHtml(m.content)}" class="chat-img" draggable="false" style="cursor:pointer;-webkit-touch-callout:default;user-select:none">
+                    <img src="${Utils.escapeHtml(m.content)}" class="chat-img" loading="lazy" decoding="async" draggable="false" style="cursor:pointer;-webkit-touch-callout:default;user-select:none">
                 </div>`,
                 bubbleClass: 'chat-screenshot-message-bubble',
                 clearQuote: false
@@ -89616,6 +89820,7 @@ const Chat = {
     _visionDescribePromises: {},
     _activeAiByCid: {},
     _renderLimitByCid: {},
+    _errorCleanLenByKey: {},
     _renderAfterPaintRaf: null,
     _renderAfterPaintTimer: null,
     _pendingRenderAfterPaint: null,
@@ -90836,20 +91041,28 @@ const Chat = {
         this._renderLimitByCid[key] = limit;
         return limit;
     },
+    _foodScanCache: {},
     _scheduleFoodDeliveryRefresh(c) {
         if (this._foodDeliveryTimer) {
             clearTimeout(this._foodDeliveryTimer);
             this._foodDeliveryTimer = null;
         }
         if (!c || !Array.isArray(c.history)) return;
+        // 脏标记：历史长度没变且上次全量扫描确认没有外卖类消息时，跳过 O(N) 扫描
+        let scanKey = this._renderKey(c.id);
+        let cached = this._foodScanCache[scanKey];
+        if (cached && cached.len === c.history.length && !cached.hasFood) return;
         let now = chatTimeNow(c);
         let nextDue = Infinity;
+        let hasFood = false;
         c.history.forEach(m => {
             if (!m || (m.type !== 'food' && m.type !== 'food_receipt')) return;
+            hasFood = true;
             if (foodDeliveryPhase(m, now) !== 'delivering') return;
             let dueAt = foodDeliveryDueAt(m);
             if (dueAt > now) nextDue = Math.min(nextDue, dueAt);
         });
+        this._foodScanCache[scanKey] = { len: c.history.length, hasFood };
         if (!Number.isFinite(nextDue)) return;
         let delay = Math.max(1000, Math.min(nextDue - now + 500, 2147483647));
         let cid = String(c.id);
@@ -91744,10 +91957,7 @@ const Chat = {
         return this._replyHtmlCardBodies(raw).filter(body => aiHtmlCardLooksUsable(body)).length;
     },
     _extractTaggedHtmlCards(raw) {
-        let text = String(raw || '')
-            .replace(/^\s*```(?:xml|html)?\s*/i, '')
-            .replace(/\s*```\s*$/i, '')
-            .trim();
+        let text = AIClient.stripCodeFence(raw);
         if (typeof decodeXmlEntities === 'function') text = decodeXmlEntities(text);
         let cards = [];
         text.replace(/<card\b[^>]*>([\s\S]*?)<\/card>/gi, (_, body) => {
@@ -93464,6 +93674,9 @@ Do not make the visible fields repeat location/outfit/pose in new words.`;
         } else {
             Appearance.applyChatStyle(c);
         }
+        // 渲染窗口只增不减会让翻过旧记录的会话之后每条新消息都重建 100+ 气泡，
+        // 每次进入会话时重置回默认窗口
+        this._renderLimitByCid[this._renderKey(id)] = this._defaultRenderLimit;
         this.renderMessages();
         this.updateInputState();
         App.openWindow('sub-chat-room');
@@ -93740,9 +93953,14 @@ Do not make the visible fields repeat location/outfit/pose in new words.`;
             this._syncChatWallpaperClass(c);
             if(bgImg) { bgImg.style.backgroundImage = c.chatBg?`url(${c.chatBg})`:'none'; bgImg.style.opacity = 1; }
             if(bgGlass) { bgGlass.style.opacity = 1; bgGlass.style.background = 'transparent'; }
-            if (!c.__altLine && !options.skipMaintenance && this.purgeSystemErrorBubbles(c)) {
-                DB.save();
-                if (typeof Contacts !== 'undefined') Contacts.render();
+            // 脏标记：历史长度没变就跳过整库 filter（错误气泡只会随追加消息出现）
+            let purgeKey = this._renderKey(c.id);
+            if (!c.__altLine && !options.skipMaintenance && this._errorCleanLenByKey[purgeKey] !== (c.history || []).length) {
+                if (this.purgeSystemErrorBubbles(c)) {
+                    DB.save();
+                    if (typeof Contacts !== 'undefined') Contacts.render();
+                }
+                this._errorCleanLenByKey[purgeKey] = (c.history || []).length;
             }
 
             con.innerHTML = '';
@@ -93844,14 +94062,14 @@ Do not make the visible fields repeat location/outfit/pose in new words.`;
                             let chk = `<div class="msg-checkbox${checked}" id="chk-${globalIdx}" onclick="MultiSelect.toggle(${globalIdx}, event)" style="display:flex;margin-right:10px"></div>`;
                             let narrationClass = m.userAuthored || m.contextNote ? 'scene-narration-badge user-authored' : 'scene-narration-badge';
                             div.style.display = 'flex'; div.style.alignItems = 'center'; div.style.justifyContent = 'center';
-                            div.innerHTML = `${chk}${m.type === 'narration' ? `<div class="${narrationClass}">${Utils.escapeHtml(m.content)}</div>` : `<div class="ts-badge">${m.content}</div>`}`;
+                            div.innerHTML = `${chk}${m.type === 'narration' ? `<div class="${narrationClass}">${Utils.escapeHtml(m.content)}</div>` : `<div class="ts-badge">${Utils.escapeHtml(m.content)}</div>`}`;
                             div.onclick = e => MultiSelect.toggle(globalIdx, e);
                         } else {
                             let narrationClass = m.userAuthored || m.contextNote ? 'scene-narration-badge user-authored' : 'scene-narration-badge';
                             div.style.display = 'flex'; div.style.justifyContent = 'center';
                             div.innerHTML = m.type === 'narration'
                                 ? `<div class="${narrationClass}">${Utils.escapeHtml(m.content)}</div>`
-                                : `<div class="ts-badge">${m.content}</div>`;
+                                : `<div class="ts-badge">${Utils.escapeHtml(m.content)}</div>`;
                             if (!m.recalled && m.type === 'narration') {
                                 let target = div.firstElementChild;
                                 if (target) ContextMenu._bindSystemMessageMenu(target, globalIdx);
@@ -97064,10 +97282,7 @@ ${recentChat || '暂无'}
 {"nickname":"...","id":"...","bio":"...","coverColor":"linear-gradient(...)","posts":数字,"following":数字,"followers":数字,"tags":["..."],"music":"..."}`;
     },
     _parseProfileReply(reply) {
-        let start = String(reply || '').indexOf('{');
-        let end = String(reply || '').lastIndexOf('}');
-        if (start < 0 || end <= start) return null;
-        return JSON.parse(String(reply).slice(start, end + 1));
+        return AIClient.parseJsonReply(reply, { expect: 'object', fallback: null });
     },
     _mergeProfile(target, profile) {
         if (!target || !profile) return;
@@ -98658,10 +98873,7 @@ const RelationshipGraph = {
         return this._worldCandidates(c).slice(0, 8).map(w => `${w.key || w.title || w.name || '世界书'}：${String(w.content || w.desc || '').slice(0, 520)}`).join('\n\n') || '无';
     },
     _parseGraphReply(reply, c) {
-        let text = String(reply || '')
-            .replace(/```(?:xml|html|text)?/gi, '')
-            .replace(/```/g, '')
-            .trim();
+        let text = AIClient.stripCodeFence(reply);
         let nodeTags = this._tags(text, 'node');
         if (!nodeTags.length) throw new Error('关系网缺少 <node> 标签');
         let idMap = {};
@@ -98868,10 +99080,7 @@ const CharacterLife = {
         return m ? (m[1] || m[2] || m[3] || '').trim() : '';
     },
     _parseLifeReply(reply) {
-        let text = String(reply || '')
-            .replace(/```(?:xml|html|text)?/gi, '')
-            .replace(/```/g, '')
-            .trim();
+        let text = AIClient.stripCodeFence(reply);
         let events = this._tags(text, 'event').map(item => ({
             time: this._clip(this._attr(item.attrs, 'time') || this._stripTags(this._tag(item.body, 'time')), 8),
             text: this._clip(this._stripTags(item.body), 160)
@@ -104467,10 +104676,7 @@ const Memory = {
         }).join('\n');
     },
     _cleanSummaryText(text) {
-        return String(text || '')
-            .replace(/^```[a-z]*\s*/i, '')
-            .replace(/```$/i, '')
-            .trim()
+        return AIClient.stripCodeFence(text)
             .replace(/^["「『]|["」』]$/g, '')
             .trim();
     },
@@ -106365,10 +106571,7 @@ ${recent}
         return `${userName}手动点了“看一眼 ta 那边”`;
     },
     _parseSceneReply(raw) {
-        let text = String(raw || '')
-            .replace(/^```[a-z]*\s*/i, '')
-            .replace(/```$/i, '')
-            .trim();
+        let text = AIClient.stripCodeFence(raw);
         let get = tag => {
             let m = text.match(new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`, 'i'));
             return m ? m[1].trim() : '';
@@ -107710,11 +107913,7 @@ const Food = {
         }
     },
     _parseJson(text) {
-        let raw = String(text || '').replace(/```json|```/gi, '').trim();
-        let start = raw.indexOf('{');
-        let end = raw.lastIndexOf('}');
-        if (start < 0 || end <= start) throw new Error('外卖 JSON 格式不完整');
-        return JSON.parse(raw.slice(start, end + 1));
+        return AIClient.parseJsonReply(text, { expect: 'object' });
     },
     _escapeRegExp(text) {
         return String(text || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -107737,10 +107936,7 @@ const Food = {
     _cleanTagText(text) {
         let raw = String(text || '');
         if (typeof cleanAiTransportEnvelope === 'function') raw = cleanAiTransportEnvelope(raw);
-        return raw
-            .replace(/```(?:xml|html|text)?/gi, '')
-            .replace(/```/g, '')
-            .trim();
+        return AIClient.stripCodeFence(raw);
     },
     _stripTags(text) {
         let raw = String(text || '')
@@ -109169,13 +109365,7 @@ const Moments = {
     },
 
     _extractJsonArray(text) {
-        let start = text ? text.indexOf('[') : -1;
-        let end = text ? text.lastIndexOf(']') : -1;
-        if (start < 0 || end <= start) return null;
-        try {
-            let arr = JSON.parse(text.substring(start, end + 1));
-            return Array.isArray(arr) ? arr : null;
-        } catch (e) { return null; }
+        return AIClient.parseJsonReply(text, { expect: 'array', fallback: null });
     },
 
     _addAiMomentComment(m, responder, content, replyToName = null, extra = null) {
@@ -109811,9 +110001,8 @@ Each reply: 1-2 short sentences, casual Chinese internet style, matching their p
         try {
             let reply = await AIClient.call({ userPrompt: prompt, temperature: 0.85 });
             if (!reply) { Toast.show('回复生成失败'); return; }
-            let start = reply.indexOf('[');
-            let end = reply.lastIndexOf(']');
-            if (start < 0 || end <= start) {
+            let arr = AIClient.parseJsonReply(reply, { expect: 'array', fallback: null });
+            if (!arr) {
                 let singleMatch = reply.match(/["']reply["']\s*:\s*["']([^"']+)["']/);
                 if (singleMatch && responders.length === 1) {
                     if (!m.comments) m.comments = [];
@@ -109829,8 +110018,6 @@ Each reply: 1-2 short sentences, casual Chinese internet style, matching their p
                 }
                 Toast.show('回复解析失败'); return;
             }
-            let arr = JSON.parse(reply.substring(start, end + 1));
-            if (!Array.isArray(arr)) { Toast.show('回复格式错误'); return; }
 
             if (!m.comments) m.comments = [];
             let names = [];
@@ -110166,17 +110353,15 @@ Requirements:
 
             let content = reply;
             let images = [];
-            try {
-                let start = reply.indexOf('{');
-                let end = reply.lastIndexOf('}');
-                if (start >= 0 && end > start) {
-                    let json = JSON.parse(reply.substring(start, end + 1));
-                    content = json.content || content;
-                    if (json.images && Array.isArray(json.images) && json.images.length > 0) {
-                        images = json.images.map(desc => `simulated:${desc}`);
-                    }
+            let json = AIClient.parseJsonReply(reply, { expect: 'object', fallback: null });
+            if (json) {
+                content = json.content || content;
+                if (json.images && Array.isArray(json.images) && json.images.length > 0) {
+                    images = json.images.map(desc => `simulated:${desc}`);
                 }
-            } catch (e) { console.warn('Moment JSON parse fallback, using raw text'); }
+            } else {
+                console.warn('Moment JSON parse fallback, using raw text');
+            }
 
             if (!DB.d.userMoments) DB.d.userMoments = [];
             let momentData = {
@@ -111024,16 +111209,12 @@ ${recentEntries}
         let weatherMatch = raw.match(/<weather\b[^>]*>([\s\S]*?)<\/weather>/i);
         if (weatherMatch) weather = String(weatherMatch[1] || '').trim() || weather;
 
-        try {
-            let start = raw.indexOf('{');
-            let end = raw.lastIndexOf('}');
-            if (start >= 0 && end > start) {
-                let json = JSON.parse(raw.substring(start, end + 1));
-                content = json.content || json.text || content;
-                weather = json.weather || weather;
-                html = json.html || json.card || '';
-            }
-        } catch (e) {}
+        let json = AIClient.parseJsonReply(raw, { expect: 'object', fallback: null });
+        if (json) {
+            content = json.content || json.text || content;
+            weather = json.weather || weather;
+            html = json.html || json.card || '';
+        }
 
         if (!html && typeof extractAiHtmlCardSegments === 'function' && hasAiHtmlCard(raw)) {
             let seg = extractAiHtmlCardSegments(raw).find(x => x.type === 'html');
@@ -112638,7 +112819,7 @@ imagePrompt 必须是英文商品图提示词；成人分类必须只展示包�
     _cleanTagText(text) {
         let raw = String(text || '');
         if (typeof cleanAiTransportEnvelope === 'function') raw = cleanAiTransportEnvelope(raw);
-        return raw.replace(/```(?:xml|html|text)?/gi, '').replace(/```/g, '').trim();
+        return AIClient.stripCodeFence(raw);
     },
 
     _stripTags(text) {
@@ -114550,9 +114731,8 @@ const ScheduleApp = {
         try {
             let content = await AIClient.call({ userPrompt: prompt });
             if (!content) return;
-            content = content.replace(/```json/g, '').replace(/```/g, '').trim();
 
-            let schedule = JSON.parse(content);
+            let schedule = AIClient.parseJsonReply(content, { expect: 'array' });
             c.schedule = schedule;
             c.scheduleDate = new Date().toDateString();
             DB.save();
@@ -114581,12 +114761,12 @@ const ScheduleApp = {
             let div = document.createElement('div');
             div.className = `timeline-item ${statusClass}`;
             div.innerHTML = `
-                <div class="tl-time">${item.time}</div>
+                <div class="tl-time">${Utils.escapeHtml(item.time)}</div>
                 <div class="tl-dot"></div>
                 <div class="tl-card">
-<div class="tl-title">${item.activity}</div>
-                    <div class="tl-desc">${item.desc}</div>
-                    ${item.impact ? `<div class="tl-impact"><svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px;flex-shrink:0"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg> ${item.impact}</div>` : ''}
+<div class="tl-title">${Utils.escapeHtml(item.activity)}</div>
+                    <div class="tl-desc">${Utils.escapeHtml(item.desc)}</div>
+                    ${item.impact ? `<div class="tl-impact"><svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px;flex-shrink:0"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg> ${Utils.escapeHtml(item.impact)}</div>` : ''}
                 </div>
             `;
             con.appendChild(div);
@@ -114775,10 +114955,7 @@ ${contacts.slice(0, 8).map(c => `${c.id}:${c.name}\n人设:${(c.charPersona || c
 要求：NPC标题有真实分享钩子；正文2-4句；评论随机0-8个且自然；char公开笔记像本人会公开发的内容；alt匿名小号必须更隐晦但仍能从语气/关注点猜到本人，不能出现真名；任何角色都不能越过人设、世界书和最近关系；可以有少量“文字封面/文字卡”帖子，封面是居中大标题排版卡片/清单封面/情绪大字报，不需要实物照片；其他配图默认非人物主体，禁止人、脸、手、身体、自拍、模特。只输出JSON数组。`;
         try {
             let reply = await AIClient.call({ userPrompt: prompt, temperature: 0.95 });
-            let start = reply ? reply.indexOf('[') : -1;
-            let end = reply ? reply.lastIndexOf(']') : -1;
-            if (start < 0 || end <= start) return null;
-            let arr = JSON.parse(reply.substring(start, end + 1));
+            let arr = AIClient.parseJsonReply(reply, { expect: 'array', fallback: null });
             if (!Array.isArray(arr) || arr.length === 0) return null;
             let seed = Date.now();
             let posts = arr.map((item, idx) => this._normalizeAiPost(item, idx, seed, contacts)).filter(Boolean);
@@ -115300,10 +115477,7 @@ ${responders.map(r => `${r.id}:${r.name} 人设:${(r.charPersona || r.persona ||
 }]。只输出JSON。`;
         try {
             let reply = await AIClient.call({ userPrompt: prompt, temperature: 0.85 });
-            let start = reply ? reply.indexOf('[') : -1;
-            let end = reply ? reply.lastIndexOf(']') : -1;
-            if (start < 0 || end <= start) return;
-            let arr = JSON.parse(reply.substring(start, end + 1));
+            let arr = AIClient.parseJsonReply(reply, { expect: 'array', fallback: null });
             if (!Array.isArray(arr) || arr.length === 0) return;
             let added = [];
             this._updatePostCopies(id, post => {
@@ -115436,10 +115610,7 @@ ${contacts.map(c => `${c.id}:${c.name} 人设:${(c.charPersona || c.persona || '
 }]。只输出JSON。`;
         try {
             let reply = await AIClient.call({ userPrompt: prompt, temperature: 0.85 });
-            let start = reply ? reply.indexOf('[') : -1;
-            let end = reply ? reply.lastIndexOf(']') : -1;
-            if (start < 0 || end <= start) return;
-            let arr = JSON.parse(reply.substring(start, end + 1));
+            let arr = AIClient.parseJsonReply(reply, { expect: 'array', fallback: null });
             if (!Array.isArray(arr) || arr.length === 0) return;
             this._updatePostCopies(id, post => {
                 if (!Array.isArray(post.comments)) post.comments = [];
@@ -115690,10 +115861,7 @@ User关系：${c && c.userPersona || '无'}
 数量：fragments 3条，collections 4条，traces 3条，posts 3条。`;
         try {
             let reply = await AIClient.call({ userPrompt: prompt, temperature: 0.9 });
-            let s = reply ? reply.indexOf('{') : -1;
-            let e = reply ? reply.lastIndexOf('}') : -1;
-            if (s < 0 || e <= s) throw new Error('AI 返回格式异常');
-            return this._normalizeAltProfile(JSON.parse(reply.substring(s, e + 1)), c, p, altId);
+            return this._normalizeAltProfile(AIClient.parseJsonReply(reply, { expect: 'object' }), c, p, altId);
         } catch (err) {
             console.warn('Xhs alt profile failed:', err);
             Toast.show('隐藏主页生成失败，请稍后重试');
@@ -117643,69 +117811,6 @@ const MusicTogether = {
             lyrics: this._extractLyricText(song.lyrics)
         });
     },
-    async _prepareSongForPlayback(song) {
-        if (!song) throw new Error('歌曲数据丢失');
-        let prepared = this._mergeSong(song);
-        let accountTried = false;
-        if (!prepared.src && !prepared.neteaseId && prepared.title) {
-            let kw = [prepared.title, prepared.artist].filter(Boolean).join(' ');
-            let found = [];
-            try {
-                found = await this._searchSharedSources(kw);
-                this._setApiState('toubiec', '解析源在线');
-            } catch (_) {
-                try {
-                    found = await this._searchVkeys(kw);
-                    this._setApiState('fallback', '备用源搜索');
-                } catch (e) {
-                    found = [];
-                }
-            }
-            let picked = found.find(r => {
-                let sameTitle = String(r.title || '').trim().toLowerCase() === String(prepared.title || '').trim().toLowerCase();
-                let artistOk = !prepared.artist || String(r.artist || '').toLowerCase().includes(String(prepared.artist || '').toLowerCase());
-                return sameTitle && artistOk;
-            }) || found[0];
-            if (picked) prepared = this._mergeSong(prepared, picked);
-        }
-        if (prepared.neteaseId && prepared.source !== 'netease-account' && this._neteaseLoggedIn()) {
-            accountTried = true;
-            try {
-                prepared = await this._resolveWithNeteaseAccount(prepared);
-                this._setApiState('netease-account', '账号源已连接');
-                this._upsertSongEverywhere(prepared);
-                return prepared;
-            } catch (_) {}
-        }
-        if (prepared.src && prepared.src.indexOf('music.163.com/song/media/outer/url') === -1) {
-            this._upsertSongEverywhere(prepared);
-            return prepared;
-        }
-        if (prepared.neteaseId) {
-            if (!accountTried) {
-                try {
-                    prepared = await this._resolveWithNeteaseAccount(prepared);
-                    this._setApiState('netease-account', '账号源已连接');
-                    this._upsertSongEverywhere(prepared);
-                    return prepared;
-                } catch (_) {}
-            }
-            try {
-                prepared = await this._resolveWithToubiec(prepared);
-                this._setApiState('toubiec', '解析源在线');
-            } catch (e) {
-                prepared = this._mergeSong(prepared, {
-                    src: prepared.src || NETEASE_OUTER_URL(prepared.neteaseId),
-                    source: prepared.source || 'netease',
-                    quality: prepared.quality || '备用链接'
-                });
-                this._setApiState('fallback', '备用播放');
-            }
-        }
-        if (!prepared.src) throw new Error('这首歌没有可用播放链接');
-        this._upsertSongEverywhere(prepared);
-        return prepared;
-    },
 
     // ============== Invite / share ==============
     async inviteCurrentContact() {
@@ -117837,27 +117942,6 @@ const MusicTogether = {
         }
         DB.save();
         if (Chat.cid === cid && typeof Chat.renderMessages === 'function') Chat.renderMessages(true);
-    },
-    async _resolveIncomingInviteSong(title, artist) {
-        let pl = this._getPlaylist();
-        let song = pl.find(p => p.title === title && (!artist || p.artist === artist));
-        if (!song) song = pl.find(p => p.title === title || (artist && p.artist === artist));
-        if (song) return this._prepareSongForPlayback(song).catch(() => song);
-        let kw = [title, artist].filter(Boolean).join(' ');
-        try {
-            let list = [];
-            try {
-                list = await this._searchSharedSources(kw);
-            } catch (_) {
-                list = await this._searchVkeys(kw);
-            }
-            let picked = list.find(r => r.neteaseId) || list[0];
-            if (!picked) return null;
-            return await this._prepareSongForPlayback(picked).catch(() => picked);
-        } catch (e) {
-            console.warn('incoming invite song search failed', e);
-            return null;
-        }
     },
     _findPendingInvite(c, role = null) {
         if (!c || !Array.isArray(c.history)) return null;
@@ -118510,9 +118594,7 @@ Output only the reaction text.`;
         }
     },
     _cleanCharText(text, fallback = '这首可以再听一会儿。') {
-        let v = String(text || '').trim()
-            .replace(/^```(?:json)?/i, '')
-            .replace(/```$/i, '')
+        let v = AIClient.stripCodeFence(text)
             .replace(/^["「『]/, '')
             .replace(/["」』]$/, '')
             .replace(/\s+/g, ' ');
@@ -118546,10 +118628,7 @@ Output only the reaction text.`;
         return m ? String(m[1] || m[2] || m[3] || '').trim() : '';
     },
     _parseCharSongChoice(reply) {
-        let text = String(reply || '')
-            .replace(/```(?:json|JSON|xml|XML|text)?/g, '')
-            .replace(/```/g, '')
-            .trim();
+        let text = AIClient.stripCodeFence(reply);
         let pick = text.match(/<\s*(?:pick|playlist)\b([^>]*)>([\s\S]*?)<\s*\/\s*(?:pick|playlist)\s*>/i);
         if (pick) {
             let attrs = pick[1] || '';
@@ -118816,82 +118895,6 @@ ${userDisplay} 点给你看这一句歌词：「${line.text}」
     },
 
     // ============== Search ==============
-    async searchSong(keyword) {
-        let kw = (keyword || '').trim();
-        this._roomView = 'search';
-        if (!kw) {
-            this._searchResults = null;
-            this._searchKw = '';
-            this._probeStatus = {};
-            this._renderSearchPanel();
-            return;
-        }
-        this._searchKw = kw;
-        this._searchResults = 'loading';
-        this._probeStatus = {};
-        this._setApiState('loading', '连接音乐源');
-        this._renderSearchPanel();
-        try {
-            let results;
-            try {
-                results = await this._searchSharedSources(kw);
-                this._setApiState('toubiec', '解析源在线');
-            } catch (e) {
-                results = await this._searchVkeys(kw);
-                this._setApiState('fallback', '备用源搜索');
-            }
-            this._searchResults = results;
-            this._renderSearchPanel();
-        } catch (e) {
-            console.error('search err', e);
-            this._searchResults = { error: e.message || '搜索失败' };
-            this._setApiState('error', '搜索不可用');
-            this._renderSearchPanel();
-        }
-    },
-    _updateSearchItemStatus(idx) {
-        let el = document.querySelector(`.music-search-item[data-idx="${idx}"]`);
-        if (!el) return;
-        let status = this._probeStatus[idx];
-        el.classList.remove('probe-loading', 'probe-ok', 'probe-fail');
-        if (status) el.classList.add('probe-' + status);
-        let badge = el.querySelector('.music-search-badge');
-        if (badge) badge.innerHTML = this._renderBadge(status, this._searchResults && this._searchResults[idx]);
-    },
-    _renderBadge(status, song) {
-        if (status === 'loading') return '<span class="music-probe-loading">解析中</span>';
-        if (status === 'ok') return '<span class="music-probe-ok">已解析</span>';
-        if (status === 'fail') return '<span class="music-probe-fail">备用</span>';
-        let label = song && song.source === 'toubiec' ? '解析源' : '备用源';
-        if (song && song.quality) label = song.quality;
-        return `<span>${Utils.escapeHtml(label)}</span>`;
-    },
-    async _addAndPlay(searchIdx) {
-        let results = this._searchResults;
-        if (!Array.isArray(results)) return;
-        let song = results[searchIdx];
-        if (!song) return Toast.show('歌曲数据丢失');
-        this._probeStatus[searchIdx] = 'loading';
-        this._updateSearchItemStatus(searchIdx);
-        try {
-            song = await this._prepareSongForPlayback(song);
-            this._probeStatus[searchIdx] = 'ok';
-            let saved = this._ensureSongInPlaylist(song);
-            if (!saved) throw new Error('歌曲数据丢失');
-            await this._loadSongIndex(saved.index);
-            await this.play();
-            this._searchResults = null;
-            this._searchKw = '';
-            this._roomView = 'home';
-            this._panelTab = 'queue';
-            this._render();
-            Toast.show('已加入并播放 · ' + song.title);
-        } catch (e) {
-            this._probeStatus[searchIdx] = 'fail';
-            this._updateSearchItemStatus(searchIdx);
-            Toast.show(e.message || '这首歌暂时无法播放');
-        }
-    },
     closeSearch() {
         this._searchResults = null;
         this._searchKw = '';
@@ -119886,33 +119889,6 @@ ${userDisplay} 点给你看这一句歌词：「${line.text}」
         } catch (e) {
             console.warn('incoming invite song search failed', e);
             return null;
-        }
-    },
-    async searchSong(keyword) {
-        let kw = (keyword || '').trim();
-        this._roomView = 'search';
-        if (!kw) {
-            this._searchResults = null;
-            this._searchKw = '';
-            this._probeStatus = {};
-            this._renderSearchPanel();
-            return;
-        }
-        this._searchKw = kw;
-        this._searchResults = 'loading';
-        this._probeStatus = {};
-        this._setApiState('loading', '正在连接音乐源');
-        this._renderSearchPanel();
-        try {
-            let results = await this._searchSharedSources(kw);
-            this._setApiState(results.some(r => r && r.source === 'toubiec') ? 'toubiec' : 'fallback', '音乐源已连接');
-            this._searchResults = results;
-            this._renderSearchPanel();
-        } catch (e) {
-            console.error('search err', e);
-            this._searchResults = { error: e.message || '搜索失败' };
-            this._setApiState('error', '搜索不可用');
-            this._renderSearchPanel();
         }
     },
     _prepareSearchProbe(results) {
@@ -121058,10 +121034,7 @@ at 填视频秒数，只能在 ${Math.round(fromSec)} 到 ${Math.round(untilSec)
     },
 
     _parseReactions(raw, fromSec, untilSec, limit, sessionId) {
-        let text = String(raw || '')
-            .replace(/```(?:xml|html|text)?/gi, '')
-            .replace(/```/g, '')
-            .trim();
+        let text = AIClient.stripCodeFence(raw);
         let items = [];
         let re = /<\s*reaction\b([^>]*)>([\s\S]*?)<\s*\/\s*reaction\s*>/gi;
         let m;
@@ -123651,10 +123624,7 @@ ${multi ? '<bullet name="角色名">一句气泡</bullet>' : '<bullet>一句气�
     },
 
     _parseBullets(raw, viewers, limit) {
-        let text = String(raw || '')
-            .replace(/```(?:xml|html|text)?/gi, '')
-            .replace(/```/g, '')
-            .trim();
+        let text = AIClient.stripCodeFence(raw);
         let items = [];
         let re = /<\s*bullet\b([^>]*)>([\s\S]*?)<\s*\/\s*bullet\s*>/gi;
         let m;
@@ -126059,11 +126029,7 @@ ${context}
     },
 
     _stripParoFence(text) {
-        return String(text || '')
-            .replace(/^```[a-z]*\s*/i, '')
-            .replace(/```$/i, '')
-            .replace(/```(?:xml|html|json|JSON)?/g, '')
-            .trim();
+        return AIClient.stripCodeFence(String(text || '').replace(/^```[a-z]*\s*/i, ''));
     },
 
     _decodeParoEntities(text) {
@@ -126548,33 +126514,16 @@ ${this._compactContextBlock(players, { recentLimit: 8, personaLimit: 520, worldL
     },
 
     _jsonFromReply(reply, fallback) {
-        let raw = String(reply || '').trim();
-        let fenced = raw.match(/```(?:json|JSON)?\s*([\s\S]*?)```/);
-        let text = (fenced ? fenced[1] : raw)
+        let data = AIClient.parseJsonReply(reply, { fallback: null });
+        if (data) return data;
+        // 修复中文引号 / 尾逗号后再试一次
+        let repaired = AIClient.stripCodeFence(reply)
             .replace(/^\s*json\s*/i, '')
-            .replace(/```(?:json)?/gi, '')
-            .replace(/```/g, '')
-            .trim();
-        let candidates = [text];
-        let startObj = text.indexOf('{');
-        let endObj = text.lastIndexOf('}');
-        let startArr = text.indexOf('[');
-        let endArr = text.lastIndexOf(']');
-        if (startObj >= 0 && endObj > startObj && (startArr < 0 || startObj < startArr)) candidates.push(text.slice(startObj, endObj + 1));
-        if (startArr >= 0 && endArr > startArr) candidates.push(text.slice(startArr, endArr + 1));
-        for (let candidate of candidates) {
-            let source = String(candidate || '').trim();
-            if (!source) continue;
-            let repaired = source
-                .replace(/[“”]/g, '"')
-                .replace(/[‘’]/g, "'")
-                .replace(/,\s*([}\]])/g, '$1');
-            for (let attempt of [source, repaired]) {
-                try {
-                    return JSON.parse(attempt);
-                } catch (e) {}
-            }
-        }
+            .replace(/[“”]/g, '"')
+            .replace(/[‘’]/g, "'")
+            .replace(/,\s*([}\]])/g, '$1');
+        data = AIClient.parseJsonReply(repaired, { fallback: null });
+        if (data) return data;
         console.warn('ChatGames JSON parse failed', reply);
         return fallback;
     },
@@ -126638,8 +126587,7 @@ ${this._compactContextBlock(players, { recentLimit: 8, personaLimit: 520, worldL
     },
 
     _quizQuestionsFromText(reply) {
-        let raw = String(reply || '')
-            .replace(/```(?:json|JSON)?\s*([\s\S]*?)```/g, '$1')
+        let raw = AIClient.stripCodeFence(reply)
             .replace(/^\s*json\s*/i, '')
             .replace(/\\n/g, '\n')
             .trim();
@@ -126857,9 +126805,7 @@ ${this._compactContextBlock(players, { recentLimit: 8, personaLimit: 420, worldL
     },
 
     _cleanTruthText(value) {
-        let text = String(value || '')
-            .replace(/```(?:json|JSON|text)?/g, '')
-            .replace(/```/g, '')
+        let text = AIClient.stripCodeFence(value)
             .replace(/<\/?(?:kind|type|title|body|question|task|note|content|text|类型|标题|题目|问题|内容|提示)[^>]*>/gi, '')
             .replace(/\s+/g, ' ')
             .trim();
@@ -126894,8 +126840,7 @@ ${this._compactContextBlock(players, { recentLimit: 8, personaLimit: 420, worldL
     },
 
     _truthLooseJsonField(raw, keys) {
-        let text = String(raw || '')
-            .replace(/```(?:json|JSON)?\s*([\s\S]*?)```/g, '$1')
+        let text = AIClient.stripCodeFence(raw)
             .replace(/[“”]/g, '"')
             .trim();
         for (let key of (Array.isArray(keys) ? keys : [keys])) {
@@ -126924,9 +126869,7 @@ ${this._compactContextBlock(players, { recentLimit: 8, personaLimit: 420, worldL
             let cleaned = this._cleanTruthText(inline[1]);
             if (cleaned) return cleaned;
         }
-        let lines = String(raw || '')
-            .replace(/```(?:json|JSON|text)?/g, '')
-            .replace(/```/g, '')
+        let lines = AIClient.stripCodeFence(raw)
             .split(/\n+/)
             .map(x => x.trim())
             .filter(Boolean);
@@ -129347,10 +129290,7 @@ const ParoTheater = {
 
     _cleanSummaryText(text) {
         if (typeof Memory !== 'undefined' && Memory._cleanSummaryText) return Memory._cleanSummaryText(text);
-        return String(text || '')
-            .replace(/^```[a-z]*\s*/i, '')
-            .replace(/```$/i, '')
-            .trim()
+        return AIClient.stripCodeFence(String(text || '').replace(/^```[a-z]*\s*/i, ''))
             .replace(/^["「『]|["」』]$/g, '')
             .trim();
     },
@@ -131230,10 +131170,7 @@ ${worldBookBlock}
     },
 
     _plainReplyItems(plain, t) {
-        let text = String(plain || '')
-            .replace(/```(?:json|JSON)?/g, '')
-            .replace(/```/g, '')
-            .trim();
+        let text = AIClient.stripCodeFence(plain);
         if (!text) return [];
         let lines = text.split(/\n+/).map(x => x.trim()).filter(Boolean);
         if (lines.length > 1) {
@@ -131658,10 +131595,7 @@ ${String(userPrompt || '').slice(0, 5000)}`;
     _endingDataFromReply(reply) {
         let data = ChatGames._jsonFromReply(reply, null);
         if (data && typeof data === 'object' && !Array.isArray(data)) return data;
-        let raw = String(reply || '')
-            .replace(/```(?:json|JSON)?/g, '')
-            .replace(/```/g, '')
-            .trim();
+        let raw = AIClient.stripCodeFence(reply);
         let pick = (labels) => {
             for (let label of labels) {
                 let re = new RegExp(`${label}\\s*[:：]\\s*([^\\n]+)`, 'i');
@@ -132336,11 +132270,8 @@ ${s.sourceMode === 'continue' ? (this._recentChat(c, 16) || '无') : '此场景�
     },
 
     _stripReplyFence(value) {
-        return String(value || '')
-            .replace(/^```[a-z]*\s*/i, '')
-            .replace(/```$/i, '')
-            .replace(/```(?:json|JSON|xml|html|text)?/g, '')
-            .trim();
+        // 先剥掉开头的任意语言围栏（AIClient 白名单外的语言词也要吃掉），其余委托统一清洗
+        return AIClient.stripCodeFence(String(value || '').replace(/^```[a-z]*\s*/i, ''));
     },
 
     _decodeReplyEntities(value) {
@@ -132754,12 +132685,9 @@ ${s.sourceMode === 'continue' ? (this._recentChat(c, 16) || '无') : '此场景�
     },
 
     _cleanReasoningText(text) {
-        return String(text || '')
+        return AIClient.stripCodeFence(String(text || '')
             .replace(/<\/?think[^>]*>/gi, '')
-            .replace(/<\/?reasoning[^>]*>/gi, '')
-            .replace(/```(?:text|md|markdown)?/gi, '')
-            .replace(/```/g, '')
-            .trim();
+            .replace(/<\/?reasoning[^>]*>/gi, ''));
     },
 
     _mergeSceneCompletion(base, reply) {
@@ -133323,10 +133251,7 @@ ${s.sourceMode === 'continue' ? (this._recentChat(c, 16) || '无') : '此场景�
 
     _cleanSummaryText(text) {
         if (typeof Memory !== 'undefined' && Memory._cleanSummaryText) return Memory._cleanSummaryText(text);
-        return String(text || '')
-            .replace(/^```[a-z]*\s*/i, '')
-            .replace(/```$/i, '')
-            .trim()
+        return AIClient.stripCodeFence(String(text || '').replace(/^```[a-z]*\s*/i, ''))
             .replace(/^["「『]|["」』]$/g, '')
             .trim();
     },
@@ -136669,11 +136594,7 @@ ${String(action || '').includes('结束') ? '<ending type="perfect/good/bad/norm
     },
 
     _stripOuterReply(text) {
-        return String(text || '')
-            .replace(/^```[a-z]*\s*/i, '')
-            .replace(/```$/i, '')
-            .replace(/```(?:xml|html|text)?/gi, '')
-            .trim();
+        return AIClient.stripCodeFence(text);
     },
 
     _fallbackNarration(text, wrapper = '') {
@@ -142765,9 +142686,7 @@ const Mailbox = {
     _cleanLetterPart(text, options = {}) {
         let out = String(text || '').trim();
         if (!out) return '';
-        out = out
-            .replace(/^```(?:xml|html|json|text|markdown)?\s*/i, '')
-            .replace(/```\s*$/i, '')
+        out = AIClient.stripCodeFence(out)
             .replace(/<\/?(?:title|subject|letter|body|content|mail)[^>]*>/gi, '')
             .replace(/^\s*(?:短标题|标题|主题|subject|title)\s*[:：].*$/gmi, '')
             .replace(/^\s*(?:正文|内容|body|content|letter|mail)\s*[:：]\s*/gmi, '')
@@ -142781,19 +142700,12 @@ const Mailbox = {
     },
 
     _parseLetterJson(source) {
-        let s = String(source || '').trim();
-        let m = s.match(/\{[\s\S]*\}/);
-        if (!m) return null;
-        try {
-            let data = JSON.parse(m[0]);
-            if (!data || typeof data !== 'object') return null;
-            return {
-                title: data.title || data.subject || '',
-                body: data.letter || data.body || data.content || data.text || ''
-            };
-        } catch(e) {
-            return null;
-        }
+        let data = AIClient.parseJsonReply(source, { expect: 'object', fallback: null });
+        if (!data) return null;
+        return {
+            title: data.title || data.subject || '',
+            body: data.letter || data.body || data.content || data.text || ''
+        };
     },
 
     _deriveLetterTitle(body, fallback = '生日邮件') {
@@ -144795,10 +144707,7 @@ Steam 游戏不要只写一句备注。每个 <steamGame> 尽量写出像真的�
     },
 
     _stripFence(v) {
-        return String(v || '')
-            .replace(/```(?:json|JSON|markdown|text)?/gi, '')
-            .replace(/```/g, '')
-            .trim();
+        return AIClient.stripCodeFence(v);
     },
 
     _sectionAliases(names = []) {
@@ -146686,13 +146595,23 @@ export default {
         if (next < now) next = this._cloudReminderScheduledAtAfter(cfg.reminderTime, now);
         return this._cloudTimeText(next);
     },
+    // 导出/云备份前剥离所有 API key——买家互发存档是常规操作，key 明文带出去等于送人。
+    // 浅拷贝替换，不做整库深拷贝（DB 可能几十 MB）。
+    _stripSecretsForExport(data) {
+        let out = Object.assign({}, data);
+        if (Array.isArray(out.presets)) out.presets = out.presets.map(p => (p && typeof p === 'object') ? Object.assign({}, p, { key: '' }) : p);
+        ['imageApi', 'visionApi', 'webSearchApi'].forEach(k => {
+            if (out[k] && typeof out[k] === 'object' && out[k].key) out[k] = Object.assign({}, out[k], { key: '' });
+        });
+        return out;
+    },
     _cloudPayloadText(cfg = {}) {
         let payload = {
             app: 'xiaoshouji',
             version: (typeof AppVersion !== 'undefined' && AppVersion.value) || '',
             exportedAt: Date.now(),
             mediaMode: 'full',
-            data: DB.d
+            data: this._stripSecretsForExport(DB.d)
         };
         return JSON.stringify(payload);
     },
@@ -147472,7 +147391,14 @@ export default {
         document.body.appendChild(modal);
     },
     async exportData(){
-        let text = JSON.stringify(DB.d);
+        let payload = {
+            app: 'xiaoshouji',
+            version: (typeof AppVersion !== 'undefined' && AppVersion.value) || '',
+            exportedAt: Date.now(),
+            mediaMode: 'full',
+            data: this._stripSecretsForExport(DB.d)
+        };
+        let text = JSON.stringify(payload);
         let filename = this._exportFilename();
         let downloaded = this._downloadExportText(text, filename);
         this.showExportModal(text, filename);
@@ -147488,15 +147414,22 @@ export default {
         let r=new FileReader();
         r.onload=async e=>{
             try{
-                let imported = JSON.parse(e.target.result);
+                let parsed = JSON.parse(e.target.result);
+                if(parsed && parsed.app === 'xiaoshouji' && parsed.chunked) throw new Error('这是云备份分片清单，请到 云备份 页用「从云端恢复」，不能当本地备份导入');
+                // 兼容两种格式：新导出的 {app:'xiaoshouji', data:{...}} 包裹格式，和旧版裸 DB.d
+                let imported = (parsed && parsed.app === 'xiaoshouji' && parsed.data && typeof parsed.data === 'object' && !Array.isArray(parsed.data)) ? parsed.data : parsed;
                 if(!imported || typeof imported !== 'object' || Array.isArray(imported)) throw new Error('备份内容不是小手机数据对象');
+                if(!Array.isArray(imported.contacts) && !Array.isArray(imported.presets)) throw new Error('文件里没有联系人也没有 API 配置，不像是小手机存档，已取消导入');
+                // 导入前把当前数据留底一份，选错文件还能救回来
+                try { localStorage.setItem('xiaoshouji_pre_import_backup_v1', JSON.stringify(DB.d)); } catch(bx) { console.warn('Pre-import backup failed', bx); }
                 Toast.show('正在写入备份数据...');
                 DB.d = imported;
                 let saved = DB.saveNow ? await DB.saveNow() : await DB.save();
                 let backupSaved = DB.saveEmergencyBackup ? DB.saveEmergencyBackup() : true;
                 if(saved === false && !backupSaved) throw new Error('浏览器拒绝写入备份数据');
-                Toast.show('数据恢复成功，正在刷新...');
-                setTimeout(()=>location.reload(), 500);
+                let hasKey = Array.isArray(imported.presets) && imported.presets.some(p => p && String(p.key || '').trim());
+                Toast.show(hasKey ? '数据恢复成功，正在刷新...' : '数据恢复成功（此备份不含 API key，刷新后请到设置重新填写），正在刷新...');
+                setTimeout(()=>location.reload(), hasKey ? 500 : 1800);
             }catch(x){
                 console.error('Import data failed:', x);
                 if (typeof ErrorReporter !== 'undefined') ErrorReporter.toastAndShow('导入数据失败', x, '没有覆盖当前数据。');
@@ -149995,9 +149928,7 @@ Fields:
 Output JSON ONLY (no markdown fence). Use Simplified Chinese.
 {"song":{"title":"","artist":"","progress":0,"loopCount":0},"typing":null,"screenTime":{"value":0,"topApp":""},"heartRate":0,"steps":0,"battery":0,"location":{"name":"","detail":""},"dynamicIslandText":""}`;
         let reply = await this._callSnoopAI({ userPrompt: prompt, temperature: 0.95, maxTokens: 1400 }, { label: '此刻状态生成', timeoutMs: 55000 });
-        let s = reply.indexOf('{'), e = reply.lastIndexOf('}');
-        if (s < 0 || e <= s) throw new Error('AI 返回格式异常');
-        let live = JSON.parse(reply.substring(s, e + 1));
+        let live = AIClient.parseJsonReply(reply, { expect: 'object' });
         live.generatedAt = Date.now();
         if (!c.phoneSnoop) c.phoneSnoop = {};
         c.phoneSnoop.live = live;
@@ -150143,10 +150074,9 @@ Output 8-12 items using this tag format, no markdown fence:
         }
         if (!out.length) {
             try {
-                let s = text.indexOf('['), e = text.lastIndexOf(']');
-                if (s >= 0 && e > s) {
-                    let parsed = JSON.parse(text.substring(s, e + 1));
-                    let list = Array.isArray(parsed) ? parsed : (parsed && Array.isArray(parsed.notifs) ? parsed.notifs : []);
+                let parsed = AIClient.parseJsonReply(text, { fallback: null });
+                let list = Array.isArray(parsed) ? parsed : (parsed && Array.isArray(parsed.notifs) ? parsed.notifs : []);
+                if (list.length) {
                     out = list.filter(Boolean).map(n => ({
                         app: this._replaceUserPlaceholders(n.app || n.name || '通知', c, '你').trim() || '通知',
                         content: this._replaceUserPlaceholders(n.content || n.text || n.body || '', c, '你').trim(),
@@ -151920,10 +151850,7 @@ Rules:
     },
 
     _stripSnoopAiFence(text) {
-        return String(text || '')
-            .replace(/```(?:json|JSON|markdown|text|xml|XML)?/g, '')
-            .replace(/```/g, '')
-            .trim();
+        return AIClient.stripCodeFence(text);
     },
 
     _snoopAttrValue(attrText, key) {
@@ -152071,20 +151998,8 @@ Rules:
     },
 
     _jsonFromAiReply(reply, fallback = null) {
-        let raw = String(reply || '').trim();
-        let fenced = raw.match(/```(?:json|JSON)?\s*([\s\S]*?)```/);
-        let text = (fenced ? fenced[1] : raw)
-            .replace(/^\s*json\s*/i, '')
-            .replace(/```(?:json)?/gi, '')
-            .replace(/```/g, '')
-            .trim();
-        let candidates = [text];
-        let arrStart = text.indexOf('[');
-        let arrEnd = text.lastIndexOf(']');
-        let objStart = text.indexOf('{');
-        let objEnd = text.lastIndexOf('}');
-        if (arrStart >= 0 && arrEnd > arrStart) candidates.push(text.slice(arrStart, arrEnd + 1));
-        if (objStart >= 0 && objEnd > objStart) candidates.push(text.slice(objStart, objEnd + 1));
+        // 统一走 AIClient 的围栏清洗 + JSON 抠取；额外保留坏 JSON 修复（中文引号/尾逗号）
+        let candidates = AIClient.extractJsonText(reply, 'any') || [];
         for (let candidate of candidates) {
             let source = String(candidate || '').trim();
             if (!source) continue;
@@ -152903,10 +152818,7 @@ JSON array only (no markdown fence):
 [{"to":"${this._userDisplayForChar(c)}|友人名","deleted":"原本想发的","rewritten":"实际发出去的(或空字符串)","time":"HH:MM"}]`;
         try {
             let reply = await this._callSnoopAI({ userPrompt: prompt, temperature: 0.9, maxTokens: 1800, retries: 1 }, { label: '草稿生成', timeoutMs: 65000 });
-            let s = reply.indexOf('['), e = reply.lastIndexOf(']');
-            if (s < 0 || e <= s) throw new Error('AI 返回格式异常');
-            let drafts = JSON.parse(reply.substring(s, e + 1));
-            if (!Array.isArray(drafts)) drafts = drafts && Array.isArray(drafts.drafts) ? drafts.drafts : [];
+            let drafts = AIClient.parseJsonReply(reply, { expect: 'array' });
             drafts = drafts.filter(Boolean);
             this._sanitizeGeneratedUserRefs(drafts, c);
             if (!c.phoneSnoop) c.phoneSnoop = {};
@@ -152993,10 +152905,7 @@ Generate 3-5 dreams ${c.name} had in the past week.
 JSON array only (no markdown fence):
 [{"date":"","title":"","content":"","mood":"","hasUser":false}]`;
             let reply = await this._callSnoopAI({ userPrompt: prompt, temperature: 1.0, maxTokens: 1800, retries: 1 }, { label: '梦境生成', timeoutMs: 65000 });
-            let s = reply.indexOf('['), e = reply.lastIndexOf(']');
-            if (s < 0 || e <= s) throw new Error('AI 返回格式异常');
-            let dreams = JSON.parse(reply.substring(s, e + 1));
-            if (!Array.isArray(dreams)) dreams = dreams && Array.isArray(dreams.dreams) ? dreams.dreams : [];
+            let dreams = AIClient.parseJsonReply(reply, { expect: 'array' });
             dreams = dreams.filter(Boolean);
             this._sanitizeGeneratedUserRefs(dreams, c);
             dreams.forEach((d, i) => { d.id = 'dream_' + Date.now() + '_' + i; });
@@ -153127,9 +153036,7 @@ Also provide summary: one Chinese sentence (max 30 chars) capturing overall vibe
 JSON only (no markdown fence):
 {"words":[{"word":"","frequency":0,"sentiment":""}],"summary":""}`;
             let reply = await this._callSnoopAI({ userPrompt: prompt, temperature: 0.95, maxTokens: 1600, retries: 1 }, { label: '潜意识解析', timeoutMs: 65000 });
-            let s = reply.indexOf('{'), e = reply.lastIndexOf('}');
-            if (s < 0 || e <= s) throw new Error('AI 返回格式异常');
-            let wc = JSON.parse(reply.substring(s, e + 1));
+            let wc = AIClient.parseJsonReply(reply, { expect: 'object' });
             if (!Array.isArray(wc.words)) throw new Error('AI 返回的关键词不是数组');
             wc.words = wc.words.filter(Boolean).map(w => ({
                 word: String(w.word || '').slice(0, 8),
@@ -153230,10 +153137,7 @@ JSON array only, no markdown fence:
 
         try {
             let reply = await this._callSnoopAI({ userPrompt: prompt, temperature: 0.95, maxTokens: 1800, retries: 1 }, { label: '剪贴板生成', timeoutMs: 65000 });
-            let s = reply.indexOf('['), e = reply.lastIndexOf(']');
-            if (s < 0 || e <= s) throw new Error('AI 返回格式异常');
-            let items = JSON.parse(reply.substring(s, e + 1));
-            if (!Array.isArray(items)) items = items && Array.isArray(items.items) ? items.items : [];
+            let items = AIClient.parseJsonReply(reply, { expect: 'array' });
             items = items.filter(Boolean);
             this._sanitizeGeneratedUserRefs(items, c);
             if (!c.phoneSnoop) c.phoneSnoop = {};
@@ -153345,9 +153249,7 @@ LIST NOTES (6-9 items):
 Language: Simplified Chinese. JSON only, no markdown fence.`;
         try {
             let reply = await this._callSnoopAI({ userPrompt: prompt, temperature: 0.95, maxTokens: 2600, retries: 1 }, { label: '备忘录生成', timeoutMs: 70000 });
-            let s = reply.indexOf('{'), e = reply.lastIndexOf('}');
-            if (s < 0 || e <= s) throw new Error('AI 返回格式异常');
-            let notes = JSON.parse(reply.substring(s, e + 1));
+            let notes = AIClient.parseJsonReply(reply, { expect: 'object' });
             if (notes.list) {
                 notes.list.forEach((n, i) => { n.id = 'note_' + Date.now() + '_' + i; });
             }
@@ -153851,10 +153753,7 @@ JSON array only, no markdown fence:
 [{"caption":"","type":"","date":"","tags":[],"isAboutUser":false,"imgPrompt":""}]`;
         try {
             let reply = await this._callSnoopAI({ userPrompt: prompt, temperature: 0.95, maxTokens: 3200, retries: 1 }, { label: '相册生成', timeoutMs: 75000 });
-            let s = reply.indexOf('['), e = reply.lastIndexOf(']');
-            if (s < 0 || e <= s) throw new Error('AI 返回格式异常');
-            let photos = JSON.parse(reply.substring(s, e + 1));
-            if (!Array.isArray(photos)) photos = photos && Array.isArray(photos.photos) ? photos.photos : [];
+            let photos = AIClient.parseJsonReply(reply, { expect: 'array' });
             photos = photos.filter(Boolean);
             this._sanitizeGeneratedUserRefs(photos, c);
             photos.forEach((p, i) => {
@@ -154539,9 +154438,7 @@ JSON only:`;
 
         try {
             let reply = await this._callSnoopAI({ userPrompt: prompt, temperature: 0.95, maxTokens: 10000, retries: 1 }, { label: '反向窥视快照生成', timeoutMs: 90000 });
-            let s = reply.indexOf('{'), e = reply.lastIndexOf('}');
-            if (s < 0 || e <= s) throw new Error('AI 返回格式异常');
-            let snapshot = JSON.parse(reply.substring(s, e + 1));
+            let snapshot = AIClient.parseJsonReply(reply, { expect: 'object' });
             this._repairReverseSnapshot(snapshot, c);
             snapshot.snapshotAt = Date.now();
             c.userSnoop = snapshot;
@@ -156116,10 +156013,7 @@ JSON array only, no markdown fence:
 [{"time":"","label":"","enabled":true,"days":""}]`;
         try {
             let reply = await this._callSnoopAI({ userPrompt: prompt, temperature: 0.9, maxTokens: 1400, retries: 1 }, { label: '闹钟生成', timeoutMs: 65000 });
-            let s = reply.indexOf('['), e = reply.lastIndexOf(']');
-            if (s < 0 || e <= s) throw new Error('AI 返回格式异常');
-            let alarms = JSON.parse(reply.substring(s, e + 1));
-            if (!Array.isArray(alarms)) alarms = alarms && Array.isArray(alarms.alarms) ? alarms.alarms : [];
+            let alarms = AIClient.parseJsonReply(reply, { expect: 'array' });
             alarms = alarms.filter(Boolean);
             this._sanitizeGeneratedUserRefs(alarms, c);
             alarms.forEach((a, i) => { a.id = 'alarm_' + Date.now() + '_' + i; });
@@ -157379,10 +157273,7 @@ AppID：...
     },
 
     _stripAiFence(v) {
-        return String(v || '')
-            .replace(/```(?:json|JSON|markdown|text)?/gi, '')
-            .replace(/```/g, '')
-            .trim();
+        return AIClient.stripCodeFence(v);
     },
 
     _splitSnoopSections(text, names) {
@@ -159429,6 +159320,13 @@ function checkFullscreen() {
     let viewportFrozen = keyboardRelevant || isTextEditingElement(document.activeElement) || Date.now() < keyboardTransitionUntil;
     let currentW = Math.round(window.innerWidth || 0);
     let currentH = Math.round(window.innerHeight || 0);
+    // iOS PWA 冷启动会把 innerHeight 量小一截且不一定补发 resize，导致页面
+    // 底部露黑条。键盘只会让视口变矮，「变高」永远不是键盘——所以增长
+    // 无条件采纳，冻结期也不例外。
+    if (currentW && currentH > stableViewportSize.h && currentW === Math.round(stableViewportSize.w || currentW)) {
+        stableViewportSize = { w: currentW, h: currentH };
+        syncStableViewportCss(stableViewportSize);
+    }
     let w = viewportFrozen ? stableViewportSize.w : currentW;
     let h = viewportFrozen ? stableViewportSize.h : currentH;
     if (!viewportFrozen && currentW && currentH) {
@@ -159510,8 +159408,11 @@ document.addEventListener('focusout', () => {
 checkFullscreen();
 // iOS standalone under-reports innerHeight at cold launch and may not fire a
 // corrective resize — re-measure a few times while the shell settles.
-scheduleKeyboardCheck([250, 700, 1500]);
-window.addEventListener('pageshow', () => scheduleKeyboardCheck([120, 500]));
+scheduleKeyboardCheck([250, 700, 1500, 3000, 6000]);
+window.addEventListener('pageshow', () => scheduleKeyboardCheck([120, 500, 1500]));
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') scheduleKeyboardCheck([120, 500]);
+});
 registerPwaServiceWorker();
 
 if ($('chat-input')) {
