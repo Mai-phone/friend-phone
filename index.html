@@ -75493,7 +75493,7 @@ body.watch-cinema-active {
             <span class="settings-version-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10"></path><path d="M7 12h7"></path><path d="M7 17h5"></path><rect x="4" y="3" width="16" height="18" rx="3"></rect></svg>
             </span>
-                    <span class="settings-row-copy"><b>当前版本</b><small><span data-app-version>v2026.07.08.2</span> · <span data-app-version-note>当前本地版本</span></small></span>
+                    <span class="settings-row-copy"><b>当前版本</b><small><span data-app-version>v2026.07.08.3</span> · <span data-app-version-note>当前本地版本</span></small></span>
         </div>
         <button class="settings-row-card" onclick="Settings.openHelp()">
             <span class="settings-row-icon">
@@ -75668,7 +75668,7 @@ body.watch-cinema-active {
         <div class="settings-help-hero">
             <div class="settings-help-hero-top">
                 <div class="settings-help-kicker">小手机更新公告</div>
-                <div class="settings-version-pill" data-app-version>v2026.07.08.2</div>
+                <div class="settings-version-pill" data-app-version>v2026.07.08.3</div>
             </div>
             <div class="settings-help-hero-title">2026-06-04 内测更新</div>
             <div class="settings-help-hero-text">这次主要更新IOS适配、相册、生图、微信/QQ 皮肤、窥视（查手机）、Ta 的电脑、资料卡和介绍一些聊天基础操作。界面更顺眼、操作更直觉，也减少低配手机上的卡顿发热（或许）</div>
@@ -76381,9 +76381,9 @@ const $ = i => document.getElementById(i);
 const createElement = (t,c,h,f) => { let e=document.createElement(t); if(c)e.className=c; if(h)e.innerHTML=h; if(f)e.onclick=f; return e; };
 
 const AppVersion = {
-    value: 'v2026.07.08.2',
+    value: 'v2026.07.08.3',
     date: '2026-07-08',
-    label: 'v2026.07.08.2',
+    label: 'v2026.07.08.3',
     note: '当前本地版本',
     apply() {
         document.querySelectorAll('[data-app-version]').forEach(el => {
@@ -159616,14 +159616,47 @@ document.addEventListener('focusout', () => {
     scheduleKeyboardCheck([180, 720]);
 });
 checkFullscreen();
+// iOS PWA 会在键盘弹出/切后台/分享面板时把整个网页窗口向上滚动一段，
+// 恢复时经常忘记滚回来——整页固定高度的应用被顶上去：顶栏钻进灵动岛
+// 点不到，底部露出 WebView 后面的系统黑条。发现整页滚动就强制归零。
+// 正在打字时不动（iOS 需要滚动来露出输入框），键盘收起/回前台后再归位。
+function resetPageScrollIfDisplaced() {
+    if (isTextEditingElement(document.activeElement)) return;
+    if (document.body && document.body.classList.contains('keyboard-open')) return;
+    let displaced = (window.scrollY || window.pageYOffset || 0) !== 0
+        || (document.documentElement && document.documentElement.scrollTop !== 0)
+        || (document.body && document.body.scrollTop !== 0)
+        || (window.visualViewport && Math.round(window.visualViewport.offsetTop || 0) > 0);
+    if (!displaced) return;
+    try { window.scrollTo(0, 0); } catch (_) {}
+    if (document.documentElement) document.documentElement.scrollTop = 0;
+    if (document.body) document.body.scrollTop = 0;
+}
+function schedulePageScrollReset(delays = [80, 350, 900]) {
+    delays.forEach(delay => setTimeout(resetPageScrollIfDisplaced, delay));
+}
+window.addEventListener('scroll', resetPageScrollIfDisplaced, { passive: true });
+if (window.visualViewport) window.visualViewport.addEventListener('scroll', resetPageScrollIfDisplaced);
+document.addEventListener('focusout', () => schedulePageScrollReset([120, 450, 900]));
 // iOS standalone under-reports innerHeight at cold launch and may not fire a
 // corrective resize — re-measure a few times while the shell settles.
 scheduleKeyboardCheck([250, 700, 1500, 3000, 6000]);
+schedulePageScrollReset([300, 1200]);
 // iOS 挂起恢复(分享面板/切后台/导出文件)后 innerHeight 可能长时间卡在小值,
 // 补测长尾要和冷启动一样长,否则黑条要等下次交互才自愈。
-window.addEventListener('pageshow', () => scheduleKeyboardCheck([120, 500, 1500, 3000, 6000]));
+window.addEventListener('pageshow', () => { scheduleKeyboardCheck([120, 500, 1500, 3000, 6000]); schedulePageScrollReset([120, 500, 1500]); });
 document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') scheduleKeyboardCheck([120, 500, 1500, 3000, 6000]);
+    if (document.visibilityState !== 'visible') return;
+    scheduleKeyboardCheck([120, 500, 1500, 3000, 6000]);
+    schedulePageScrollReset([120, 500, 1500]);
+    // 切后台瞬间可能有 focusout 没送达：回前台时没有输入焦点却还挂着
+    // keyboard-open，页面会一直被压缩——强制清掉
+    if (document.body && document.body.classList.contains('keyboard-open') && !isTextEditingElement(document.activeElement)) {
+        document.body.classList.remove('keyboard-open', 'keyboard-focus');
+        document.documentElement.style.setProperty('--keyboard-height', '0px');
+        lastKeyboardOpen = false;
+        lastKeyboardHeight = 0;
+    }
 });
 registerPwaServiceWorker();
 
