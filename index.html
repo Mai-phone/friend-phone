@@ -76,6 +76,15 @@
     --transfer-bg: #CCCFDD; --transfer-accent: #2F3033;
 }
 
+/* dvh 跟随浏览器真实可视高度（Safari 浏览器 tab 里 vh 会被工具栏盖住一截）。
+   老系统不认 dvh，直接把值塞变量会在 var() 替换时整条失效，必须 @supports 分流 */
+@supports (height: 100dvh) {
+    :root {
+        --app-stable-width: 100dvw;
+        --app-stable-height: 100dvh;
+    }
+}
+
 /* Responsive Root Font Size */
 html {
     font-size: clamp(12px, 3.5vw, 16px); /* Dynamic scaling based on viewport width */
@@ -37714,7 +37723,11 @@ body:not(.line-theme-wechat):not(.line-theme-qq) #sub-chat-room .chat-input-area
     box-shadow: 0 -4px 12px rgba(16, 20, 25, 0.055) !important;
     -webkit-backdrop-filter: blur(10px) saturate(1.04) !important;
     backdrop-filter: blur(10px) saturate(1.04) !important;
-    overflow: hidden !important;
+    overflow: visible !important;
+}
+
+body:not(.line-theme-wechat):not(.line-theme-qq) #quote-preview.quote-preview-bar {
+    z-index: 80 !important;
 }
 
 body:not(.line-theme-wechat):not(.line-theme-qq) #sub-chat-room .chat-unified-glass::before {
@@ -70013,6 +70026,41 @@ body.line-theme-qq #chat-messages .msg-content.chat-doodle-message-bubble {
     max-width: 100% !important;
 }
 
+#chat-messages .chat-img-render-fallback {
+    width: min(190px, 58vw);
+    min-height: 132px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 16px 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(15, 20, 26, 0.08);
+    background: rgba(255, 255, 255, 0.78);
+    color: #6A737D;
+    text-align: center;
+}
+
+#chat-messages .chat-img-render-fallback svg {
+    width: 30px;
+    height: 30px;
+    opacity: 0.56;
+}
+
+#chat-messages .chat-img-render-fallback b {
+    font-size: 13px;
+    line-height: 1.25;
+    color: #0F141A;
+}
+
+#chat-messages .chat-img-render-fallback span {
+    font-size: 11px;
+    line-height: 1.35;
+    color: #7B8490;
+}
+
 body.line-theme-wechat #chat-messages .bubble.text-bubble,
 body.line-theme-wechat #chat-messages .msg-content.text-bubble,
 body.line-theme-qq #chat-messages .bubble.text-bubble,
@@ -75493,7 +75541,7 @@ body.watch-cinema-active {
             <span class="settings-version-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10"></path><path d="M7 12h7"></path><path d="M7 17h5"></path><rect x="4" y="3" width="16" height="18" rx="3"></rect></svg>
             </span>
-                    <span class="settings-row-copy"><b>当前版本</b><small><span data-app-version>v2026.07.08.3</span> · <span data-app-version-note>当前本地版本</span></small></span>
+                    <span class="settings-row-copy"><b>当前版本</b><small><span data-app-version>v2026.07.08.5</span> · <span data-app-version-note>当前本地版本</span></small></span>
         </div>
         <button class="settings-row-card" onclick="Settings.openHelp()">
             <span class="settings-row-icon">
@@ -75668,7 +75716,7 @@ body.watch-cinema-active {
         <div class="settings-help-hero">
             <div class="settings-help-hero-top">
                 <div class="settings-help-kicker">小手机更新公告</div>
-                <div class="settings-version-pill" data-app-version>v2026.07.08.3</div>
+                <div class="settings-version-pill" data-app-version>v2026.07.08.5</div>
             </div>
             <div class="settings-help-hero-title">2026-06-04 内测更新</div>
             <div class="settings-help-hero-text">这次主要更新IOS适配、相册、生图、微信/QQ 皮肤、窥视（查手机）、Ta 的电脑、资料卡和介绍一些聊天基础操作。界面更顺眼、操作更直觉，也减少低配手机上的卡顿发热（或许）</div>
@@ -76381,9 +76429,9 @@ const $ = i => document.getElementById(i);
 const createElement = (t,c,h,f) => { let e=document.createElement(t); if(c)e.className=c; if(h)e.innerHTML=h; if(f)e.onclick=f; return e; };
 
 const AppVersion = {
-    value: 'v2026.07.08.3',
-    date: '2026-07-08',
-    label: 'v2026.07.08.3',
+    value: 'v2026.07.09.1',
+    date: '2026-07-09',
+    label: 'v2026.07.09.1',
     note: '当前本地版本',
     apply() {
         document.querySelectorAll('[data-app-version]').forEach(el => {
@@ -76588,6 +76636,10 @@ const NoticeStyle = {
         if (status === 408 || /timeout|timed out|abort|超时/.test(s)) return 'timeout';
         if (/network|fetch failed|failed to fetch|load failed|连接失败|网络|断网|cors/.test(s)) return 'network';
         if (/empty|空响应|响应为空|返回为空|没有返回|无返回/.test(s)) return 'empty';
+        if (
+            /provided image is not valid|image\s+is\s+not\s+valid|invalid[_\s-]*image|unsupported[_\s-]*image|invalid[_\s-]*argument|图片.*无效|图片.*不支持/.test(s) &&
+            /image|图片|图像|画面|识图|vision/.test(s)
+        ) return 'imageInput';
         if (/json|parse|解析|格式/.test(s)) return 'parse';
         if (/识图|vision|看图|图片识别|读图/.test(s)) return 'vision';
         if (/图片|生图|image|绘图|画面/.test(s)) return 'image';
@@ -76607,6 +76659,7 @@ const NoticeStyle = {
             timeout: ['请求超时', '请求发出后太久没有返回。请检查网络、中转站响应速度，或稍后重试。'],
             network: ['网络请求失败', '浏览器没有成功连到接口。请检查网络、Base URL、中转站状态或跨域限制。'],
             empty: ['接口返回为空', '请求成功但没有拿到可用内容。可以重试，或换一个更稳定的模型。'],
+            imageInput: ['图片输入无效', '这张图已经发出，但当前模型接口没有接收这份图片数据。新上传图片会先转成标准 JPEG；这条可以换图或重新发送一次。'],
             parse: ['返回格式无法解析', '模型返回了内容，但这个功能没有读懂格式。可以重试，或把接口返回反馈出来继续修解析。'],
             vision: ['识图失败', '识图接口或模型没有正常返回图片描述。请检查识图 API 配置、模型能力和图片读取。'],
             image: ['图片生成失败', '图片接口没有返回可用图片。请检查图片 API、额度、提示词安全策略和模型状态。'],
@@ -76635,6 +76688,7 @@ const NoticeStyle = {
             timeout: ['对方似乎没来得及回复...', '再试一次吧。'],
             network: ['检查网络哦，再试一次吧。', ''],
             empty: ['对方暂时无法回应。', '可以修改话术后再试一次哦。'],
+            imageInput: ['这张图没被接口收下。', '换张图或重新发送一次。'],
             parse: ['这条消息没有完整送达。', '可以重新试一次。'],
             vision: ['咦，图片裂开了！', '换张图再试试？'],
             image: ['生成失败了...T T', '换个说法再试试？'],
@@ -77086,7 +77140,14 @@ const Utils = {
     async imageFileToChatDataUrl(file, options = {}) {
         let original = await new Promise(resolve => this._fileToBase64Raw(file, resolve));
         let maxDataUrlLength = options.maxDataUrlLength || 2.2 * 1024 * 1024;
-        if (!file || !/^image\//i.test(file.type || '') || String(original || '').length <= maxDataUrlLength) {
+        let originalMime = ((String(original || '').match(/^data:([^;,]+)/i) || [])[1] || (file && file.type) || '').toLowerCase();
+        let isImage = /^image\//i.test(originalMime) || /^image\//i.test(file && file.type || '');
+        let normalizeForDisplay = !!(options.normalizeForDisplay || options.normalizeForChat || options.forceNormalize || options.normalize);
+        let canRasterize = isImage && !/^image\/(?:gif|svg\+xml)$/i.test(originalMime);
+        let needsResize = String(original || '').length > maxDataUrlLength;
+        let isBrowserSafeRaster = /^data:image\/(?:png|jpe?g|webp);base64,/i.test(String(original || ''));
+        let shouldRasterize = canRasterize && (normalizeForDisplay || needsResize || !isBrowserSafeRaster);
+        if (!file || !isImage || !shouldRasterize) {
             return { dataUrl: original, compressed: false, originalBytes: file && file.size || this.dataUrlBytes(original), bytes: this.dataUrlBytes(original) };
         }
 
@@ -77123,9 +77184,12 @@ const Utils = {
                         bestLength = dataUrl.length;
                     }
                     if (dataUrl.length <= maxDataUrlLength) {
+                        let outMime = ((dataUrl.match(/^data:([^;,]+)/i) || [])[1] || outputType || '').toLowerCase();
                         return {
                             dataUrl,
-                            compressed: true,
+                            compressed: needsResize || dataUrl.length < String(original || '').length,
+                            normalized: normalizeForDisplay || outMime !== originalMime,
+                            mime: outMime,
                             originalBytes: file.size || this.dataUrlBytes(original),
                             bytes: this.dataUrlBytes(dataUrl),
                             width: w,
@@ -77135,9 +77199,12 @@ const Utils = {
                 }
             }
 
+            let bestMime = ((String(best || original).match(/^data:([^;,]+)/i) || [])[1] || outputType || originalMime || '').toLowerCase();
             return {
                 dataUrl: best || original,
-                compressed: !!best,
+                compressed: !!best && (needsResize || String(best).length < String(original || '').length),
+                normalized: !!best && (normalizeForDisplay || bestMime !== originalMime),
+                mime: bestMime,
                 originalBytes: file.size || this.dataUrlBytes(original),
                 bytes: this.dataUrlBytes(best || original)
             };
@@ -88761,9 +88828,10 @@ const MessageRenderer = {
             return { html, bubbleClass: 'emoticon-bubble', clearQuote: false };
         } else if (m.content && (m.content.startsWith('data:') || m.content.startsWith('http'))) {
             // Real Image (Base64 or URL) -> Show directly
+            let time = Number(m.time || 0) || 0;
             return {
                 html: `<div class="chat-img-shell">
-                    <img src="${Utils.escapeHtml(m.content)}" class="chat-img" loading="lazy" decoding="async" draggable="false" style="cursor:pointer;-webkit-touch-callout:default;user-select:none">
+                    <img src="${Utils.escapeHtml(m.content)}" class="chat-img" loading="lazy" decoding="async" draggable="false" style="cursor:pointer;-webkit-touch-callout:default;user-select:none" onerror="if(window.Chat&&Chat.handleImagePreviewError)Chat.handleImagePreviewError(this,${time})">
                 </div>`,
                 bubbleClass: null,
                 clearQuote: false
@@ -89832,6 +89900,7 @@ if (typeof window !== 'undefined') window.AltMainNotice = AltMainNotice;
 
 const Chat = {
     cid: null, quotedMessage: null, _activeAbortController: null, _activeRequestId: 0, _streamFallbackByPreset: {},
+    _imageInputFallbackByPreset: {},
     _altSessionId: '',
     _activeAccountId: undefined,
     _visionDescribePromises: {},
@@ -92810,6 +92879,16 @@ Format exactly: <msg type="emoticon">exact_listed_name</msg>. Do not use {{emoti
         src = String(src || '').trim();
         return src.startsWith('data:image/') ? src : '';
     },
+    _isApiSendableImageDataUrl(dataUrl) {
+        let src = String(dataUrl || '').trim();
+        if (!/^data:image\/(?:png|jpe?g|webp);base64,/i.test(src)) return false;
+        let comma = src.indexOf(',');
+        if (comma < 0) return false;
+        let b64 = src.slice(comma + 1).replace(/\s/g, '');
+        if (!b64 || b64.length % 4 === 1 || /[^A-Za-z0-9+/=]/.test(b64)) return false;
+        let bytes = (typeof Utils !== 'undefined' && Utils.dataUrlBytes) ? Utils.dataUrlBytes(src) : Math.floor(b64.length * 3 / 4);
+        return bytes > 0 && src.length <= 2.4 * 1024 * 1024;
+    },
     _isUserPromptImageMessage(m) {
         return !!(
             m &&
@@ -92835,7 +92914,7 @@ Format exactly: <msg type="emoticon">exact_listed_name</msg>. Do not use {{emoti
         return items;
     },
     _latestUserTurnNeedsVision(c) {
-        return this._latestUserTurnMessages(c).filter(m => this._shouldDescribeUserImage(m));
+        return this._latestUserTurnMessages(c).filter(m => this._shouldDescribeUserImage(m, c));
     },
     async _ensureLatestUserTurnVision(c, options = {}) {
         let pending = this._latestUserTurnNeedsVision(c);
@@ -92863,15 +92942,16 @@ Format exactly: <msg type="emoticon">exact_listed_name</msg>. Do not use {{emoti
             let img = images[i];
             let desc = this._imageDescriptionForPrompt(img);
             let label = `图片 ${i + 1}${i === images.length - 1 ? '（latest）' : ''}`;
-            parts.push({ type: 'text', text: desc ? `${label} 已有识图描述：${desc}` : label });
             let dataUrl = this._imageDataUrlForPrompt(img);
-            if (dataUrl) {
+            let canSendImage = this._isApiSendableImageDataUrl(dataUrl);
+            parts.push({ type: 'text', text: desc ? `${label} 已有识图描述：${desc}` : (canSendImage ? label : `${label}：用户发来了一张图片，当前只能作为图片消息事实传入。`) });
+            if (canSendImage) {
                 parts.push({ type: 'image_url', image_url: { url: dataUrl } });
             }
         }
         return parts;
     },
-    _activeChatApiSupportsImageInput() {
+    _activeChatApiSupportsImageInput(c = null) {
         let cfg = (typeof VisionClient !== 'undefined' && VisionClient.config) ? VisionClient.config() : null;
         let fallbackVisionOn = !!(
             cfg &&
@@ -92880,7 +92960,7 @@ Format exactly: <msg type="emoticon">exact_listed_name</msg>. Do not use {{emoti
             VisionClient.isEnabled &&
             VisionClient.isEnabled()
         );
-        return !fallbackVisionOn;
+        return !fallbackVisionOn && !this._imageInputFallbackActive(c);
     },
     _getAvatarTargetFromUserInstruction(c) {
         if (!c || !Array.isArray(c.history)) return null;
@@ -93107,7 +93187,7 @@ Do not make the visible fields repeat location/outfit/pose in new words.`;
             let noteText = cleanTransferText(pendingTransfer.note, '转账给您');
             transferCtx = `[SYSTEM: ${userDisplay} sent a transfer of ${amountText || 'MISSING_AMOUNT'}. Note: ${noteText}.${sourceHint} Decide whether to accept or reject based on context. If you accept, you MUST include the token [TX_ACC] in your text content. If you reject, include [TX_REJ].]`;
         }
-        let imageInputCtx = `\n[Image Input]\n如果 ${userDisplay} 在普通聊天里发来图片，${this._activeChatApiSupportsImageInput() ? '默认直接把原图交给当前聊天 API 识别。' : '当前已启用单独识图 API，会先把图片读成文字描述再交给聊天 API。'}把它当作 ${userDisplay} 分享的生活、物品、截图或画面来回应。普通聊天图片与“允许 TA 看到我换头像”无关；只有当 ${userDisplay} 明确要求把当前或最近候选图片设为你的头像/情头时，才允许在回复末尾追加 [AVATAR_SET:n]；如果图片不是头像候选、只是截图/生活分享/聊天记录，或你拿不准，就输出 [AVATAR_SKIP] 或不输出头像指令。不要因为 ${userDisplay} 泛泛说“想换头像”就替 ta 选择旧图片。`;
+        let imageInputCtx = `\n[Image Input]\n如果 ${userDisplay} 在普通聊天里发来图片，${this._activeChatApiSupportsImageInput(c) ? '默认直接把原图交给当前聊天 API 识别。' : '当前会优先使用图片描述或只保留“发了图片”的事实，避免把当前接口拒收的原图继续塞进聊天 API。'}把它当作 ${userDisplay} 分享的生活、物品、截图或画面来回应。普通聊天图片与“允许 TA 看到我换头像”无关；只有当 ${userDisplay} 明确要求把当前或最近候选图片设为你的头像/情头时，才允许在回复末尾追加 [AVATAR_SET:n]；如果图片不是头像候选、只是截图/生活分享/聊天记录，或你拿不准，就输出 [AVATAR_SKIP] 或不输出头像指令。不要因为 ${userDisplay} 泛泛说“想换头像”就替 ta 选择旧图片。`;
         let aiBlockDirective = c.allowAiBlock ? `\n[Block Control]\n不要从 ${userDisplay} 的自然语言关键词触发拉黑。${userDisplay} 提到“拉黑/黑名单/拒收”、开玩笑、威胁、测试或讨论这个功能，都只是聊天内容，不是后台指令。\n只有当你以角色身份真的主动决定切断联系时，才在回复中包含隐藏指令 [BLOCK]。只有这个指令会改变前端状态。\n没有输出 [BLOCK] 时，不要声称“后台指令已执行/已经加入黑名单/消息已经被系统拒收成功”这类系统动作已经完成；你仍然可以用角色语气威胁、开玩笑或表达想拉黑，但那只是台词。\n[/Block Control]` : '';
         let emoticonCtx = '';
         if (options.includeEmoticonRule !== false) {
@@ -93285,6 +93365,24 @@ Do not make the visible fields repeat location/outfit/pose in new words.`;
         if (!preset) return 'default';
         return String(preset.id || `${preset.url || ''}|${preset.model || ''}` || 'default');
     },
+    _imageInputFallbackActive(c) {
+        let key = this._chatStreamCacheKey(c);
+        let info = this._imageInputFallbackByPreset && this._imageInputFallbackByPreset[key];
+        if (!info) return false;
+        if (Date.now() > Number(info.until || 0)) {
+            delete this._imageInputFallbackByPreset[key];
+            return false;
+        }
+        return true;
+    },
+    _noteImageInputFallback(c, err) {
+        let key = this._chatStreamCacheKey(c);
+        if (!this._imageInputFallbackByPreset) this._imageInputFallbackByPreset = {};
+        this._imageInputFallbackByPreset[key] = {
+            until: Date.now() + 5 * 60 * 1000,
+            reason: String((err && (err.userMessage || err.message || err.detail)) || err || '').slice(0, 240)
+        };
+    },
     _streamFallbackActive(c) {
         let key = this._chatStreamCacheKey(c);
         let info = this._streamFallbackByPreset && this._streamFallbackByPreset[key];
@@ -93306,6 +93404,37 @@ Do not make the visible fields repeat location/outfit/pose in new words.`;
             until: Date.now() + 60 * 1000,
             reason: String((err && (err.userMessage || err.message || err.detail)) || err || '').slice(0, 240)
         };
+    },
+    _isInvalidImageInputError(err) {
+        if (!err) return false;
+        let text = [
+            err.message,
+            err.userMessage,
+            err.detail,
+            err.rawResponse,
+            err.responseBody,
+            err.rawText
+        ].map(v => {
+            if (!v) return '';
+            if (typeof v === 'string') return v;
+            try { return JSON.stringify(v); } catch (e) { return String(v || ''); }
+        }).join('\n').toLowerCase();
+        return Number(err.status || 0) === 400 && /provided image is not valid|image\s+is\s+not\s+valid|invalid[_\s-]*image|unsupported[_\s-]*image|invalid[_\s-]*argument/.test(text);
+    },
+    _messagesHaveImageInput(messages = []) {
+        return (messages || []).some(m => Array.isArray(m && m.content) && m.content.some(part => part && part.type === 'image_url'));
+    },
+    _textOnlyMessagesFromImageInput(messages = []) {
+        return (messages || []).map(m => {
+            if (!Array.isArray(m && m.content)) return m;
+            let textParts = [];
+            (m.content || []).forEach(part => {
+                if (!part) return;
+                if (part.type === 'text') textParts.push(String(part.text || '').trim());
+                else if (part.type === 'image_url') textParts.push('[图片：用户刚刚发送了一张图片，但当前通道无法直接读取原图。请只按“用户发了图片”这一事实自然回应，不要编造画面细节。]');
+            });
+            return { ...m, content: textParts.filter(Boolean).join('\n') || '[图片]' };
+        });
     },
     _chatCompletionTextFromJson(raw) {
         let text = String(raw || '').trim();
@@ -93422,6 +93551,7 @@ Do not make the visible fields repeat location/outfit/pose in new words.`;
         let streamTimeout = Math.max(15000, parseInt(options.streamTimeout, 10) || 65000);
         let nonStreamTimeout = Math.max(15000, parseInt(options.nonStreamTimeout, 10) || 90000);
         let streamIdleTimeout = Math.max(8000, parseInt(options.streamIdleTimeout, 10) || 18000);
+        let effectiveMessages = messages;
         let makeCall = async (stream, sourceError = null) => {
             let controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
             let timedOut = false;
@@ -93433,7 +93563,7 @@ Do not make the visible fields repeat location/outfit/pose in new words.`;
             if (bindActiveController && this._activeRequestId === requestId) this._activeAbortController = controller;
             try {
                 let result = await AIClient.call(this._aiCallArgsForContact(c, {
-                    messages,
+                    messages: effectiveMessages,
                     stream,
                     signal: controller ? controller.signal : undefined,
                     contact: c,
@@ -93461,24 +93591,43 @@ Do not make the visible fields repeat location/outfit/pose in new words.`;
             }
         };
 
-        if (options.preferStream === false || this._streamFallbackActive(c)) {
-            if (setTitle && options.preferStream !== false) setTitle('正在输入中...');
-            return await makeCall(false);
-        }
+        let runPreferred = async () => {
+            if (options.preferStream === false || this._streamFallbackActive(c)) {
+                if (setTitle && options.preferStream !== false) setTitle('正在输入中...');
+                return await makeCall(false);
+            }
+
+            try {
+                return await makeCall(true);
+            } catch (streamErr) {
+                if (!this._shouldRetryWithoutStream(streamErr)) throw streamErr;
+                this._noteStreamFallback(c, streamErr);
+                console.warn('Chat stream failed, retrying without stream:', streamErr);
+                if (setTitle) setTitle('正在输入中...');
+                try {
+                    return await makeCall(false, streamErr);
+                } catch (fallbackErr) {
+                    if (fallbackErr && !fallbackErr.streamFallbackCause) fallbackErr.streamFallbackCause = streamErr;
+                    throw fallbackErr;
+                }
+            }
+        };
 
         try {
-            return await makeCall(true);
-        } catch (streamErr) {
-            if (!this._shouldRetryWithoutStream(streamErr)) throw streamErr;
-            this._noteStreamFallback(c, streamErr);
-            console.warn('Chat stream failed, retrying without stream:', streamErr);
-            if (setTitle) setTitle('正在输入中...');
-            try {
-                return await makeCall(false, streamErr);
-            } catch (fallbackErr) {
-                if (fallbackErr && !fallbackErr.streamFallbackCause) fallbackErr.streamFallbackCause = streamErr;
-                throw fallbackErr;
+            return await runPreferred();
+        } catch (err) {
+            if (
+                options.retryWithoutImageInputOnInvalid !== false &&
+                this._isInvalidImageInputError(err) &&
+                this._messagesHaveImageInput(effectiveMessages)
+            ) {
+                this._noteImageInputFallback(c, err);
+                effectiveMessages = this._textOnlyMessagesFromImageInput(effectiveMessages);
+                if (setTitle) setTitle('正在输入中...');
+                console.warn('Chat image input was rejected; retrying without image_url payload:', err);
+                return await makeCall(false, err);
             }
+            throw err;
         }
     },
     async appendMsg(role, content, type='text', extra={}, skipRender=false) {
@@ -94953,9 +95102,9 @@ ${outputRule}`;
         if (m && m.visionStatus === 'error') return '[' + label + ': 识图失败，模型只能知道用户发了一张图片]';
         return '[' + label + ']';
     },
-    _shouldDescribeUserImage(msg) {
+    _shouldDescribeUserImage(msg, contact = null) {
         let cfg = (typeof VisionClient !== 'undefined' && VisionClient.config) ? VisionClient.config() : null;
-        if (this._activeChatApiSupportsImageInput()) return false;
+        if (this._activeChatApiSupportsImageInput(contact)) return false;
         return !!(
             this._isUserPromptImageMessage(msg) &&
             !this._imageDescriptionForPrompt(msg) &&
@@ -94987,6 +95136,8 @@ ${outputRule}`;
     },
     async _describeImageMessageOnce(msg, contact = null, options = {}) {
         let c = contact || DB.getContact(this.cid, this._activeAccountId);
+        let dataUrl = this._imageDataUrlForPrompt(msg);
+        if (!dataUrl) return null;
         msg.visionStatus = 'pending';
         msg.visionError = '';
         if (!options.silent) Toast.show('正在识图...');
@@ -95970,8 +96121,8 @@ ${(typeof Chat !== 'undefined' && Chat._guardrailsPrompt) ? Chat._guardrailsProm
         let webSearchPromptCtx = webSearchCtx
             ? this._weightedPromptBlock('appContext', 'Web Search Context', webSearchCtx, '根据你的人设表现即可。')
             : '';
-        let chatApiSeesImages = this._activeChatApiSupportsImageInput();
-        let imageInputCtx = `\n[Image Input]\n如果 ${userDisplay} 在普通聊天里发来图片，${chatApiSeesImages ? '默认直接把原图交给当前聊天 API 识别。' : '当前已启用单独识图 API，会先把图片读成文字描述再交给聊天 API。'}把它当作 ${userDisplay} 分享的生活、物品、截图或画面来回应。普通聊天图片与“允许 TA 看到我换头像”无关；只有当 ${userDisplay} 明确要求把当前或最近候选图片设为你的头像/情头时，才允许在回复末尾追加 [AVATAR_SET:n]；如果图片不是头像候选、只是截图/生活分享/聊天记录，或你拿不准，就输出 [AVATAR_SKIP] 或不输出头像指令。不要因为 ${userDisplay} 泛泛说“想换头像”就替 ta 选择旧图片。`;
+        let chatApiSeesImages = this._activeChatApiSupportsImageInput(c);
+        let imageInputCtx = `\n[Image Input]\n如果 ${userDisplay} 在普通聊天里发来图片，${chatApiSeesImages ? '默认直接把原图交给当前聊天 API 识别。' : '当前会优先使用图片描述或只保留“发了图片”的事实，避免把当前接口拒收的原图继续塞进聊天 API。'}把它当作 ${userDisplay} 分享的生活、物品、截图或画面来回应。普通聊天图片与“允许 TA 看到我换头像”无关；只有当 ${userDisplay} 明确要求把当前或最近候选图片设为你的头像/情头时，才允许在回复末尾追加 [AVATAR_SET:n]；如果图片不是头像候选、只是截图/生活分享/聊天记录，或你拿不准，就输出 [AVATAR_SKIP] 或不输出头像指令。不要因为 ${userDisplay} 泛泛说“想换头像”就替 ta 选择旧图片。`;
         let pendingAvatarCtx = pendingUserAvatarReaction
             ? `\n[User Avatar Update]\n${userDisplay} 刚刚把在你这里显示的聊天头像换成了新图片。你需要优先回应 ${userDisplay} 本轮最新消息；如果自然合适，可以顺带对这个新头像作出一句具体反应。不要为了头像打断当前话题，不要只围绕头像开启新一轮回复。\n[/User Avatar Update]`
             : '';
@@ -96522,6 +96673,20 @@ let transferMatch = /^\[TRANSFER:\s*([^\],\]]*)\s*(?:,\s*(.+?))?\]$/i.exec(part)
         $('quote-text-content').innerText = "回复: " + quote;
     },
     cancelQuote() { this.quotedMessage=null; $('quote-preview').classList.remove('active'); },
+    handleImagePreviewError(img, time = 0) {
+        try {
+            let shell = img && img.closest ? img.closest('.chat-img-shell') : null;
+            if (!shell || shell.dataset.previewBroken === '1') return;
+            shell.dataset.previewBroken = '1';
+            shell.innerHTML = `<div class="chat-img-render-fallback" data-msg-time="${Number(time) || 0}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2.5"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                <b>图片已发送</b>
+                <span>前端暂时无法预览这张图</span>
+            </div>`;
+        } catch (e) {
+            if (img) img.style.display = 'none';
+        }
+    },
     showTyping(statusText = '正在输入中...') {
         if (statusText) {
             this._setShortStatusOverride(statusText);
@@ -99692,7 +99857,7 @@ const ChatCall = {
         try {
             return !!(typeof Chat !== 'undefined'
                 && Chat._activeChatApiSupportsImageInput
-                && Chat._activeChatApiSupportsImageInput());
+                && Chat._activeChatApiSupportsImageInput(DB.getContact ? DB.getContact(Chat.cid) : null));
         } catch(e) {
             return false;
         }
@@ -101645,22 +101810,34 @@ const PlusMenu = {
         let files = Array.from(inp.files || []);
         inp.value = '';
         let compressedCount = 0;
+        let normalizedCount = 0;
         let sent = [];
         for (let i = 0; i < files.length; i++) {
             let file = files[i];
             let result = Utils.imageFileToChatDataUrl
-                ? await Utils.imageFileToChatDataUrl(file)
+                ? await Utils.imageFileToChatDataUrl(file, {
+                    normalizeForDisplay: true,
+                    outputType: 'image/jpeg',
+                    preserveTransparency: false,
+                    maxDataUrlLength: 2.2 * 1024 * 1024
+                })
                 : { dataUrl: await new Promise(resolve => Utils.fileToBase64(file, resolve)), compressed: false };
             if (result.compressed) compressedCount++;
+            if (result.normalized) normalizedCount++;
             let msg = await Chat.send(null, 'image', {
                 content: result.dataUrl,
                 imageCompressed: !!result.compressed,
+                imageNormalized: !!result.normalized,
+                imageMime: result.mime || '',
                 imageOriginalBytes: result.originalBytes || 0,
                 imageBytes: result.bytes || 0
             });
             if (msg) sent.push(msg);
         }
-        if (compressedCount) Toast.show(`已压缩 ${compressedCount} 张大图，避免发送失败`);
+        if (compressedCount || normalizedCount) {
+            let count = Math.max(compressedCount, normalizedCount);
+            Toast.show(count > 1 ? `已处理 ${count} 张图片，避免预览/发送失败` : '已转成标准图片，避免预览裂开');
+        }
     },
     showEmoticons() {
         if (typeof StickerSuggest !== 'undefined' && StickerSuggest.hide) StickerSuggest.hide();
@@ -159405,7 +159582,21 @@ function syncKeyboardAvoidanceTarget() {
     if (overlay) overlay.classList.add('keyboard-avoid');
 }
 
+// iOS 真机：视口高度交给 CSS 声明式供给（00_vars.css 的 100dvh/100vh），WebKit
+// 自己维护永远是真的；JS 量 innerHeight 在 iOS PWA 冷启动/键盘/回前台时序里
+// 会拿到假数且不补发 resize，锁进 CSS 变量就是历次黑条的根源。
+// 安卓 WebView 弹键盘会压缩整个视口（vh 跟着缩），仍需 JS 锁定稳定高度。
+// stableViewportSize 本身两端都继续维护——键盘高度计算依赖它。
+function isCssDrivenViewport() {
+    return isIosLikeDevice() && !isNativeAndroidApp();
+}
+
 function syncStableViewportCss(size) {
+    if (isCssDrivenViewport()) {
+        document.documentElement.style.removeProperty('--app-stable-width');
+        document.documentElement.style.removeProperty('--app-stable-height');
+        return;
+    }
     if (!size || !size.w || !size.h) return;
     document.documentElement.style.setProperty('--app-stable-width', size.w + 'px');
     document.documentElement.style.setProperty('--app-stable-height', size.h + 'px');
