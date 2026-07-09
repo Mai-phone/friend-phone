@@ -85,6 +85,16 @@
     }
 }
 
+/* iOS PWA（主屏幕全屏）：布局高度改用 lvh —— vh/dvh 会跟着被系统摆矮的
+   冷启动视口一起说谎，lvh 始终等于完整屏幕高度，内容真正铺满屏。
+   Safari 浏览器 tab 里不挂这个 class（lvh 会被工具栏盖），继续走 dvh */
+@supports (height: 100lvh) {
+    html.ios-pwa-fullbleed {
+        --app-stable-width: 100lvw;
+        --app-stable-height: 100lvh;
+    }
+}
+
 /* Responsive Root Font Size */
 html {
     font-size: clamp(12px, 3.5vw, 16px); /* Dynamic scaling based on viewport width */
@@ -3758,6 +3768,22 @@ body.keyboard-open { height: var(--app-stable-height, 100vh) !important; }
 html:not(.phone-shell-preview) { background: #F2F4F6; }
 html:not(.phone-shell-preview) body { background: #F2F4F6; }
 
+/* iOS PWA 视口谎言兜底（同类项目真机验证的套路：环境标记 + 100lvh 固定底板）：
+   vh/dvh 会跟着被系统摆矮的布局视口一起说谎，lvh 报的始终是完整屏幕高度。
+   这块 fixed 底板垫在一切内容之下，视口再矮它也铺到真实屏幕最底。 */
+html.ios-viewport-guard::before {
+    content: '';
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100lvh;
+    background: #F2F4F6;
+    z-index: -1;
+    pointer-events: none;
+}
+
 /* iOS 原生惯性滚动（legacy 属性，新版 Safari 已默认，但加上无害） */
 .scroll-content, #chat-messages, .reading-paper, .res-chat-list, .post-detail-view, .post-scroll, .cd-list-edit-container, .bottom-sheet-content {
     -webkit-overflow-scrolling: touch;
@@ -6716,6 +6742,7 @@ body.line-theme-wechat #sub-chat-room .chat-room-short-status {
     font-size: calc(13px * var(--app-font-scale));
     line-height: 1.5;
     white-space: pre-wrap;
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
 }
 .msg-translation.me {
@@ -9749,6 +9776,7 @@ body.keyboard-open .chat-call-overlay.active-call .chat-call-video-stage {
 .chat-settings-nav {
     background: rgba(255,255,255,0.78) !important;
     border-bottom: 1px solid rgba(15,20,26,0.05) !important;
+    -webkit-backdrop-filter: blur(18px);
     backdrop-filter: blur(18px);
 }
 .chat-settings-nav .nav-title {
@@ -15257,6 +15285,7 @@ textarea.moments-edit-input {
     border-radius: 2rem; padding: 0.4rem 1rem; font-size: 0.75rem; font-weight: 600; cursor: pointer;
 }
 .wallet-relative-card {
+    -webkit-backdrop-filter: blur(12px);
     background: rgba(255,255,255,0.8); backdrop-filter: blur(12px);
     border-radius: 1rem; padding: 1rem 1.25rem;
     margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between;
@@ -28219,6 +28248,7 @@ body.keyboard-open #sub-chat-games.active .chat-games-page {
     justify-content: center;
     padding: calc(16px + var(--safe-top)) 16px calc(16px + var(--safe-bottom));
     background: rgba(92, 70, 64, 0.32);
+    -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
 }
 
@@ -30212,6 +30242,7 @@ body.paro-setting-open.keyboard-open #sub-paro-theater.active .pt-input-wrap {
     justify-content: center;
     padding: calc(16px + var(--safe-top)) 16px calc(16px + var(--safe-bottom));
     background: rgba(92, 70, 64, 0.32);
+    -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
 }
 
@@ -30308,6 +30339,7 @@ body.paro-setting-open.keyboard-open #sub-paro-theater.active .pt-input-wrap {
     border-radius: 15px;
     background: rgba(255, 254, 250, 0.96);
     box-shadow: 0 16px 38px rgba(82, 62, 56, 0.2);
+    -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
 }
 
@@ -35348,6 +35380,7 @@ button.alt-avatar {
     border: 1px solid var(--sg-line-soft);
     border-radius: 8px;
     background: rgba(238, 241, 244, 0.92);
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
 }
 
@@ -37199,6 +37232,7 @@ body.line-theme-qq #sub-chat-room.chat-has-custom-bg #chat-messages {
     background: color-mix(in srgb, var(--app-bg) 76%, #FFFFFF) !important;
     border-bottom: 1px solid color-mix(in srgb, var(--border) 72%, transparent) !important;
     box-shadow: none !important;
+    -webkit-backdrop-filter: none !important;
     backdrop-filter: none !important;
     height: var(--app-nav-height) !important;
     min-height: var(--app-nav-height) !important;
@@ -47219,6 +47253,7 @@ button.computer-search-result {
     background: rgba(255,255,255,0.13);
     color: rgba(255,255,255,0.9);
     border-color: rgba(255,255,255,0.18);
+    -webkit-backdrop-filter: blur(18px) saturate(1.12);
     backdrop-filter: blur(18px) saturate(1.12);
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 10px 22px rgba(0,0,0,0.14);
 }
@@ -47242,6 +47277,7 @@ button.computer-search-result {
         linear-gradient(180deg, rgba(255,255,255,0.17), rgba(255,255,255,0.075));
     border: 1px solid rgba(255,255,255,0.16);
     box-shadow: 0 18px 42px rgba(0,0,0,0.20), inset 0 1px 0 rgba(255,255,255,0.16);
+    -webkit-backdrop-filter: blur(22px) saturate(1.12);
     backdrop-filter: blur(22px) saturate(1.12);
 }
 .music-live-topline {
@@ -47552,6 +47588,7 @@ button.computer-search-result {
     border-radius: 22px;
     background: rgba(20,23,28,0.50);
     border-color: rgba(255,255,255,0.14);
+    -webkit-backdrop-filter: blur(22px) saturate(1.14);
     backdrop-filter: blur(22px) saturate(1.14);
     box-shadow: 0 16px 36px rgba(0,0,0,0.20), inset 0 1px 0 rgba(255,255,255,0.12);
 }
@@ -47690,6 +47727,7 @@ button.computer-search-result {
     background: linear-gradient(180deg, var(--mt-glass-strong), var(--mt-glass-soft));
     border: 1px solid var(--mt-line);
     box-shadow: 0 18px 42px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.13);
+    -webkit-backdrop-filter: blur(24px) saturate(1.12);
     backdrop-filter: blur(24px) saturate(1.12);
 }
 #sub-music-together .music-ref-back {
@@ -47701,6 +47739,7 @@ button.computer-search-result {
     border: 1px solid rgba(255,255,255,0.14);
     background: rgba(255,255,255,0.10);
     color: var(--mt-ink);
+    -webkit-backdrop-filter: blur(16px) saturate(1.1);
     backdrop-filter: blur(16px) saturate(1.1);
 }
 #sub-music-together .music-ref-avatar {
@@ -47762,6 +47801,7 @@ button.computer-search-result {
     background: rgba(255,255,255,0.078);
     border: 1px solid var(--mt-line);
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.11);
+    -webkit-backdrop-filter: blur(22px) saturate(1.1);
     backdrop-filter: blur(22px) saturate(1.1);
 }
 #sub-music-together .music-ref-actions button {
@@ -47820,6 +47860,7 @@ button.computer-search-result {
     border: 1px solid var(--mt-line);
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.10);
     color: var(--mt-ink);
+    -webkit-backdrop-filter: blur(18px) saturate(1.08);
     backdrop-filter: blur(18px) saturate(1.08);
 }
 #sub-music-together .music-ref-list-row {
@@ -47896,6 +47937,7 @@ button.computer-search-result {
     border: 1px solid rgba(255,255,255,0.16);
     color: var(--mt-ink);
     box-shadow: 0 16px 34px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.14);
+    -webkit-backdrop-filter: blur(24px) saturate(1.14);
     backdrop-filter: blur(24px) saturate(1.14);
 }
 #sub-music-together .music-ref-mini-cover {
@@ -47927,6 +47969,7 @@ button.computer-search-result {
     background: linear-gradient(180deg, rgba(255,255,255,0.13), rgba(255,255,255,0.065));
     border: 1px solid var(--mt-line);
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 16px 34px rgba(0,0,0,0.20);
+    -webkit-backdrop-filter: blur(22px) saturate(1.12);
     backdrop-filter: blur(22px) saturate(1.12);
 }
 #sub-music-together .music-co-copy b {
@@ -47966,6 +48009,7 @@ button.computer-search-result {
     background: rgba(255,255,255,0.10);
     color: var(--mt-ink);
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.11), 0 12px 24px rgba(0,0,0,0.16);
+    -webkit-backdrop-filter: blur(18px) saturate(1.12);
     backdrop-filter: blur(18px) saturate(1.12);
 }
 #sub-music-together .music-soft-back,
@@ -48010,6 +48054,7 @@ button.computer-search-result {
     background: linear-gradient(180deg, rgba(255,255,255,0.118), rgba(255,255,255,0.064));
     border: 1px solid var(--mt-line);
     box-shadow: 0 16px 34px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.14);
+    -webkit-backdrop-filter: blur(24px) saturate(1.12);
     backdrop-filter: blur(24px) saturate(1.12);
 }
 #sub-music-together .music-soft-note {
@@ -48091,6 +48136,7 @@ button.computer-search-result {
     border: 1px solid var(--mt-line);
     color: var(--mt-ink);
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.10);
+    -webkit-backdrop-filter: blur(18px) saturate(1.1);
     backdrop-filter: blur(18px) saturate(1.1);
 }
 #sub-music-together .music-room .music-search-box svg {
@@ -48123,6 +48169,7 @@ button.computer-search-result {
     background: rgba(255,255,255,0.086);
     border: 1px solid rgba(255,255,255,0.118);
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+    -webkit-backdrop-filter: blur(18px) saturate(1.08);
     backdrop-filter: blur(18px) saturate(1.08);
 }
 #sub-music-together .music-room .music-search-item {
@@ -48167,6 +48214,7 @@ button.computer-search-result {
     border: 1px solid var(--mt-line);
     color: var(--mt-muted);
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.10);
+    -webkit-backdrop-filter: blur(20px) saturate(1.1);
     backdrop-filter: blur(20px) saturate(1.1);
 }
 #sub-music-together .music-search-pulse {
@@ -48242,6 +48290,7 @@ button.computer-search-result {
     color: var(--mt-ink);
     border: 1px solid var(--mt-line);
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.10);
+    -webkit-backdrop-filter: blur(18px) saturate(1.08);
     backdrop-filter: blur(18px) saturate(1.08);
 }
 #sub-music-together .music-more-actions button svg,
@@ -48370,6 +48419,7 @@ button.computer-search-result {
     background: rgba(255,255,255,0.13);
     color: rgba(255,255,255,0.9);
     border-color: rgba(255,255,255,0.18);
+    -webkit-backdrop-filter: blur(18px) saturate(1.12);
     backdrop-filter: blur(18px) saturate(1.12);
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 10px 22px rgba(0,0,0,0.14);
 }
@@ -48392,6 +48442,7 @@ button.computer-search-result {
     border-radius: 0;
     background: transparent;
     box-shadow: none;
+    -webkit-backdrop-filter: none;
     backdrop-filter: none;
 }
 #sub-music-together .music-live-page .music-detail-controls {
@@ -48403,6 +48454,7 @@ button.computer-search-result {
     border-radius: 22px;
     background: rgba(20,23,28,0.50);
     border-color: rgba(255,255,255,0.14);
+    -webkit-backdrop-filter: blur(22px) saturate(1.14);
     backdrop-filter: blur(22px) saturate(1.14);
     box-shadow: 0 16px 36px rgba(0,0,0,0.20), inset 0 1px 0 rgba(255,255,255,0.12);
 }
@@ -48491,6 +48543,7 @@ button.computer-search-result {
     background: linear-gradient(180deg, var(--mt-light-panel-strong), var(--mt-light-panel-soft));
     border: 1px solid var(--mt-light-line);
     box-shadow: 0 14px 34px rgba(25,31,39,0.085), inset 0 1px 0 rgba(255,255,255,0.90);
+    -webkit-backdrop-filter: blur(22px) saturate(1.08);
     backdrop-filter: blur(22px) saturate(1.08);
 }
 #sub-music-together.music-window:not(:has(.music-live-page)) .music-ref-hero {
@@ -48598,6 +48651,7 @@ button.computer-search-result {
     border: 1px solid rgba(18,24,33,0.08);
     color: var(--mt-light-ink);
     box-shadow: 0 18px 38px rgba(25,31,39,0.14), inset 0 1px 0 rgba(255,255,255,0.92);
+    -webkit-backdrop-filter: blur(24px) saturate(1.12);
     backdrop-filter: blur(24px) saturate(1.12);
 }
 #sub-music-together.music-window:not(:has(.music-live-page)) .music-ref-miniplayer button.active,
@@ -48749,6 +48803,7 @@ button.computer-search-result {
     border-radius: 0 !important;
     background: transparent !important;
     box-shadow: none !important;
+    -webkit-backdrop-filter: none !important;
     backdrop-filter: none !important;
 }
 
@@ -48795,6 +48850,7 @@ button.computer-search-result {
     border: 1px solid rgba(255,255,255,0.42);
     color: rgba(36,35,41,0.74);
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.58);
+    -webkit-backdrop-filter: blur(18px) saturate(1.08);
     backdrop-filter: blur(18px) saturate(1.08);
     z-index: 2;
 }
@@ -48898,6 +48954,7 @@ button.computer-search-result {
     line-height: 1.1;
     font-weight: 760;
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.48);
+    -webkit-backdrop-filter: blur(16px) saturate(1.08);
     backdrop-filter: blur(16px) saturate(1.08);
     font-family: inherit;
     text-align: center;
@@ -48953,6 +49010,7 @@ button.computer-search-result {
     background: rgba(255,255,255,0.48);
     border: 1px solid rgba(255,255,255,0.50);
     box-shadow: 0 14px 32px rgba(112,107,112,0.12), inset 0 1px 0 rgba(255,255,255,0.70);
+    -webkit-backdrop-filter: blur(22px) saturate(1.08);
     backdrop-filter: blur(22px) saturate(1.08);
 }
 
@@ -48968,6 +49026,7 @@ button.computer-search-result {
     border-radius: 0;
     background: transparent !important;
     box-shadow: none !important;
+    -webkit-backdrop-filter: none !important;
     backdrop-filter: none !important;
 }
 
@@ -49027,6 +49086,7 @@ button.computer-search-result {
     background: rgba(255,255,255,0.36);
     border: 1px solid rgba(255,255,255,0.42);
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.66);
+    -webkit-backdrop-filter: blur(16px) saturate(1.08);
     backdrop-filter: blur(16px) saturate(1.08);
 }
 
@@ -49103,6 +49163,7 @@ button.computer-search-result {
     border-radius: 0;
     background: transparent !important;
     box-shadow: none !important;
+    -webkit-backdrop-filter: none !important;
     backdrop-filter: none !important;
     color: var(--mt-profile-ink);
 }
@@ -49152,6 +49213,7 @@ button.computer-search-result {
     font-size: 12px;
     font-weight: 780;
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.66);
+    -webkit-backdrop-filter: blur(18px) saturate(1.08);
     backdrop-filter: blur(18px) saturate(1.08);
 }
 
@@ -49194,6 +49256,7 @@ button.computer-search-result {
     border: 1px solid rgba(255,255,255,0.52);
     color: rgba(36,35,41,0.82);
     box-shadow: 0 18px 38px rgba(112,107,112,0.18), inset 0 1px 0 rgba(255,255,255,0.72);
+    -webkit-backdrop-filter: blur(24px) saturate(1.12);
     backdrop-filter: blur(24px) saturate(1.12);
 }
 
@@ -57147,6 +57210,7 @@ body.line-theme-wechat #chat-messages .msg-quote-below {
     font-size: 12.5px !important;
     line-height: 1.34 !important;
     overflow: hidden !important;
+    -webkit-backdrop-filter: blur(8px) !important;
     backdrop-filter: blur(8px) !important;
 }
 
@@ -67894,6 +67958,7 @@ body.line-theme-qq #chat-messages .msg-content.location-bubble {
 
 .live-location-nav {
     background: rgba(239, 244, 249, 0.9) !important;
+    -webkit-backdrop-filter: blur(14px);
     backdrop-filter: blur(14px);
     border-bottom: 1px solid rgba(71, 88, 106, 0.08) !important;
 }
@@ -68924,6 +68989,7 @@ body.line-theme-qq #chat-messages .msg-content.location-bubble {
     color: #4D3140;
     text-align: left;
     box-shadow: 0 10px 24px rgba(177, 96, 130, 0.12);
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
 }
 
@@ -73385,6 +73451,7 @@ body.watch-cinema-active {
     background: rgba(8, 12, 16, 0.58);
     color: #FFFFFF;
     font-size: 12px;
+    -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
 }
 
@@ -76429,9 +76496,9 @@ const $ = i => document.getElementById(i);
 const createElement = (t,c,h,f) => { let e=document.createElement(t); if(c)e.className=c; if(h)e.innerHTML=h; if(f)e.onclick=f; return e; };
 
 const AppVersion = {
-    value: 'v2026.07.09.1',
+    value: 'v2026.07.09.4',
     date: '2026-07-09',
-    label: 'v2026.07.09.1',
+    label: 'v2026.07.09.4',
     note: '当前本地版本',
     apply() {
         document.querySelectorAll('[data-app-version]').forEach(el => {
@@ -86924,7 +86991,7 @@ const AI_HTML_CARD_ALLOWED_STYLE_PROPS = new Set([
     'color','box-shadow','text-shadow','opacity','overflow','overflow-x','overflow-y','overflow-hidden',
     'font','font-family','font-size','font-weight','font-style','line-height','text-align','letter-spacing','white-space','text-transform',
     'text-decoration','word-break','overflow-wrap',
-    'position','inset','top','right','bottom','left','z-index','transform','transform-origin','transition','filter','backdrop-filter','cursor','user-select',
+    'position','inset','top','right','bottom','left','z-index','transform','transform-origin','transition','filter','backdrop-filter','-webkit-backdrop-filter','cursor','user-select',
     'object-fit','object-position'
 ]);
 
@@ -159593,10 +159660,14 @@ function isCssDrivenViewport() {
 
 function syncStableViewportCss(size) {
     if (isCssDrivenViewport()) {
+        document.documentElement.classList.add('ios-viewport-guard');
+        document.documentElement.classList.toggle('ios-pwa-fullbleed', isStandaloneDisplayMode());
         document.documentElement.style.removeProperty('--app-stable-width');
         document.documentElement.style.removeProperty('--app-stable-height');
         return;
     }
+    document.documentElement.classList.remove('ios-viewport-guard');
+    document.documentElement.classList.remove('ios-pwa-fullbleed');
     if (!size || !size.w || !size.h) return;
     document.documentElement.style.setProperty('--app-stable-width', size.w + 'px');
     document.documentElement.style.setProperty('--app-stable-height', size.h + 'px');
