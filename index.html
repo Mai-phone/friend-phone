@@ -75679,7 +75679,7 @@ body.watch-cinema-active {
             <span class="settings-version-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10"></path><path d="M7 12h7"></path><path d="M7 17h5"></path><rect x="4" y="3" width="16" height="18" rx="3"></rect></svg>
             </span>
-                    <span class="settings-row-copy"><b>当前版本</b><small><span data-app-version>v2026.07.11.3</span> · <span data-app-version-note>当前本地版本</span></small></span>
+                    <span class="settings-row-copy"><b>当前版本</b><small><span data-app-version>v2026.07.11.4</span> · <span data-app-version-note>当前本地版本</span></small></span>
         </div>
         <button class="settings-row-card" onclick="Settings.openHelp()">
             <span class="settings-row-icon">
@@ -75854,7 +75854,7 @@ body.watch-cinema-active {
         <div class="settings-help-hero">
             <div class="settings-help-hero-top">
                 <div class="settings-help-kicker">小手机更新公告</div>
-                <div class="settings-version-pill" data-app-version>v2026.07.11.3</div>
+                <div class="settings-version-pill" data-app-version>v2026.07.11.4</div>
             </div>
             <div class="settings-help-hero-title">2026-06-04 内测更新</div>
             <div class="settings-help-hero-text">这次主要更新IOS适配、相册、生图、微信/QQ 皮肤、窥视（查手机）、Ta 的电脑、资料卡和介绍一些聊天基础操作。界面更顺眼、操作更直觉，也减少低配手机上的卡顿发热（或许）</div>
@@ -76567,9 +76567,9 @@ const $ = i => document.getElementById(i);
 const createElement = (t,c,h,f) => { let e=document.createElement(t); if(c)e.className=c; if(h)e.innerHTML=h; if(f)e.onclick=f; return e; };
 
 const AppVersion = {
-    value: 'v2026.07.11.3',
+    value: 'v2026.07.11.4',
     date: '2026-07-11',
-    label: 'v2026.07.11.3',
+    label: 'v2026.07.11.4',
     note: '当前本地版本',
     apply() {
         document.querySelectorAll('[data-app-version]').forEach(el => {
@@ -159592,7 +159592,21 @@ AppID：...
         return { keyboardHeight, liftHeight, byWindow, byVisual, visualBottomGap };
     }
 
-    return { measure };
+    function alignLift(options = {}) {
+        const currentLift = Math.max(0, Math.round(Number(options.currentLift) || 0));
+        const maxLift = Math.max(0, Math.round(Number(options.maxLift) || 0));
+        const inputBottom = Number(options.inputBottom);
+        const visualBottom = Number(options.visualBottom);
+        const tolerance = Math.max(0, Number(options.tolerance) || 0);
+        if (!Number.isFinite(inputBottom) || !Number.isFinite(visualBottom) || visualBottom <= 0) {
+            return Math.min(currentLift, maxLift);
+        }
+        const error = inputBottom - visualBottom;
+        if (Math.abs(error) <= tolerance) return Math.min(currentLift, maxLift);
+        return Math.max(0, Math.min(maxLift, Math.round(currentLift + error)));
+    }
+
+    return { measure, alignLift };
 });
 </script>
 <script>/* js/boot.js */
@@ -159815,6 +159829,8 @@ let keyboardTransitionUntil = 0;
 let lastKeyboardOpen = false;
 let lastKeyboardHeight = 0;
 let keyboardStickTimer = 0;
+let keyboardAlignRaf = 0;
+let keyboardAlignFollowupRaf = 0;
 
 function isTextEditingElement(el) {
     if (!el) return false;
@@ -159924,6 +159940,55 @@ function getKeyboardLiftHeight(keyboardHeight, nativeHeight = getNativeAndroidKe
     return keyboardHeight > 0 ? Math.min(keyboardHeight, result.liftHeight) : 0;
 }
 
+function cancelPinnedChatInputAlignment() {
+    if (keyboardAlignRaf && typeof cancelAnimationFrame === 'function') cancelAnimationFrame(keyboardAlignRaf);
+    if (keyboardAlignFollowupRaf && typeof cancelAnimationFrame === 'function') cancelAnimationFrame(keyboardAlignFollowupRaf);
+    keyboardAlignRaf = 0;
+    keyboardAlignFollowupRaf = 0;
+}
+
+function alignPinnedChatInputToVisualViewport(maxLift) {
+    if (
+        !pinsIosStandaloneChatViewport() ||
+        !document.body ||
+        !document.body.classList.contains('keyboard-open') ||
+        !window.visualViewport ||
+        !KeyboardViewport ||
+        typeof KeyboardViewport.alignLift !== 'function'
+    ) return;
+    let inputBar = $('chat-input-bar');
+    if (!inputBar) return;
+    let rect = inputBar.getBoundingClientRect();
+    let visualBottom = Number(window.visualViewport.offsetTop || 0) + Number(window.visualViewport.height || 0);
+    let currentLift = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--keyboard-lift-height')) || 0;
+    let nextLift = KeyboardViewport.alignLift({
+        currentLift,
+        maxLift,
+        inputBottom: rect.bottom,
+        visualBottom,
+        tolerance: 1
+    });
+    if (Math.abs(nextLift - currentLift) >= 1) {
+        document.documentElement.style.setProperty('--keyboard-lift-height', `${nextLift}px`);
+    }
+}
+
+function schedulePinnedChatInputAlignment(maxLift) {
+    cancelPinnedChatInputAlignment();
+    let run = () => {
+        keyboardAlignRaf = 0;
+        alignPinnedChatInputToVisualViewport(maxLift);
+        if (typeof requestAnimationFrame === 'function') {
+            keyboardAlignFollowupRaf = requestAnimationFrame(() => {
+                keyboardAlignFollowupRaf = 0;
+                alignPinnedChatInputToVisualViewport(maxLift);
+            });
+        }
+    };
+    if (typeof requestAnimationFrame === 'function') keyboardAlignRaf = requestAnimationFrame(run);
+    else keyboardAlignRaf = setTimeout(run, 16);
+}
+
 function isKeyboardResize() {
     let wasKeyboardOpen = !!(document.body && document.body.classList.contains('keyboard-open'));
     if (!isTextEditingElement(document.activeElement) && !wasKeyboardOpen) return false;
@@ -159953,11 +160018,14 @@ function syncKeyboardCss(open) {
     document.documentElement.style.setProperty('--keyboard-height', h + 'px');
     document.documentElement.style.setProperty('--keyboard-lift-height', liftHeight + 'px');
     document.documentElement.style.setProperty('--visual-viewport-offset-top', offsetTop + 'px');
+    let pinIosChat = keyboardOpen && pinsIosStandaloneChatViewport();
     if (document.body) {
         document.body.classList.toggle('keyboard-focus', editing);
         document.body.classList.toggle('keyboard-open', keyboardOpen);
-        document.body.classList.toggle('ios-chat-keyboard-pinned', keyboardOpen && pinsIosStandaloneChatViewport());
+        document.body.classList.toggle('ios-chat-keyboard-pinned', pinIosChat);
     }
+    if (pinIosChat) schedulePinnedChatInputAlignment(h);
+    else cancelPinnedChatInputAlignment();
     let changed = keyboardOpen !== lastKeyboardOpen || Math.abs(h - lastKeyboardHeight) >= 16;
     lastKeyboardOpen = keyboardOpen;
     lastKeyboardHeight = h;
@@ -160095,6 +160163,7 @@ document.addEventListener('focusout', () => {
     setTimeout(syncKeyboardAvoidanceTarget, 0);
     document.documentElement.style.setProperty('--keyboard-height', '0px');
     document.documentElement.style.setProperty('--keyboard-lift-height', '0px');
+    cancelPinnedChatInputAlignment();
     scheduleKeyboardCheck([180, 720]);
 });
 checkFullscreen();
@@ -160138,6 +160207,7 @@ document.addEventListener('visibilitychange', () => {
         document.body.classList.remove('keyboard-open', 'keyboard-focus', 'ios-chat-keyboard-pinned');
         document.documentElement.style.setProperty('--keyboard-height', '0px');
         document.documentElement.style.setProperty('--keyboard-lift-height', '0px');
+        cancelPinnedChatInputAlignment();
         lastKeyboardOpen = false;
         lastKeyboardHeight = 0;
     }
