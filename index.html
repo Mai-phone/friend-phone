@@ -64586,7 +64586,7 @@ body:not(.line-theme-wechat):not(.line-theme-qq) #sub-chat-room .chat-input-area
     box-shadow: 0 -4px 8px rgba(16, 18, 21, 0.045) !important;
     -webkit-backdrop-filter: blur(12px) saturate(1.04) !important;
     backdrop-filter: blur(12px) saturate(1.04) !important;
-    overflow: hidden !important;
+    overflow: visible !important;
 }
 
 body:not(.line-theme-wechat):not(.line-theme-qq) #sub-chat-room .chat-input {
@@ -75679,7 +75679,7 @@ body.watch-cinema-active {
             <span class="settings-version-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10"></path><path d="M7 12h7"></path><path d="M7 17h5"></path><rect x="4" y="3" width="16" height="18" rx="3"></rect></svg>
             </span>
-                    <span class="settings-row-copy"><b>当前版本</b><small><span data-app-version>v2026.07.11.2</span> · <span data-app-version-note>当前本地版本</span></small></span>
+                    <span class="settings-row-copy"><b>当前版本</b><small><span data-app-version>v2026.07.11.3</span> · <span data-app-version-note>当前本地版本</span></small></span>
         </div>
         <button class="settings-row-card" onclick="Settings.openHelp()">
             <span class="settings-row-icon">
@@ -75854,7 +75854,7 @@ body.watch-cinema-active {
         <div class="settings-help-hero">
             <div class="settings-help-hero-top">
                 <div class="settings-help-kicker">小手机更新公告</div>
-                <div class="settings-version-pill" data-app-version>v2026.07.11.2</div>
+                <div class="settings-version-pill" data-app-version>v2026.07.11.3</div>
             </div>
             <div class="settings-help-hero-title">2026-06-04 内测更新</div>
             <div class="settings-help-hero-text">这次主要更新IOS适配、相册、生图、微信/QQ 皮肤、窥视（查手机）、Ta 的电脑、资料卡和介绍一些聊天基础操作。界面更顺眼、操作更直觉，也减少低配手机上的卡顿发热（或许）</div>
@@ -76567,9 +76567,9 @@ const $ = i => document.getElementById(i);
 const createElement = (t,c,h,f) => { let e=document.createElement(t); if(c)e.className=c; if(h)e.innerHTML=h; if(f)e.onclick=f; return e; };
 
 const AppVersion = {
-    value: 'v2026.07.11.2',
+    value: 'v2026.07.11.3',
     date: '2026-07-11',
-    label: 'v2026.07.11.2',
+    label: 'v2026.07.11.3',
     note: '当前本地版本',
     apply() {
         document.querySelectorAll('[data-app-version]').forEach(el => {
@@ -90049,7 +90049,7 @@ const AltMainNotice = {
 if (typeof window !== 'undefined') window.AltMainNotice = AltMainNotice;
 
 const Chat = {
-    cid: null, quotedMessage: null, _activeAbortController: null, _activeRequestId: 0, _streamFallbackByPreset: {},
+    cid: null, quotedMessage: null, quotedMessageContext: '', _activeAbortController: null, _activeRequestId: 0, _streamFallbackByPreset: {},
     _imageInputFallbackByPreset: {},
     _altSessionId: '',
     _activeAccountId: undefined,
@@ -92522,6 +92522,14 @@ ${visibleReply || '（无）'}
         </div>`;
     },
     _pendingQuoteFields() {
+        if (
+            this.quotedMessage &&
+            this.quotedMessageContext &&
+            this.quotedMessageContext !== this._quoteContextKey()
+        ) {
+            this.cancelQuote();
+            return {};
+        }
         let quote = this._quoteDisplayText(this.quotedMessage);
         if (!quote) return {};
         let fields = { quote };
@@ -93960,8 +93968,11 @@ Do not make the visible fields repeat location/outfit/pose in new words.`;
         return changed;
     },
     open(id, options = {}) {
-        this._altSessionId = options.altSessionId || '';
-        this._activeAccountId = this._accountIdForOpen(options);
+        let nextAltSessionId = options.altSessionId || '';
+        let nextAccountId = this._accountIdForOpen(options);
+        this.cancelQuote();
+        this._altSessionId = nextAltSessionId;
+        this._activeAccountId = nextAccountId;
         this.cid=id;
         if (typeof GroupMention !== 'undefined' && GroupMention.hide) GroupMention.hide();
         let c=DB.getContact(id, this._activeAccountId);
@@ -96814,15 +96825,25 @@ let transferMatch = /^\[TRANSFER:\s*([^\],\]]*)\s*(?:,\s*(.+?))?\]$/i.exec(part)
     quoteTextForMessage(m) {
         return this._quoteForMessage(m);
     },
+    _quoteContextKey(cid = this.cid, accountId = this._activeAccountId, altSessionId = this._altSessionId) {
+        let accountKey = accountId === undefined || accountId === null ? 'main' : String(accountId);
+        return `${accountKey}|${cid === undefined || cid === null ? '' : String(cid)}|${String(altSessionId || '')}`;
+    },
     setQuote(t) {
         let meta = this._quoteMetaFromQuote(t);
         let quote = this._quoteDisplayText(meta || t);
         if (!quote) return;
         this.quotedMessage = meta || quote;
+        this.quotedMessageContext = this._quoteContextKey();
         $('quote-preview').classList.add('active');
         $('quote-text-content').innerText = "回复: " + quote;
     },
-    cancelQuote() { this.quotedMessage=null; $('quote-preview').classList.remove('active'); },
+    cancelQuote() {
+        this.quotedMessage = null;
+        this.quotedMessageContext = '';
+        let preview = $('quote-preview');
+        if (preview) preview.classList.remove('active');
+    },
     handleImagePreviewError(img, time = 0) {
         try {
             let shell = img && img.closest ? img.closest('.chat-img-shell') : null;
@@ -159563,7 +159584,11 @@ AppID：...
         const threshold = Math.max(0, Math.round(Number(options.threshold) || 0));
         const measuredHeight = Math.max(byWindow, byVisual, nativeHeight);
         const keyboardHeight = measuredHeight > threshold ? measuredHeight : 0;
-        const liftHeight = options.browserOwnsAvoidance ? 0 : keyboardHeight;
+        let manualLiftHeight = keyboardHeight;
+        if (options.alignToVisualBottom && options.hasVisualViewport) {
+            manualLiftHeight = Math.max(visualBottomGap, nativeHeight);
+        }
+        const liftHeight = options.browserOwnsAvoidance ? 0 : manualLiftHeight;
         return { keyboardHeight, liftHeight, byWindow, byVisual, visualBottomGap };
     }
 
@@ -159893,6 +159918,7 @@ function getKeyboardLiftHeight(keyboardHeight, nativeHeight = getNativeAndroidKe
         threshold: 0,
         editing: true,
         wasOpen: keyboardHeight > 0,
+        alignToVisualBottom: pinsIosStandaloneChatViewport(),
         browserOwnsAvoidance: isCssDrivenViewport() && !pinsIosStandaloneChatViewport()
     });
     return keyboardHeight > 0 ? Math.min(keyboardHeight, result.liftHeight) : 0;
