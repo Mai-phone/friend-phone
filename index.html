@@ -14513,6 +14513,44 @@ textarea.moments-edit-input {
     white-space: nowrap;
     box-shadow: 0 10px 24px rgba(255, 194, 203, 0.26), inset 0 1px 0 rgba(255,255,255,0.34);
 }
+.xhs-main-chat-link {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 13px 15px;
+    border-radius: 20px;
+    background: rgba(255, 251, 248, 0.82);
+    border: 1px solid rgba(255, 194, 203, 0.18);
+    box-shadow: 0 10px 24px rgba(91, 69, 74, 0.06);
+}
+.xhs-main-chat-link > div { flex: 1; min-width: 0; }
+.xhs-main-chat-link b { display: block; color: #2A1A1F; font-size: calc(14px * var(--app-font-scale)); margin-bottom: 4px; }
+.xhs-main-chat-link span { display: block; color: #8C6871; font-size: calc(11px * var(--app-font-scale)); line-height: 1.45; }
+.xhs-main-chat-link input { position: absolute; opacity: 0; pointer-events: none; }
+.xhs-main-chat-link i {
+    position: relative;
+    width: 44px;
+    height: 26px;
+    flex: 0 0 44px;
+    border-radius: 999px;
+    background: #D9D5D3;
+    transition: background .2s ease;
+}
+.xhs-main-chat-link i::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 2px 7px rgba(61, 43, 48, 0.22);
+    transition: transform .2s ease;
+}
+.xhs-main-chat-link input:checked + i { background: #F39AAA; }
+.xhs-main-chat-link input:checked + i::after { transform: translateX(18px); }
 .xhs-card-desc {
     color: #7B4F58;
     font-size: calc(11px * var(--app-font-scale));
@@ -76748,7 +76786,7 @@ body.watch-cinema-active {
                     </div>
                 </div>
                 <div class="chat-context-setting">
-                    <label class="chat-settings-field mini"><span>上下文记忆</span><input type="number" id="set-context-limit" class="settings-input" placeholder="20"></label>
+                    <label class="chat-settings-field mini"><span>上下文记忆</span><input type="number" id="set-context-limit" class="settings-input" placeholder="100"></label>
                     <div class="chat-context-stats">
                         <div>本次请求估算 <b id="stat-token-count">0</b> tokens</div>
                         <small id="stat-token-detail">聊天 0 / 设定 0 / 记忆 0</small>
@@ -77825,7 +77863,7 @@ body.watch-cinema-active {
             <span class="settings-version-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10"></path><path d="M7 12h7"></path><path d="M7 17h5"></path><rect x="4" y="3" width="16" height="18" rx="3"></rect></svg>
             </span>
-                    <span class="settings-row-copy"><b>当前版本</b><small><span data-app-version>v2026.07.12.11</span> · <span data-app-version-note>当前本地版本</span></small></span>
+                    <span class="settings-row-copy"><b>当前版本</b><small><span data-app-version>v2026.07.12.16</span> · <span data-app-version-note>当前本地版本</span></small></span>
         </div>
         <button class="settings-row-card" onclick="Settings.openHelp()">
             <span class="settings-row-icon">
@@ -78000,7 +78038,7 @@ body.watch-cinema-active {
         <div class="settings-help-hero">
             <div class="settings-help-hero-top">
                 <div class="settings-help-kicker">小手机更新公告</div>
-                <div class="settings-version-pill" data-app-version>v2026.07.12.11</div>
+                <div class="settings-version-pill" data-app-version>v2026.07.12.16</div>
             </div>
             <div class="settings-help-hero-title">2026-06-04 内测更新</div>
             <div class="settings-help-hero-text">这次主要更新IOS适配、相册、生图、微信/QQ 皮肤、窥视（查手机）、Ta 的电脑、资料卡和介绍一些聊天基础操作。界面更顺眼、操作更直觉，也减少低配手机上的卡顿发热（或许）</div>
@@ -78713,9 +78751,9 @@ const $ = i => document.getElementById(i);
 const createElement = (t,c,h,f) => { let e=document.createElement(t); if(c)e.className=c; if(h)e.innerHTML=h; if(f)e.onclick=f; return e; };
 
 const AppVersion = {
-    value: 'v2026.07.12.11',
-    date: '2026-07-11',
-    label: 'v2026.07.12.11',
+    value: 'v2026.07.12.16',
+    date: '2026-07-12',
+    label: 'v2026.07.12.16',
     note: '当前本地版本',
     apply() {
         document.querySelectorAll('[data-app-version]').forEach(el => {
@@ -78759,12 +78797,14 @@ const WorldBook = {
         return limit ? entries.slice(0, limit) : entries;
     },
     formatEntries(ids = [], opts = {}) {
-        let maxPerEntry = opts.maxPerEntry || 800;
+        let maxPerEntry = Number(opts.maxPerEntry);
+        let shouldTruncate = Number.isFinite(maxPerEntry) && maxPerEntry > 0;
         let limit = opts.limit || 0;
         return this.activeEntries(ids, { includeGlobal: opts.includeGlobal !== false, limit })
             .map(w => {
                 let title = w.key || w.title || w.name || '世界书';
-                let content = String(w.content || w.desc || '').trim().slice(0, maxPerEntry);
+                let content = String(w.content || w.desc || '').trim();
+                if (shouldTruncate) content = content.slice(0, maxPerEntry);
                 if (!content) return '';
                 return `[世界书条目｜${title}｜权重 ${Number(w.weight || 0)}/100｜${w.isGlobal ? '全局' : '角色绑定'}]\n${content}`;
             })
@@ -85246,6 +85286,7 @@ class GroupManager {
   }
 
   _worldText(ids = []) {
+    // TODO(group-chat): 群聊二期统一移除成员人设和世界书的上下文截断。
     if (typeof WorldBook !== 'undefined' && WorldBook.formatEntries) {
       return WorldBook.formatEntries(ids, { limit: 6, maxPerEntry: 500 });
     }
@@ -85903,8 +85944,8 @@ const CrossAppContext = {
     getForChat(c) {
         if (!c || c.isGroup || typeof DB === 'undefined' || !DB.d) return '';
         let userName = this._userName(c);
+        let xhsLines = this._xhsFor(c);
         let lines = [];
-        lines.push(...this._xhsFor(c));
         lines.push(...this._phoneSnoopFor(c));
         lines.push(...this._reverseSnoopFor(c));
         lines.push(...this._computerFor(c));
@@ -85916,12 +85957,15 @@ const CrossAppContext = {
         lines.push(...this._diaryFor(c));
         lines.push(...this._scheduleFor(c));
         lines.push(...this._readingFor(c));
-        if (!lines.length) return '';
-        return `\n[跨软件上下文]\n这些是 ${c.name} 自己在其他软件里的近期行为/状态；如果 ${userName} 问起，可以自然承认并延续。不要把其他角色或路人的内容当成自己做的。\n${lines.slice(0, 12).join('\n')}\n[/跨软件上下文]\n`;
+        if (!xhsLines.length && !lines.length) return '';
+        let xhsBlock = xhsLines.length ? `\n[小麦书完整上下文]\n${xhsLines.join('\n\n')}\n[/小麦书完整上下文]` : '';
+        let otherBlock = lines.length ? `\n${lines.slice(0, 12).join('\n')}` : '';
+        return `\n[跨软件上下文]\n这些是 ${c.name} 自己在其他软件里的行为/状态；如果 ${userName} 问起，可以自然承认并延续。不要把其他角色或路人的内容当成自己做的。${xhsBlock}${otherBlock}\n[/跨软件上下文]\n`;
     },
 
     _xhsFor(c) {
         let st = DB.d.wheatBook || {};
+        if (st.linkToMainChat !== true) return [];
         let all = (st.posts || []).concat(st.userPosts || [], st.likedPosts || []);
         let seen = {};
         let posts = [];
@@ -85932,27 +85976,30 @@ const CrossAppContext = {
         });
         posts.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
-        let lines = posts.slice(0, 3).map(p => {
+        let commentText = p => (Array.isArray(p.comments) ? p.comments : []).map(cm => {
+            if (!cm) return '';
+            let authorId = cm.author || cm.charId || '';
+            let name = String(authorId) === String(c.id) ? (c.remark || c.name) : (cm.name || cm.authorName || (authorId === 'user' ? this._userName(c) : '路人'));
+            return `${name}：${cm.text || cm.content || ''}`;
+        }).filter(Boolean).join('\n');
+        let lines = posts.map(p => {
             let kind = p.type === 'alt' ? '小麦书小号' : (p.type === 'system' ? '小麦书读心推荐' : '小麦书');
-            return `- ${kind}: 你发过/关联到「${this._clip(p.title, 28)}」：${this._clip(p.content, 90)}`;
+            let tags = Array.isArray(p.tags) && p.tags.length ? `\n标签：${p.tags.join('、')}` : '';
+            let comments = commentText(p);
+            return `- ${kind}: 你发过/关联到「${p.title || ''}」\n正文：${p.content || ''}${tags}${comments ? `\n评论互动：\n${comments}` : ''}`;
         });
 
         let userPosts = [];
         (st.userPosts || []).forEach(p => {
             if (!p || !Array.isArray(p.comments)) return;
-            p.comments.forEach(cm => {
-                if (!cm || String(cm.author || cm.charId || '') !== String(c.id)) return;
-                userPosts.push({
-                    title: p.title,
-                    text: cm.text || cm.content || '',
-                    time: cm.time || p.createdAt || 0
-                });
-            });
+            let participated = p.comments.some(cm => cm && String(cm.author || cm.charId || '') === String(c.id));
+            if (participated) userPosts.push(p);
         });
-        userPosts.sort((a, b) => (b.time || 0) - (a.time || 0));
-        let userName = this._userName(c);
-        userPosts.slice(0, 2).forEach(item => {
-            lines.push(`- 小麦书: 你评论过 ${userName} 的笔记「${this._clip(item.title, 28)}」：${this._clip(item.text, 80)}`);
+        userPosts.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        userPosts.forEach(p => {
+            let tags = Array.isArray(p.tags) && p.tags.length ? `\n标签：${p.tags.join('、')}` : '';
+            let comments = commentText(p);
+            lines.push(`- 小麦书: 你参与过 ${this._userName(c)} 的笔记「${p.title || ''}」\n正文：${p.content || ''}${tags}${comments ? `\n评论互动：\n${comments}` : ''}`);
         });
         return lines;
     },
@@ -86925,12 +86972,12 @@ const Contacts = {
         let c = contactId && DB.getContact ? DB.getContact(contactId) : null;
         if (!c) return { contact: null, prompt: '' };
         let name = c.remark || c.name || '已有角色';
-        let persona = String(c.charPersona || c.persona || '').slice(0, 700);
+        let persona = String(c.charPersona || c.persona || '');
         let signature = String(c.signature || '').slice(0, 80);
         let world = '';
         try {
             if (typeof WorldBook !== 'undefined' && WorldBook.formatEntries) {
-                world = WorldBook.formatEntries(c.worldIds || [], { includeGlobal: true, limit: 3, maxPerEntry: 220 });
+                world = WorldBook.formatEntries(c.worldIds || [], { includeGlobal: true });
             }
         } catch (e) {}
         return {
@@ -97932,7 +97979,7 @@ The content will be stored away from the normal chat view. Do not mention system
 
 ${(typeof Chat !== 'undefined' && Chat._guardrailsPrompt) ? Chat._guardrailsPrompt() : ''}`;
 
-            let contextLimit = c.contextLimit || 20;
+            let contextLimit = c.contextLimit || 100;
             let recent = (c.history || []).slice(-contextLimit).filter(h => h.role !== 'system').map(h => ({
                 role: h.role === 'user' ? 'user' : 'assistant',
                 content: this._promptBodyForMessage(h, c)
@@ -98113,7 +98160,7 @@ ${(typeof Chat !== 'undefined' && Chat._guardrailsPrompt) ? Chat._guardrailsProm
         let relationshipModeCtx = this._affectionModePrompt(c);
         let sys = `${baseSys}\n${altIdentityCtx}\n${relationshipModeCtx}\n${timeCtx}\n${proactiveTimeCtx}\n${foodDeliveryCtx}\n${lifeCtx}\n${relationshipGraphCtx}\n${birthdayCtx}\n${personaStr}\n${worldCtx}\n${memoriesCtx}\n${phoneSnoopCtx}\n${this._callControlDirective(c)}\n${this._groupInviteDirective(c)}\n${this._bilingualDirective(c)}\n${this._htmlCardDirective(c)}\n${this._chatScreenshotDirective(c)}\n${this._doodleDirective(c)}\n\n${(typeof ImageClient !== 'undefined') ? ImageClient.getDirective('chat', c) : ''}\n\n${this._guardrailsPrompt()}`;
 
-        let contextLimit = c.contextLimit || 20;
+        let contextLimit = c.contextLimit || 100;
         let promptHistory = (c.history || []).filter(h => h && h.role !== 'system').slice(-contextLimit);
         let rawItems = this._promptItemsForHistory(c, promptHistory);
         let msgs = [{role:'system', content: sys}, ...rawItems, {role:'user', content:`[SYSTEM: 现在可以主动续聊或找 ${userDisplay} 说点什么。必须从上次对话结尾自然衔接，除非有特殊事件（天气变化、时间节点等）否则不要起全新话题。不要说 ${userDisplay} 没回、没说话、没有新消息或一直沉默。如果你觉得没什么好说的，输出 [NO_INIT] 即可。]`}];
@@ -98243,7 +98290,7 @@ ${this._chatScreenshotDirective(c)}
 ${this._doodleDirective(c)}
 ${(typeof ImageClient !== 'undefined') ? ImageClient.getDirective('chat', c) : ''}
 ${(typeof Chat !== 'undefined' && Chat._guardrailsPrompt) ? Chat._guardrailsPrompt() : ''}`;
-            let contextLimit = Math.min(c.contextLimit || 20, 16);
+            let contextLimit = c.contextLimit || 100;
             let promptHistory = (c.history || []).filter(h => h && h.role !== 'system').slice(-contextLimit);
             let recent = this._promptItemsForHistory(c, promptHistory);
             let replyRaw = await AIClient.call(this._aiCallArgsForContact(c, {
@@ -98490,7 +98537,7 @@ ${(typeof Chat !== 'undefined' && Chat._guardrailsPrompt) ? Chat._guardrailsProm
         let altMainSideChannelCtx = this._altMainSideChannelDirective(c);
         let sys=`${baseSys}\n${altIdentityCtx}\n${modelCtx}\n${relationshipModeCtx}\n${narratorInst}\n${writingStyleCtx}\n${timeAware}\n${weatherInfo}\n${sleepCtx}\n${lifeCtx}\n${characterLifeCtx}\n${companionCtx}\n${relationshipGraphCtx}\n${birthdayCtx}\n${personaStr}\nDiary:${c.diary||''}\n${latestUserOverrideCtx}\n${foodDeliveryCtx}\n${statusPrompt}\n${worldCtx}\n${sceneNarrationCtx}\n${memoriesCtx}\n${appContextCtx}\n${webSearchPromptCtx}\n${altMainSideChannelCtx}\n${transferCtx}\n${emoticonCtx}\n${imageInputCtx}\n${pendingAvatarCtx}\n${aiBlockDirective}\n${this._callControlDirective(c)}\n${this._groupInviteDirective(c)}\n${this._bilingualDirective(c)}\n${this._htmlCardDirective(c)}\n${this._chatScreenshotDirective(c)}\n${this._doodleDirective(c)}\n${(typeof ImageClient !== 'undefined') ? ImageClient.getDirective('chat', c) : ''}\n${memoryDirective}\n\n[一起听]\n如果你此刻想主动邀请 ${userDisplay} 一起听歌，可以在回复中插入一次 [MUSIC_INV:歌名 - 歌手]。歌由你按自己人设和此刻心情选择，不需要从 ${userDisplay} 歌单里挑。只有你真的想邀请时才用，不要为了完成任务硬用。\n\n${this._guardrailsPrompt()}`;
 
-        let contextLimit = c.contextLimit || 20;
+        let contextLimit = c.contextLimit || 100;
         // Convert history to API messages, merging consecutive same-role messages
         // and tagging each user bubble with [气泡 N] so the model treats them as discrete.
         let promptHistory = c.history.slice(-contextLimit).filter(h=>h.role!=='system');
@@ -106060,7 +106107,7 @@ const ChatSettings = {
         let detailEl = $('stat-token-detail');
         if (!c || !tokenEl) return;
         let input = $('set-context-limit');
-        let limit = input ? (parseInt(input.value, 10) || c.contextLimit || 20) : (c.contextLimit || 20);
+        let limit = input ? (parseInt(input.value, 10) || c.contextLimit || 100) : (c.contextLimit || 100);
         let withTime = $('set-ai-time-aware') ? $('set-ai-time-aware').checked : c.timeAware !== false;
         let statContact = { ...c, timeAware: withTime };
         let errors = [];
@@ -106387,7 +106434,7 @@ const ChatSettings = {
         if ($('set-translation-custom')) $('set-translation-custom').value = c.translationCustom || '';
         this.updateTranslationCustom();
         Memory.syncSettingsUI();
-        $('set-context-limit').value = c.contextLimit || 20;
+        $('set-context-limit').value = c.contextLimit || 100;
         $('set-context-limit').oninput = () => ChatSettings.updateContextStats();
         this.updateContextStats();
 
@@ -106602,7 +106649,7 @@ const ChatSettings = {
         if ($('set-translation-lang')) c.translationLang = $('set-translation-lang').value || 'english';
         if ($('set-translation-display')) c.translationDisplay = $('set-translation-display').value === 'hidden' ? 'hidden' : 'inline';
         if ($('set-translation-custom')) c.translationCustom = $('set-translation-custom').value.trim();
-        c.contextLimit = parseInt($('set-context-limit').value) || 20;
+        c.contextLimit = parseInt($('set-context-limit').value) || 100;
 
         // Save Worlds
         let wIds = [];
@@ -109225,19 +109272,19 @@ const Location = {
             .filter(Boolean)
             .join('、') || '暂无';
         let recent = (Array.isArray(c.history) ? c.history : [])
-            .filter(m => m && m.role !== 'system')
-            .slice(-6)
+            .filter(m => m && m.role !== 'system' && !m.demoOnly)
+            .slice(-50)
             .map(m => {
                 let who = m.role === 'user' ? this._userName(c) : this._name(c);
                 let body = Chat._promptBodyForMessage ? Chat._promptBodyForMessage(m, c) : String(m.content || '');
                 body = typeof cleanAiVisibleText === 'function' ? cleanAiVisibleText(body) : body;
-                return `${who}: ${String(body || '').replace(/\s+/g, ' ').slice(0, 90)}`;
+                return `${who}: ${String(body || '').replace(/\s+/g, ' ')}`;
             })
             .filter(Boolean)
             .join('\n') || '暂无';
         return `触发事件：${this._sceneTriggerLabel(trigger, extra, c)}
-角色人设：${String(c.charPersona || '').slice(0, 700)}
-${this._userName(c)} 人设：${String(c.userPersona || '').slice(0, 360)}
+角色人设：${String(c.charPersona || c.persona || '')}
+${this._userName(c)} 人设：${String(c.userPersona || '')}
 贴贴定位：${this._contextSummary(c, s, state)}
 地图标记：${markers}
 地名隐私：${this._privacyNotice(s)}
@@ -111326,6 +111373,15 @@ const Moments = {
             .filter(c => !options.excludeId || String(c.id) !== String(options.excludeId))
             .filter(c => DB.contactMatchesUserPersona ? DB.contactMatchesUserPersona(c, target) : true);
     },
+    _currentChatCommenterForPersona(personaId) {
+        if (typeof Chat === 'undefined' || Chat.cid === null || Chat.cid === undefined) return null;
+        if (Chat._activeAccountId !== null && Chat._activeAccountId !== undefined) return null;
+        if (Chat._altSessionId) return null;
+        let c = DB.getContact ? DB.getContact(Chat.cid) : null;
+        if (!c || c.isGroup) return null;
+        if (DB.contactMatchesUserPersona && !DB.contactMatchesUserPersona(c, personaId || 'default')) return null;
+        return c;
+    },
     _contactsForMoment(m, options = {}) {
         let author = this.getMomentAuthor(m);
         let authorContact = author && author.id ? DB.getContact(author.id) : null;
@@ -112026,31 +112082,119 @@ const Moments = {
 
     _momentWorldBrief(c) {
         if (!c) return '无';
-        if (typeof WorldBook !== 'undefined' && WorldBook.formatEntries) {
-            return WorldBook.formatEntries(c.worldIds || [], { limit: 3, maxPerEntry: 160 }) || '无';
+        if (typeof WorldBook !== 'undefined' && WorldBook.activeEntries) {
+            let entries = WorldBook.activeEntries(c.worldIds || [], { includeGlobal: true });
+            return entries.map(w => {
+                let title = w.key || w.title || w.name || '世界书';
+                let content = String(w.content || w.desc || '').trim();
+                if (!content) return '';
+                return `[世界书条目｜${title}｜权重 ${Number(w.weight || 0)}/100｜${w.isGlobal ? '全局' : '角色绑定'}]\n${content}`;
+            }).filter(Boolean).join('\n\n') || '无';
         }
         if (!Array.isArray(DB.d.world)) return '无';
         return DB.d.world.filter(w => w && w.enabled !== false && (w.isGlobal || ((c.worldIds || []).includes(w.id))))
             .sort((a, b) => (Number(b.weight || 0) - Number(a.weight || 0)))
-            .map(w => `${w.title || w.name || '世界书'}（权重 ${Number(w.weight || 0)}）:${(w.content || w.desc || '').slice(0, 160)}`)
+            .map(w => `${w.title || w.name || '世界书'}（权重 ${Number(w.weight || 0)}）:${w.content || w.desc || ''}`)
             .filter(Boolean)
-            .slice(0, 3)
             .join('\n') || '无';
+    },
+
+    _momentMemoryBrief(c) {
+        if (!c) return '无';
+        if (typeof Memory !== 'undefined' && Memory.getPassiveContext) {
+            let context = String(Memory.getPassiveContext(c) || '').trim();
+            if (context) return context;
+        }
+        return (c.memories || [])
+            .filter(m => m && String(m.source || '') !== 'moments')
+            .map(m => {
+                if (typeof Memory !== 'undefined' && Memory._formatContextLine) return Memory._formatContextLine(m, c);
+                let when = m.time && typeof chatPromptTime === 'function' ? chatPromptTime(m.time) : '未知时间';
+                return `[${when}] ${m.content || ''}`;
+            })
+            .filter(Boolean)
+            .join('\n') || '无';
+    },
+
+    _momentChatBrief(c) {
+        if (!c) return '无';
+        let userName = this._fallbackUserName();
+        let messages = (c.history || [])
+            .filter(m => m && m.role !== 'system' && !m.demoOnly)
+            .slice(-50);
+        let lines = messages.map(m => {
+            let body = '';
+            try {
+                if (typeof Chat !== 'undefined' && Chat._promptBodyForMessage) {
+                    body = Chat._promptBodyForMessage(m, c);
+                }
+            } catch (e) {}
+            if (!body) {
+                body = String(m.content || '').trim();
+                if (/^data:/i.test(body)) body = '[图片]';
+                else if (typeof summarizeAiHtmlMessage === 'function' && /<[^>]+>/.test(body)) body = summarizeAiHtmlMessage(body);
+            }
+            body = String(body || '').trim();
+            if (!body) return '';
+            let speaker = m.role === 'user'
+                ? userName
+                : ((m.role === 'assistant' || m.role === 'ai') ? c.name : (m.name || m.role || '消息'));
+            let when = m.time && typeof chatPromptTime === 'function' ? `[${chatPromptTime(m.time)}] ` : '';
+            return `${when}${speaker}：${body}`;
+        }).filter(Boolean);
+        return lines.join('\n') || '无';
     },
 
     _momentContactBrief(c) {
         if (!c) return '';
-        let memories = (c.memories || []).slice(-4).map(m => {
-            if (typeof Memory !== 'undefined' && Memory._formatContextLine) return Memory._formatContextLine(m, c);
-            let when = m && m.time && typeof chatPromptTime === 'function' ? chatPromptTime(m.time) : '未知时间';
-            return `[${when}] ${m && m.content || ''}`;
-        }).join('\n') || '无';
-        let recent = (c.history || []).slice(-8).map(m => `${m.role}: ${m.content || ''}`).join(' / ').slice(0, 360) || '无';
-        return `id:${c.id}\n名字:${c.name}\n人设:${(c.charPersona || c.persona || '无').slice(0, 420)}\n与User关系/设定:${(c.userPersona || '无').slice(0, 220)}\n世界书:${this._momentWorldBrief(c)}\n记忆:${memories}\n最近聊天:${recent}`;
+        let userName = this._fallbackUserName();
+        return `id:${c.id}
+名字:${c.name}
+人设:${c.charPersona || c.persona || '无'}
+与${userName}关系/设定:${c.userPersona || '无'}
+世界书:
+${this._momentWorldBrief(c)}
+记忆:
+${this._momentMemoryBrief(c)}
+最近 50 条主聊天:
+${this._momentChatBrief(c)}`;
     },
 
-    _extractJsonArray(text) {
-        return AIClient.parseJsonReply(text, { expect: 'array', fallback: null });
+    _decodeMomentTagText(text) {
+        let raw = String(text || '');
+        if (typeof document === 'undefined') return raw.trim();
+        let el = document.createElement('textarea');
+        el.innerHTML = raw;
+        return el.value.trim();
+    },
+
+    _parseMomentTags(text, tagName) {
+        let raw = (AIClient.stripCodeFence ? AIClient.stripCodeFence(text) : String(text || '')).trim();
+        let items = [];
+        let tag = String(tagName || 'comment').replace(/[^a-z0-9_-]/gi, '');
+        let re = new RegExp(`<${tag}\\b([^>]*)>([\\s\\S]*?)<\\/${tag}>`, 'gi');
+        let match;
+        while ((match = re.exec(raw))) {
+            let attrs = {};
+            let attrRe = /([a-zA-Z][\w-]*)\s*=\s*(["'])(.*?)\2/g;
+            let attrMatch;
+            while ((attrMatch = attrRe.exec(match[1] || ''))) {
+                attrs[attrMatch[1].toLowerCase()] = this._decodeMomentTagText(attrMatch[3]);
+            }
+            let content = this._decodeMomentTagText(String(match[2] || '').replace(/<[^>]+>/g, ' '));
+            if (content) items.push({ attrs, content });
+        }
+        return {
+            items,
+            explicitNone: /<none\s*\/?>/i.test(raw),
+            valid: items.length > 0 || /<none\s*\/?>/i.test(raw)
+        };
+    },
+
+    _momentFormatError(label) {
+        let err = new Error(`${label || '朋友圈评论'}返回格式不正确`);
+        err.requestLabel = label || '朋友圈评论解析';
+        return err;
     },
 
     _addAiMomentComment(m, responder, content, replyToName = null, extra = null) {
@@ -112104,20 +112248,35 @@ const Moments = {
     renderCommentSection(m) {
         let comments = m.comments || [];
         let hasComments = comments.length > 0;
-        let listHtml = comments.map(cm => {
+        let listHtml = comments.map((cm, idx) => {
             let name = cm.authorName || '我';
             let replyPrefix = cm.replyTo ? `<span class="m-comment-reply-to">回复 <span class="m-comment-name">${Utils.escapeHtml(cm.replyTo)}</span></span>` : '';
-            return `<div class="m-comment-item" onclick="Moments.setReplyTo(${m.id},'${Utils.escapeHtml(name).replace(/'/g,"\\'")}',${cm.author === 'user' ? 'null' : cm.author})"><span class="m-comment-name">${Utils.escapeHtml(name)}</span>${replyPrefix}<span class="m-comment-text">：${Utils.escapeHtml(cm.content)}</span></div>`;
+            let commentKey = cm.id !== undefined && cm.id !== null ? cm.id : idx;
+            return `<div class="m-comment-item" data-moment-id="${Utils.escapeHtml(m.id)}" data-comment-id="${Utils.escapeHtml(commentKey)}" onclick="Moments.setReplyToComment(this)"><span class="m-comment-name">${Utils.escapeHtml(name)}</span>${replyPrefix}<span class="m-comment-text">：${Utils.escapeHtml(cm.content)}</span></div>`;
         }).join('');
         return `<div id="m-comments-${m.id}" class="m-comments-section${hasComments ? ' has-comments' : ''}">${listHtml}<div class="m-comment-input-row"><input type="text" id="m-input-${m.id}" placeholder="写评论..." onkeydown="if(event.key==='Enter'){Moments.submitComment(${m.id},this)}"><button onclick="Moments.submitComment(${m.id},document.getElementById('m-input-${m.id}'))">发送</button></div></div>`;
     },
 
-    setReplyTo(momentId, name, charId) {
-        this._replyTo = { momentId, name, charId };
+    setReplyToComment(el) {
+        if (!el || !el.dataset) return;
+        let momentId = el.dataset.momentId;
+        let commentId = el.dataset.commentId;
+        let m = (DB.d.userMoments || []).find(x => String(x.id) === String(momentId));
+        if (!m) return;
+        let comments = m.comments || [];
+        let cm = comments.find((item, idx) => String(item && item.id !== undefined && item.id !== null ? item.id : idx) === String(commentId));
+        if (!cm) return;
+        this.setReplyTo(m.id, cm.authorName || '我', cm.author === 'user' ? null : cm.author, commentId);
+    },
+
+    setReplyTo(momentId, name, charId, commentId = null) {
+        this._replyTo = { momentId, name, charId, commentId };
+        let sec = document.getElementById(`m-comments-${momentId}`);
+        if (sec) sec.classList.add('m-comments-open');
         let inp = document.getElementById(`m-input-${momentId}`);
         if (inp) {
             inp.placeholder = `回复 ${name}...`;
-            inp.focus();
+            setTimeout(() => inp.focus(), 30);
         }
     },
 
@@ -112137,6 +112296,7 @@ const Moments = {
             authorAvatar: userIdentity.avatar || Utils.defaultAvatar,
             content: text,
             replyTo: replyTo ? replyTo.name : null,
+            replyToCommentId: replyTo ? replyTo.commentId : null,
             time: Date.now()
         });
         let author = this.getMomentAuthor(m);
@@ -112163,78 +112323,40 @@ const Moments = {
         let replyTarget = replyTo && replyTo.charId ? replyTo.charId : null;
         if (author.isChar && (!replyTarget || String(replyTarget) === String(author.id))) {
             setTimeout(() => this.generatePosterCommentReplies(momentId, true), 1500);
-        } else {
+        } else if (replyTarget) {
             setTimeout(() => this.triggerCommentReply(momentId, text, replyTarget), 1500);
         }
     },
 
     async triggerCommentReply(momentId, userComment, replyTargetId) {
         let m = DB.d.userMoments.find(x => x.id === momentId);
-        if (!m) return;
-        let author = this.getMomentAuthor(m);
-        let poster = author.isChar && author.id ? DB.getContact(author.id) : null;
-
-        let responders = [];
-
-        if (replyTargetId) {
-            let target = DB.getContact(replyTargetId);
-            let allowed = this._contactsForMoment(m);
-            if (target && allowed.some(c => String(c.id) === String(target.id))) responders.push(target);
-        } else if (poster) {
-            if (poster) responders.push(poster);
-        }
-
-        if (!replyTargetId) {
-            let recentNames = (m.comments || []).slice(-6).map(cm => cm.author).filter(id => id && id !== 'user');
-            recentNames.forEach(id => {
-                let c = DB.getContact(id);
-                if (c && !responders.find(r => r.id === c.id)) responders.push(c);
-            });
-            let audienceContacts = this._contactsForMoment(m, { excludeId: poster && poster.id });
-            let audienceSet = new Set(audienceContacts.map(c => String(c.id)));
-            responders = responders.filter(r => audienceSet.has(String(r.id)) || (poster && String(r.id) === String(poster.id)));
-            let others = audienceContacts.filter(c => (!poster || c.id !== poster.id) && !responders.find(r => r.id === c.id));
-            others.sort(() => Math.random() - 0.5);
-            others.slice(0, 2).forEach(c => { if (Math.random() < 0.28) responders.push(c); });
-        }
-
-        let fallbackContacts = this._contactsForMoment(m, { excludeId: poster && poster.id });
-        if (responders.length === 0 && fallbackContacts.length > 0) responders.push(fallbackContacts[Math.floor(Math.random() * fallbackContacts.length)]);
-        responders = responders.filter(Boolean).slice(0, replyTargetId ? 1 : 3);
-        if (responders.length === 0) return;
+        if (!m || !replyTargetId) return;
+        let target = DB.getContact(replyTargetId);
+        let allowed = this._contactsForMoment(m);
+        if (!target || !allowed.some(c => String(c.id) === String(target.id))) return;
 
         let existingComments = (m.comments || []).slice(-8).map(cm => `${cm.authorName}: ${cm.content}`).join('\n');
-        let posterLabel = this.getMomentAuthorLabel(m);
         let userIdentity = this._userCommentIdentity(m);
         let userName = userIdentity.name || '机主';
-        let replyContext = replyTargetId ? `\n${userName} 是在点名回复 ${responders[0].name}，只有这个人必须回。` : '\n不是每个人都要回；没话说的人不要出现在 JSON 里。';
-        let prompt = `你在写朋友圈评论区的实时回复。不要写模板客套话，必须像这些角色本人刚看到后随手打出来的短评论。
+        let prompt = `${userName} 刚回复了 ${target.name} 的评论。被回复的人按自己的人设自由回应。
 
-动态作者：${posterLabel}
+动态作者：${this.getMomentAuthorLabel(m)}
 动态内容：${(m.content || '').slice(0, 260)}
-${m.imgs && m.imgs.length ? `动态含图片 ${m.imgs.length} 张；如果正文没提图，不要瞎描述图片细节。\n` : ''}${poster ? `作者人设：\n${this._momentContactBrief(poster)}\n` : ''}${existingComments ? `已有评论：\n${existingComments}\n` : ''}${userName} 刚评论：${userComment}${replyContext}
+${m.imgs && m.imgs.length ? `动态含图片 ${m.imgs.length} 张。\n` : ''}${existingComments ? `评论区：\n${existingComments}\n` : ''}
+${userName} 的回复：${userComment}
+${target.name}：
+${this._momentContactBrief(target)}
 
-候选回复者（必须严格按各自人设、关系、最近聊天和记忆写）：
-${responders.map(c => `---\n${this._momentContactBrief(c)}`).join('\n')}
-
-要求：
-1. 只写会自然开口的人；被 ${userName} 点名回复时，只让被点名的人回。
-2. 每条 1 句，最长 28 个中文字符；可以很短、可以阴阳怪气/害羞/冷淡/吃醋/认真，按人设决定。
-3. 必须接住动态内容、${userName} 评论、已有评论里的具体信息，不要万能句如“好棒”“哈哈哈”“真不错”。
-4. 不要 OOC，不要用不符合角色的网络语；不要让陌生角色表现得和 ${userName} 过熟。
-5. 输出 JSON 数组：[{"id":"角色id","reply":"评论"}]。只输出 JSON。`;
+只输出 <comment charId="${target.id}">评论</comment>。如果 ${target.name} 此刻不会回应，输出 <none/>。不要输出其他文字。`;
 
         try {
             let reply = await AIClient.call({ userPrompt: prompt, temperature: 0.78 });
-            let arr = this._extractJsonArray(reply);
-            if (!arr) return;
-
-            let added = false;
-            for (let item of arr.slice(0, responders.length)) {
-                if (!item || !item.reply) continue;
-                let r = responders.find(x => String(x.id) === String(item.id)) || responders.find(x => x.name === item.name) || responders[0];
-                added = this._addAiMomentComment(m, r, item.reply, replyTargetId ? (userIdentity.name || this._fallbackUserName()) : null) || added;
-            }
+            let parsed = this._parseMomentTags(reply, 'comment');
+            if (!parsed.valid) throw this._momentFormatError('朋友圈评论回复');
+            if (parsed.explicitNone) return;
+            let item = parsed.items.find(x => String(x.attrs.charid || x.attrs.id || '') === String(target.id));
+            if (!item || !item.content) throw this._momentFormatError('朋友圈评论回复');
+            let added = this._addAiMomentComment(m, target, item.content, userIdentity.name || this._fallbackUserName());
             if (!added) return;
             DB.save();
             this.render();
@@ -112273,32 +112395,26 @@ ${responders.map(c => `---\n${this._momentContactBrief(c)}`).join('\n')}
         if (candidates.length === 0) return;
 
         let existingComments = (m.comments || []).slice(-8).map(cm => `${cm.authorName}: ${cm.content}`).join('\n');
-        let prompt = `你在写朋友圈里角色之间的自然评论。评论必须像本人顺手打出来，不能像模板互动。
+        let prompt = `这些角色看见了 ${this.getMomentAuthorLabel(m)} 的朋友圈。按各自的人设与关系决定是否评论。
 
-动态作者：${this.getMomentAuthorLabel(m)}
 动态内容：${(m.content || '').slice(0, 260)}
 ${poster ? `作者人设：\n${this._momentContactBrief(poster)}\n` : ''}${existingComments ? `已有评论：\n${existingComments}\n` : ''}
-候选评论者如下。请判断谁真的会评论；没动机、关系不熟或人设不适合的人不要出现。
+候选角色：
 ${candidates.map(c => `---\n${this._momentContactBrief(c)}`).join('\n')}
 
-要求：
-1. 每条 1 句，最长 28 个中文字符。
-2. 评论要接住动态里的具体内容或两人关系，不要“好看”“好棒”“哈哈哈”这种泛句。
-3. 严格按人设：冷淡就少字，嘴硬就别直夸，亲近才可以暧昧或调侃。
-4. 不要让角色知道自己不该知道的信息，不要替 user 发言。
-5. 输出 JSON 数组：[{"id":"角色id","reply":"评论"}]。只输出 JSON。`;
+只输出评论标签：<comment charId="角色id">评论</comment>。没有角色会评论时输出 <none/>。不要输出其他文字。`;
 
         try {
             let reply = await AIClient.call({ userPrompt: prompt, temperature: 0.78 });
-            let arr = this._extractJsonArray(reply);
-            if (!arr || arr.length === 0) return;
+            let parsed = this._parseMomentTags(reply, 'comment');
+            if (!parsed.valid) throw this._momentFormatError('朋友圈角色评论');
+            if (parsed.explicitNone) return;
 
             let names = [];
-            for (let item of arr.slice(0, 4)) {
-                if (!item || !item.reply) continue;
-                let r = candidates.find(x => String(x.id) === String(item.id)) || candidates.find(x => x.name === item.name);
+            for (let item of parsed.items.slice(0, 4)) {
+                let r = candidates.find(x => String(x.id) === String(item.attrs.charid || item.attrs.id || ''));
                 if (!r) continue;
-                if (this._addAiMomentComment(m, r, item.reply)) names.push(r.name);
+                if (this._addAiMomentComment(m, r, item.content)) names.push(r.name);
             }
             if (names.length === 0) return;
             DB.save();
@@ -112345,10 +112461,12 @@ ${candidates.map(c => `---\n${this._momentContactBrief(c)}`).join('\n')}
                 return !alreadyRepliedTo.has(keyWithId) && !alreadyRepliedTo.has(keyByName);
             })
             .slice(-6);
+        if (forceForUser) {
+            let latestUser = [...candidates].reverse().find(item => String(item.cm.author) === 'user');
+            candidates = latestUser ? [latestUser] : [];
+        }
         if (candidates.length === 0) return;
 
-        let persona = `${poster.charPersona || ''}\n${poster.persona || ''}`.toLowerCase();
-        let clearlyAloof = /高冷|冷淡|寡言|少言|不屑|懒得|疏离|孤僻|厌世|社交障碍/.test(persona);
         let recentComments = candidates.map(item => {
             let cm = item.cm;
             let commenter = cm.author ? DB.getContact(cm.author) : null;
@@ -112359,38 +112477,31 @@ ${candidates.map(c => `---\n${this._momentContactBrief(c)}`).join('\n')}
         let existingComments = comments.slice(-10).map(cm => `${cm.authorName || '我'}${cm.replyTo ? ` 回复 ${cm.replyTo}` : ''}: ${cm.content}`).join('\n');
         let userIdentity = this._userCommentIdentity(m);
         let userName = userIdentity.name || '机主';
-        let prompt = `你在写朋友圈评论区里“动态作者本人”的回复。作者不需要每条都回，只挑最自然的一到两条。除非作者人设明确高冷、不屑社交、懒得理人，否则应该至少回复一条。
+        let prompt = `动态作者看见了评论区。按人设决定要不要回复、回复谁。
 
 动态作者：
 ${this._momentContactBrief(poster)}
-${clearlyAloof ? '\n注意：作者人设里有明显冷淡/高冷倾向，可以只回一句很短的话，或者真的不回。' : ''}
 
 动态内容：${(m.content || '').slice(0, 260)}
 ${m.imgs && m.imgs.length ? `动态含图片 ${m.imgs.length} 张；如果正文没提图，不要瞎描述图片细节。\n` : ''}${existingComments ? `评论区现状：\n${existingComments}\n` : ''}
 可回复的评论：
 ${recentComments}
 
-要求：
-1. 只让动态作者回复，回复 1-2 条；${forceForUser ? `${userName} 刚评论了作者自己的动态，除非作者明确极度冷漠，否则必须回 ${userName} 一条。` : '除非明确高冷不屑，否则不要输出空数组。'}
-2. 每条最长 24 个中文字符，像本人随手回评论，不要像客服。
-3. 回复要接住对方评论和两人关系；可以调侃、嘴硬、害羞、认真、冷淡，按人设决定。
-4. 不要逐条全回，不要重复前面已经说过的话。
-5. 输出 JSON 数组：[{"commentId":"被回复评论id","reply":"作者回复"}]。只输出 JSON。`;
+${forceForUser ? `${userName} 刚评论了作者自己的动态。` : ''}
+只输出回复标签：<reply commentId="被回复评论id">回复</reply>。不回复时输出 <none/>。不要输出其他文字。`;
 
         try {
             let reply = await AIClient.call({ userPrompt: prompt, temperature: 0.76 });
-            let arr = this._extractJsonArray(reply);
-            if ((!arr || arr.length === 0) && (!clearlyAloof || forceForUser)) {
-                arr = [{ commentId: String(candidates[0].cm.id || candidates[0].idx), reply: this._fallbackPosterReply(poster, candidates[0].cm) }];
-            }
-            if (!arr || arr.length === 0) return;
+            let parsed = this._parseMomentTags(reply, 'reply');
+            if (!parsed.valid) throw this._momentFormatError('朋友圈作者回复');
+            if (parsed.explicitNone) return;
 
             let added = false;
-            for (let item of arr.slice(0, 2)) {
-                if (!item || !item.reply) continue;
-                let target = candidates.find(x => String(x.cm.id || x.idx) === String(item.commentId)) || candidates[0];
+            for (let item of parsed.items.slice(0, 2)) {
+                let target = candidates.find(x => String(x.cm.id || x.idx) === String(item.attrs.commentid || ''));
+                if (!target) continue;
                 let name = target.cm.authorName || (DB.getContact(target.cm.author) || {}).name || '好友';
-                added = this._addAiMomentComment(m, poster, item.reply, name, {
+                added = this._addAiMomentComment(m, poster, item.content, name, {
                     replyToCommentId: target.cm.id || target.idx,
                     isPosterReply: true
                 }) || added;
@@ -112406,59 +112517,7 @@ ${recentComments}
             } else {
                 Toast.show('朋友圈回复失败');
             }
-            if (!clearlyAloof || forceForUser) {
-                let target = candidates[0];
-                if (!target) return;
-                let name = target.cm.authorName || (DB.getContact(target.cm.author) || {}).name || '好友';
-                let added = this._addAiMomentComment(m, poster, this._fallbackPosterReply(poster, target.cm), name, {
-                    replyToCommentId: target.cm.id || target.idx,
-                    isPosterReply: true
-                });
-                if (added) {
-                    DB.save();
-                    this.render();
-                    this.notifyNew();
-                }
-            }
         }
-    },
-
-    _fallbackPosterReply(poster, comment) {
-        let persona = `${poster && (poster.charPersona || poster.persona || '')}`.toLowerCase();
-        let text = String(comment && comment.content || '');
-        let isQuestion = /[？?吗呢啊]|怎么|为什么|哪里|哪儿|啥|什么|是不是|有没有/.test(text);
-        let isPraise = /好看|可爱|漂亮|帅|棒|厉害|喜欢|绝|甜|温柔|好会|不错/.test(text);
-        let isLaugh = /哈|笑死|绷不住|乐|哈哈|hh/i.test(text);
-        let isCare = /累|辛苦|注意|早点|休息|抱抱|别难过|还好吗|没事吧/.test(text);
-        if (/傲娇|嘴硬|别扭|毒舌/.test(persona)) {
-            if (isPraise) return '也没有那么夸张。';
-            if (isQuestion) return '你猜得倒挺准。';
-            return '你话好多。';
-        }
-        if (/温柔|体贴|治愈|甜|软/.test(persona)) {
-            if (isCare) return '嗯，已经好一点了。';
-            if (isPraise) return '这句先收下。';
-            if (isQuestion) return '是那时候想到的。';
-            return '刚好想留住这一刻。';
-        }
-        if (/活泼|开朗|热情|元气|话多/.test(persona)) {
-            if (isLaugh) return '你也太会抓重点了。';
-            if (isPraise) return '这句我可截图了。';
-            return '这句我收下了。';
-        }
-        if (/高冷|冷淡|寡言|少言|不屑|懒得|疏离|孤僻|厌世/.test(persona)) {
-            if (isQuestion) return '嗯，差不多。';
-            return '看到了。';
-        }
-        if (/认真|沉稳|理性|克制/.test(persona)) {
-            if (isQuestion) return '嗯，是那时候。';
-            if (isCare) return '放心，已经处理好了。';
-            return '嗯，确实是这样。';
-        }
-        if (isPraise) return '这句有点会说。';
-        if (isQuestion) return '嗯，是那时候。';
-        if (isCare) return '放心，没事。';
-        return '刚好想到，就发了。';
     },
 
     triggerCharLikes(momentId) {
@@ -112615,6 +112674,7 @@ ${recentComments}
         let authorName = persona.userName || persona.label || DB.d.userName || this._fallbackUserName();
         let authorAvatar = persona.avatar || DB.d.momentUserAvatar || DB.d.ownerAvatar || Utils.defaultAvatar;
         let displayText = t.replace(/@\[([^\]]+)\]\(\d+\)/g, '@$1');
+        let priorityCommenter = this._currentChatCommenterForPersona(personaId);
         let m = {
             id:Date.now(),
             time:Date.now(),
@@ -112626,6 +112686,7 @@ ${recentComments}
             name: authorName,
             avatar: authorAvatar,
             imgs: this.tempImgs,
+            priorityCommenterId: priorityCommenter ? priorityCommenter.id : undefined,
             mentionedChars: this._mentionedChars.length > 0 ? [...this._mentionedChars] : undefined
         };
         if(!DB.d.userMoments) DB.d.userMoments = [];
@@ -112649,89 +112710,106 @@ ${recentComments}
         this.render();
         App.goBack();
         Toast.show("动态已发布");
-        if (this._mentionedChars.length > 0) {
-            setTimeout(() => this.triggerMentionComments(m.id), 2000);
-        }
+        setTimeout(() => this.generateUserPostComments(m.id), 2000);
         setTimeout(() => this.triggerCharLikes(m.id), 3000);
         this._mentionedChars = [];
     },
 
-    async triggerMentionComments(momentId) {
+    async generateUserPostComments(momentId) {
         let m = DB.d.userMoments.find(x => x.id === momentId);
-        if (!m || !m.mentionedChars || m.mentionedChars.length === 0) return;
+        if (!m) return;
+        let author = this.getMomentAuthor(m);
+        if (!author.isUser) return;
 
-        let responders = [];
-        let allowed = new Set(this._contactsForMoment(m).map(c => String(c.id)));
-        for (let cid of m.mentionedChars) {
-            if (!allowed.has(String(cid))) continue;
-            let c = DB.getContact(cid);
-            if (c) responders.push({ name: c.name, avatar: c.avatar, persona: c.charPersona, id: c.id });
-        }
-        if (responders.length === 0) return;
+        let contacts = this._contactsForMoment(m);
+        if (contacts.length === 0) return;
+        let priority = contacts.find(c => String(c.id) === String(m.priorityCommenterId || '')) || null;
+        let mentionedSet = new Set((m.mentionedChars || []).map(id => String(id)));
+        let mentioned = contacts.filter(c => mentionedSet.has(String(c.id)));
+        let requiredIds = new Set();
+        if (priority) requiredIds.add(String(priority.id));
+        mentioned.forEach(c => requiredIds.add(String(c.id)));
+        let others = contacts
+            .filter(c => !requiredIds.has(String(c.id)))
+            .sort((a, b) => Number(b.lastActive || 0) - Number(a.lastActive || 0))
+            .slice(0, 3);
+        let candidates = [
+            ...(priority ? [priority] : []),
+            ...mentioned.filter(c => !priority || String(c.id) !== String(priority.id)),
+            ...others
+        ];
+        if (candidates.length === 0) return;
 
-        Toast.show('等待回复中...');
+        let userIdentity = this._userCommentIdentity(m);
+        let userName = userIdentity.name || this._fallbackUserName();
+        let priorityIsMentioned = !!(priority && mentionedSet.has(String(priority.id)));
+        let additionalMentioned = mentioned.filter(c => !priority || String(c.id) !== String(priority.id));
+        let additionalMentionedNames = additionalMentioned.map(c => `${c.name}（id:${c.id}）`).join('、');
+        let priorityRule = priority
+            ? `${priority.name} 是 ${userName} 当前正在聊天的人，必须按自己的人设评论这条动态。`
+            : '当前没有与这个发布身份匹配的聊天对象。';
+        let mentionedRules = [];
+        if (priorityIsMentioned) mentionedRules.push(`${priority.name} 同时被 @，只评论一次。`);
+        if (additionalMentionedNames) mentionedRules.push(`另外被 @ 的角色也需要回应：${additionalMentionedNames}。`);
+        if (mentionedRules.length === 0) mentionedRules.push('这条动态没有 @ 角色。');
+        let mentionedRule = mentionedRules.join('\n');
+        let existingComments = (m.comments || []).slice(-8).map(cm => `${cm.authorName}: ${cm.content}`).join('\n');
+        let prompt = `${userName} 刚发了这条朋友圈。
+${priorityRule}
+${mentionedRule}
+其他候选角色按各自的人设与关系决定是否评论。
+${priority ? '当前聊天对象的人设、最近聊天和当前动态是本轮最高优先级。旧记忆只用于保持连续、避免矛盾，不要盖过刚刚发生的内容。' : ''}
 
-        let userDisplay = (typeof getDisplayUserName === 'function') ? getDisplayUserName(null, m.name || '你') : (m.name || (DB.d.ownerProfile && DB.d.ownerProfile.name) || '你');
-        let prompt = `You are simulating multiple people replying to a social media post.
-Post by ${userDisplay}: "${(m.content || '').substring(0, 200)}"
-The poster tagged these people. Each person should reply naturally.
+动态内容：${(m.content || '').slice(0, 260)}
+${m.imgs && m.imgs.length ? `动态含图片 ${m.imgs.length} 张。\n` : ''}${existingComments ? `已有评论：\n${existingComments}\n` : ''}
 
-People replying:
-${responders.map(r => `- ${r.name}${r.persona ? ' (personality: ' + r.persona.substring(0, 80) + ')' : ''}`).join('\n')}
+候选角色：
+${candidates.map(c => `---\n${this._momentContactBrief(c)}`).join('\n')}
 
-Reply in this EXACT JSON format (no other text):
-[{"name":"person name","reply":"their comment"}]
-Each reply: 1-2 short sentences, casual Chinese internet style, matching their personality.`;
+只输出评论标签：<comment charId="角色id">评论</comment>。${requiredIds.size > 0 ? '必须包含上面要求回应的角色。' : '没有角色会评论时输出 <none/>。'}不要输出其他文字。`;
 
         try {
             let reply = await AIClient.call({ userPrompt: prompt, temperature: 0.85 });
-            if (!reply) { Toast.show('回复生成失败'); return; }
-            let arr = AIClient.parseJsonReply(reply, { expect: 'array', fallback: null });
-            if (!arr) {
-                let singleMatch = reply.match(/["']reply["']\s*:\s*["']([^"']+)["']/);
-                if (singleMatch && responders.length === 1) {
-                    if (!m.comments) m.comments = [];
-                    m.comments.push({
-                        id: Date.now(), author: responders[0].id,
-                        authorName: responders[0].name, authorAvatar: responders[0].avatar || Utils.defaultAvatar,
-                        content: singleMatch[1], time: Date.now()
-                    });
-                    DB.save(); this.render(); this.notifyNew();
-                    this.saveMomentMemory(responders[0].id, 'comment', m, singleMatch[1]);
-                    Toast.show(`${responders[0].name} 回复了你`);
-                    return;
-                }
-                Toast.show('回复解析失败'); return;
+            let parsed = this._parseMomentTags(reply, 'comment');
+            if (!parsed.valid) throw this._momentFormatError('朋友圈主动评论');
+            if (parsed.explicitNone) {
+                if (requiredIds.size > 0) throw this._momentFormatError('朋友圈主动评论');
+                return;
             }
-
-            if (!m.comments) m.comments = [];
             let names = [];
-            for (let item of arr) {
-                if (!item.reply) continue;
-                let r = responders.find(x => x.name === item.name) || responders[0];
-                m.comments.push({
-                    id: Date.now() + Math.floor(Math.random() * 1000),
-                    author: r ? r.id : 'npc',
-                    authorName: item.name || r.name,
-                    authorAvatar: (r && r.avatar) || Utils.defaultAvatar,
-                    content: item.reply,
-                    time: Date.now()
-                });
-                names.push(item.name || r.name);
-                if (r && r.id) this.saveMomentMemory(r.id, 'comment', m, item.reply);
+            let used = new Set();
+            let itemsById = new Map();
+            parsed.items.forEach(item => {
+                let charId = String(item.attrs.charid || item.attrs.id || '');
+                if (charId && !itemsById.has(charId)) itemsById.set(charId, item);
+            });
+            let missingRequired = [...requiredIds].filter(id => !itemsById.has(id));
+            if (missingRequired.length > 0) throw this._momentFormatError('朋友圈主动评论');
+            for (let r of candidates) {
+                let item = itemsById.get(String(r.id));
+                if (!item || used.has(String(r.id))) continue;
+                if (this._addAiMomentComment(m, r, item.content)) {
+                    used.add(String(r.id));
+                    names.push(r.name);
+                }
             }
+            if (names.length === 0) return;
             DB.save();
             this.render();
             this.notifyNew();
             if (names.length > 0) Toast.show(`${names.join('、')} 回复了你`);
         } catch (e) {
-            console.error('Mention comment failed:', e);
+            console.error('User moment comment failed:', e);
             if (typeof ErrorReporter !== 'undefined') {
-                ErrorReporter.toastAndShow('评论生成出错', e, '被 @ 的角色评论没有生成成功。');
+                ErrorReporter.toastAndShow('朋友圈评论失败', e, '角色评论这条朋友圈时没有生成成功。');
             } else {
-                Toast.show('评论生成出错');
+                Toast.show('朋友圈评论失败');
             }
         }
+    },
+
+    async triggerMentionComments(momentId) {
+        return this.generateUserPostComments(momentId);
     },
 
     handleMentionInput(e) {
@@ -117483,6 +117561,7 @@ const XhsApp = {
         if (!st.draftImage) st.draftImage = '';
         if (!st.draftPrompt) st.draftPrompt = '';
         if (!st.lastRefreshAt) st.lastRefreshAt = 0;
+        if (typeof st.linkToMainChat !== 'boolean') st.linkToMainChat = false;
         return st;
     },
 
@@ -117576,7 +117655,7 @@ const XhsApp = {
         let lines = [];
         contacts.slice(0, 3).forEach(c => {
             let recent = (c.history || []).slice(-8).map(m => m.content || m.title || '').filter(Boolean).join(' / ');
-            if (recent) lines.push(`${c.name}: ${recent.slice(0, 140)}`);
+            if (recent) lines.push(`${c.name}: ${recent}`);
         });
         let music = DB.d.musicSession && DB.d.musicSession.songSnapshot ? DB.d.musicSession.songSnapshot : null;
         return { active, lines: lines.join('\n'), music };
@@ -117585,14 +117664,13 @@ const XhsApp = {
     _worldContext(c) {
         if (!c) return '无';
         if (typeof WorldBook !== 'undefined' && WorldBook.formatEntries) {
-            return WorldBook.formatEntries(c.worldIds || [], { limit: 4, maxPerEntry: 220 }) || '无';
+            return WorldBook.formatEntries(c.worldIds || [], { includeGlobal: true }) || '无';
         }
         if (!Array.isArray(DB.d.world)) return '无';
         return DB.d.world.filter(w => w && w.enabled !== false && (w.isGlobal || ((c.worldIds || []).includes(w.id))))
             .sort((a, b) => (Number(b.weight || 0) - Number(a.weight || 0)))
-            .map(w => `${w.title || w.name || '世界书'}（权重 ${Number(w.weight || 0)}）:${(w.content || w.desc || '').slice(0, 220)}`)
+            .map(w => `${w.title || w.name || '世界书'}（权重 ${Number(w.weight || 0)}）:${w.content || w.desc || ''}`)
             .filter(Boolean)
-            .slice(0, 4)
             .join('\n') || '无';
     },
 
@@ -117628,7 +117706,7 @@ const XhsApp = {
 结构：7条NPC路人笔记，1条algorithm系统推荐，1条char公开笔记，1条alt匿名小号笔记。只能生成 npc/system/char/alt，绝对不要生成 user 类型，也不要替 user 发帖、不要用 user 第一人称写生活。
 
 可用角色（char/alt 发帖前必须认真参考人设、最近聊天、关联世界书；宁可少写也不要 OOC）：
-${contacts.slice(0, 8).map(c => `${c.id}:${c.name}\n人设:${(c.charPersona || c.persona || '无').slice(0, 360)}\nUser人设/关系:${(c.userPersona || '无').slice(0, 220)}\n关联世界书:${this._worldContext(c)}\n最近聊天:${(c.history || []).slice(-10).map(m => m.content || '').filter(Boolean).join(' / ').slice(0, 360)}`).join('\n\n')}
+${contacts.slice(0, 8).map(c => `${c.id}:${c.name}\n人设:${c.charPersona || c.persona || '无'}\nUser人设/关系:${c.userPersona || '无'}\n关联世界书:${this._worldContext(c)}\n最近聊天:${(c.history || []).slice(-10).map(m => m.content || '').filter(Boolean).join(' / ')}`).join('\n\n')}
 
 最近上下文：${signals.lines || '无'}
 一起听：${signals.music ? JSON.stringify(signals.music) : '无'}
@@ -117753,7 +117831,7 @@ ${contacts.slice(0, 8).map(c => `${c.id}:${c.name}\n人设:${(c.charPersona || c
         if (!c) return null;
         let visual = this._visualSeed(Math.random() < 0.25 ? 'anime' : 'real');
         let base = this._personaLine(c, visual.category, '', false);
-        let post = { id: 'char_' + id, type: 'char', charId: c.id, title: base.title, content: base.content, tags: [visual.category, c.name, '关注'], img: '', imgPrompt: `${visual.imgPrompt}. Mood should match persona without showing a person: ${(c.charPersona || c.persona || '').slice(0, 80)}`, visualStyle: visual.visualStyle, category: visual.category, likes: 18 + Math.floor(Math.random() * 80), collects: Math.floor(Math.random() * 18), comments: [], createdAt: Date.now() - Math.floor(Math.random() * 3600000), sortWeight: 7 + Math.random() };
+        let post = { id: 'char_' + id, type: 'char', charId: c.id, title: base.title, content: base.content, tags: [visual.category, c.name, '关注'], img: '', imgPrompt: `${visual.imgPrompt}. Mood should match persona without showing a person: ${c.charPersona || c.persona || ''}`, visualStyle: visual.visualStyle, category: visual.category, likes: 18 + Math.floor(Math.random() * 80), collects: Math.floor(Math.random() * 18), comments: [], createdAt: Date.now() - Math.floor(Math.random() * 3600000), sortWeight: 7 + Math.random() };
         post.comments = this._defaultComments(c, post);
         return post;
     },
@@ -117897,8 +117975,14 @@ ${contacts.slice(0, 8).map(c => `${c.id}:${c.name}\n人设:${(c.charPersona || c
         let meta = this._channelMeta(st.channel);
         let last = st.lastRefreshAt ? `上次刷新 ${this._timeText(st.lastRefreshAt)}` : '还没刷新过';
         let hero = `<div class="xhs-feed-hero"><div><b>${this._esc(meta.title)}</b><p>${this._esc(meta.desc)}</p><span>${this._esc(meta.action)} · ${this._esc(last)}</span></div><button onclick="XhsApp.genFeed(true)">刷新</button></div>`;
+        let mainChatLink = `<label class="xhs-main-chat-link"><div><b>关联进主聊天</b><span>开启后，主聊天会写入小麦书里的内容和互动，char会自然记得这些，但注意token。</span></div><input type="checkbox" ${st.linkToMainChat ? 'checked' : ''} onchange="XhsApp.setMainChatLink(this.checked)"><i aria-hidden="true"></i></label>`;
         let empty = `<div class="xhs-empty"><div><b>${this._esc(meta.title)}暂时空着</b><p>${this._esc(meta.desc)}</p><button onclick="XhsApp.sw('recommend');XhsApp.genFeed(true)">去推荐刷新</button></div></div>`;
-        feed.innerHTML = hero + (posts.length ? posts.map(p => this._cardHtml(p)).join('') : empty);
+        feed.innerHTML = hero + mainChatLink + (posts.length ? posts.map(p => this._cardHtml(p)).join('') : empty);
+    },
+
+    setMainChatLink(enabled) {
+        this._state().linkToMainChat = enabled === true;
+        DB.save();
     },
 
     _visiblePosts() {
@@ -118155,7 +118239,7 @@ ${contacts.slice(0, 8).map(c => `${c.id}:${c.name}\n人设:${(c.charPersona || c
 帖子作者/标题/正文：${this._displayName(p, c, true)} / ${p.title} / ${(p.content || '').slice(0, 180)}
 ${userDisplay} 评论：${userComment}
 可回复角色：
-${responders.map(r => `${r.id}:${r.name} 人设:${(r.charPersona || r.persona || '').slice(0, 120)}`).join('\n')}
+${responders.map(r => `${r.id}:${r.name}\n人设:${r.charPersona || r.persona || '无'}\nUser人设/关系:${r.userPersona || '无'}\n关联世界书:${this._worldContext(r)}`).join('\n\n')}
 
 请判断谁会自然回复，不需要每个人都回复。输出JSON数组：[{
 "charId":"角色id","reply":"一句自然中文回复"
@@ -118289,7 +118373,7 @@ ${responders.map(r => `${r.id}:${r.name} 人设:${(r.charPersona || r.persona ||
         let userDisplay = (typeof getDisplayUserName === 'function') ? getDisplayUserName(null, this._ownerName()) : this._ownerName();
         let prompt = `${userDisplay}在小麦书发布了一条笔记：${p.title} / ${(p.content || '').slice(0, 180)}
 可互动角色：
-${contacts.map(c => `${c.id}:${c.name} 人设:${(c.charPersona || c.persona || '').slice(0, 120)}`).join('\n')}
+${contacts.map(c => `${c.id}:${c.name}\n人设:${c.charPersona || c.persona || '无'}\nUser人设/关系:${c.userPersona || '无'}\n关联世界书:${this._worldContext(c)}`).join('\n\n')}
 请判断0-3个人是否会自然评论或点赞，不要强行互动。输出JSON数组：[{
 "charId":"角色id","action":"like|comment","reply":"评论内容，点赞可空"
 }]。只输出JSON。`;
@@ -118535,7 +118619,8 @@ ${contacts.map(c => `${c.id}:${c.name} 人设:${(c.charPersona || c.persona || '
 角色：${c ? c.name : '未知'}
 人设：${c && (c.charPersona || c.persona) || '无'}
 User关系：${c && c.userPersona || '无'}
-最近聊天：${c && Array.isArray(c.history) ? c.history.slice(-8).map(m => `${m.role}: ${m.content || ''}`).join(' / ').slice(0, 520) : '无'}
+最近聊天：${c && Array.isArray(c.history) ? c.history.slice(-8).map(m => `${m.role}: ${m.content || ''}`).join(' / ') : '无'}
+关联世界书：${this._worldContext(c)}
 小号已有笔记：${(sourcePosts || []).map(x => `《${x.title}》${x.content}`).join(' / ').slice(0, 520)}
 匿名名参考：${p && p.anonymousName || ''}
 
@@ -129457,20 +129542,56 @@ const ChatGames = {
         }).join('\n');
     },
 
-    _contextBlock(players = this._selectedPlayers()) {
+    _fullWorldBookContext(ids = []) {
+        let selected = new Set(this._normalizeWorldBookIds(ids).map(String));
+        return this._worldBookEntries(true)
+            .filter(w => w && (w.isGlobal || selected.has(String(w.id))))
+            .map(w => {
+                let title = this._worldBookEntryTitle(w);
+                let content = String(w.content || w.desc || '').trim();
+                return content ? `[世界书条目｜${title}｜权重 ${Number(w.weight || 0)}/100｜${w.isGlobal ? '全局' : '角色绑定'}]\n${content}` : '';
+            })
+            .filter(Boolean)
+            .join('\n\n');
+    },
+
+    _recentChatForPrompt(limit = 50) {
+        let c = this._contact();
+        if (!c || !Array.isArray(c.history)) return '';
+        return c.history
+            .filter(m => m && m.role !== 'system' && !m.demoOnly)
+            .slice(-limit)
+            .map(m => {
+                let name = m.role === 'user' ? this._ownerName() : (m.name || c.name || 'ta');
+                let content = typeof Chat !== 'undefined' && Chat._promptBodyForMessage
+                    ? Chat._promptBodyForMessage(m, c)
+                    : '';
+                if (!content) {
+                    let imageDesc = m.type === 'image'
+                        ? (typeof VisionClient !== 'undefined' && VisionClient.descriptionFromMessage
+                            ? VisionClient.descriptionFromMessage(m)
+                            : (m.visionDescription || m.imgDescription || m.imageDescription || m.imgPrompt || ''))
+                        : '';
+                    content = m.emoticonName ? `[表情:${m.emoticonName}]` :
+                        (m.type === 'image' ? (imageDesc ? `[图片:${imageDesc}]` : '[图片]') :
+                        (m.type === 'voice' ? `[语音:${m.content || ''}]` :
+                        (m.type === 'location' ? `[位置:${m.locName || m.name || ''}]` :
+                        (m.type === 'music-share' ? `[分享歌曲:${m.title || ''}]` : (m.content || '')))));
+                }
+                return `${name}: ${content}`;
+            }).join('\n');
+    },
+
+    _contextBlock(players = this._selectedPlayers(), opts = {}) {
         let c = this._contact();
         let owner = DB.d.ownerProfile || {};
         let userName = this._ownerName(c);
-        let world = '';
-        if (c && typeof WorldBook !== 'undefined' && WorldBook.formatEntries) world = WorldBook.formatEntries(c.worldIds || [], { maxPerEntry: 900 }).slice(0, 2400);
-        else if (c && Array.isArray(DB.d.world)) {
-            world = DB.d.world
-                .filter(w => w && w.enabled !== false && (w.isGlobal || (c.worldIds || []).includes(w.id)))
-                .sort((a, b) => (Number(b.weight || 0) - Number(a.weight || 0)))
-                .map(w => `${w.key || w.title || w.name || '世界书'}（权重 ${Number(w.weight || 0)}）:${w.content || w.desc || ''}`)
-                .join('\n')
-                .slice(0, 2400);
-        }
+        let worldIds = Object.prototype.hasOwnProperty.call(opts, 'worldIds') ? opts.worldIds : (c && c.worldIds || []);
+        let world = this._fullWorldBookContext(worldIds);
+        let recentLimit = Number(opts.recentLimit) || 50;
+        let memoryCtx = (typeof Memory !== 'undefined' && Memory.getPassiveContext && c && !c.isGroup)
+            ? String(Memory.getPassiveContext(c) || '').trim()
+            : '';
         let lifeCtx = (typeof LifeOS !== 'undefined' && LifeOS.getChatContext && c && !c.isGroup) ? LifeOS.getChatContext(c.id) : '';
         let momentsCtx = (typeof Moments !== 'undefined' && Moments.getMomentsContext && c && !c.isGroup) ? Moments.getMomentsContext(c.id) : '';
         return `当前对象：${this._targetLabel()}
@@ -129480,11 +129601,20 @@ User 设定：${c && (c.userPersona || c.groupUserPersona || '') || owner.bio ||
 参与角色：
 ${players.map(p => `- ${p.name}: ${p.persona || '无'}`).join('\n')}
 最近聊天：
-${this._recentChat()}
+${this._recentChatForPrompt(recentLimit)}
 世界书：
 ${world || '无'}
+长短期记忆：
+${memoryCtx || '无'}
 补充上下文：
 ${lifeCtx || ''}${momentsCtx || ''}`;
+    },
+
+    _interactionContextBlock(players = this._selectedPlayers(), compactOpts = {}) {
+        let c = this._contact();
+        // TODO(group-chat): 群聊互动后续单独设计完整上下文；当前保持原有紧凑策略，避免改变群聊行为。
+        if (c && c.isGroup) return this._compactContextBlock(players, compactOpts);
+        return this._contextBlock(players, { recentLimit: 50 });
     },
 
     _compactContextBlock(players = this._selectedPlayers(), opts = {}) {
@@ -129852,10 +129982,10 @@ ${world || '无'}`;
         };
     },
 
-    _altTranscript(session, limit = 14) {
+    _altTranscript(session) {
         let name = session.altName || '小号';
         let target = session.targetName || 'ta';
-        return (session.messages || []).slice(-limit).map(m => {
+        return (session.messages || []).map(m => {
             let label = m.from === 'alt' ? name : (m.from === 'char' ? target : (m.from === 'request' ? '好友验证' : '状态'));
             return `${label}: ${m.text || ''}`;
         }).join('\n');
@@ -129863,7 +129993,7 @@ ${world || '无'}`;
 
     _altStartPrompt(c, target, fields) {
         let ownerName = this._ownerName(c);
-        let context = this._compactContextBlock([target], { recentLimit: 10, personaLimit: 620, worldLimit: 780 });
+        let context = this._interactionContextBlock([target], { recentLimit: 10, personaLimit: 620, worldLimit: 780 });
         return `你在模拟一段独立的线上小号聊天。真实机主「${ownerName}」用小号向「${target.name || 'ta'}」发好友申请并试探；「${target.name || 'ta'}」不知道屏幕外是谁，除非 ta 根据人设、关系和线索自然识破。
 
 小号昵称：${fields.altName}
@@ -129890,7 +130020,7 @@ ${context}
 
     _altContinuePrompt(c, target, session, text) {
         let ownerName = this._ownerName(c);
-        let context = this._compactContextBlock([target], { recentLimit: 8, personaLimit: 560, worldLimit: 620 });
+        let context = this._interactionContextBlock([target], { recentLimit: 8, personaLimit: 560, worldLimit: 620 });
         return `继续模拟这段独立的小号聊天。真实机主「${ownerName}」仍在用小号和「${target.name || session.targetName || 'ta'}」说话；角色不知道屏幕外是谁，除非 ta 根据对话自然识破。
 
 当前状态：${this._altStatusLabel(session.status)}
@@ -130906,7 +131036,7 @@ ${roleTags}
 </paro>
 
 上下文：
-${this._compactContextBlock(players, { recentLimit: 8, personaLimit: 520, worldLimit: 700, worldIds: worldBookIds })}`;
+${this._contextBlock(players, { recentLimit: 50, worldIds: worldBookIds })}`;
 
         let generatedOk = false;
         try {
@@ -131339,7 +131469,7 @@ ${(opts.previousQuestions || []).map((q, i) => `${i + 1}. ${q}`).join('\n') || '
 继续写到第 ${count} 题，不要照抄例子。
 
 上下文：
-${this._compactContextBlock(players, { recentLimit: 8, personaLimit: 420, worldLimit: 500 })}`;
+${this._interactionContextBlock(players, { recentLimit: 8, personaLimit: 420, worldLimit: 500 })}`;
         let reply = await AIClient.call({
             userPrompt: prompt,
             temperature: 0.72,
@@ -131494,12 +131624,12 @@ ${this._compactContextBlock(players, { recentLimit: 8, personaLimit: 420, worldL
 提示：可空
 
 原始返回：
-${String(opts.previousReply || '').slice(0, 2400)}
+${String(opts.previousReply || '')}
 
 原始需求：${opts.kindText || '真心话大冒险'}；尺度：${opts.toneText || '轻松'}；补充要求：${opts.extra || '无'}
 
 上下文：
-${this._compactContextBlock(players, { recentLimit: 8, personaLimit: 420, worldLimit: 500 })}`;
+${this._interactionContextBlock(players, { recentLimit: 8, personaLimit: 420, worldLimit: 500 })}`;
         let reply = await AIClient.call({ userPrompt: prompt, temperature: 0.55, maxTokens: 10000, retries: 1 });
         let data = /^[\s`]*(?:json\s*)?[\[{]/i.test(String(reply || '')) ? this._jsonFromReply(reply, null) : null;
         return this._truthPayloadFromReply(reply, data);
@@ -131526,7 +131656,7 @@ ${this._compactContextBlock(players, { recentLimit: 8, personaLimit: 420, worldL
 提示：给 user 的一句轻提示，可为空
 
 上下文：
-${this._compactContextBlock(players, { recentLimit: 8, personaLimit: 420, worldLimit: 500 })}`;
+${this._interactionContextBlock(players, { recentLimit: 8, personaLimit: 420, worldLimit: 500 })}`;
         try {
             let reply = await AIClient.call({ userPrompt: prompt, temperature: 0.8, maxTokens: 10000, retries: 2 });
             let data = /^[\s`]*(?:json\s*)?[\[{]/i.test(String(reply || '')) ? this._jsonFromReply(reply, null) : null;
@@ -131715,7 +131845,7 @@ ${this._compactContextBlock(players, { recentLimit: 8, personaLimit: 420, worldL
 继续写到第 ${count} 题，不要照抄例子。
 
 上下文：
-${this._compactContextBlock(players, { recentLimit: 8, personaLimit: 420, worldLimit: 500 })}`;
+${this._interactionContextBlock(players, { recentLimit: 8, personaLimit: 420, worldLimit: 500 })}`;
         try {
             let reply = await AIClient.call({ userPrompt: prompt, temperature: 0.78, maxTokens: Math.min(6000, Math.max(900, count * 110)), retries: 2 });
             let data = this._jsonFromReply(reply, null);
@@ -131983,14 +132113,14 @@ ${this._compactContextBlock(players, { recentLimit: 8, personaLimit: 420, worldL
 {"answers":["角色答案"],"scores":[3],"comments":["短评"]}
 
 上一轮原始返回：
-${String(previousReply || '').slice(0, 2400)}
+${String(previousReply || '')}
 
 问卷标题：${q.title}
 题目与 ${names.userName} 答案：
 ${items}
 
 上下文：
-${this._compactContextBlock(q.players, { recentLimit: 8, personaLimit: 520, worldLimit: 500 })}`;
+${this._interactionContextBlock(q.players, { recentLimit: 8, personaLimit: 520, worldLimit: 500 })}`;
         let reply = await AIClient.call({
             userPrompt: prompt,
             temperature: 0.72,
@@ -132019,7 +132149,7 @@ ${this._compactContextBlock(q.players, { recentLimit: 8, personaLimit: 520, worl
 ${items}
 
 上下文：
-${this._compactContextBlock(q.players, { recentLimit: 8, personaLimit: 520, worldLimit: 500 })}`;
+${this._interactionContextBlock(q.players, { recentLimit: 8, personaLimit: 520, worldLimit: 500 })}`;
         let reply = await AIClient.call({
             userPrompt: prompt,
             temperature: 0.78,
@@ -133642,25 +133772,17 @@ const ParoTheater = {
         return String(w && (w.key || w.title || w.name) || '世界书').trim() || '世界书';
     },
 
-    _worldBookContext(t = this._theater(), c = this._contact(t), opts = {}) {
+    _worldBookContext(t = this._theater(), c = this._contact(t)) {
         if (!this._worldBookLinked(t) || !c) return '';
         let ids = this._worldBookIds(t, c);
         let idSet = new Set((Array.isArray(ids) ? ids : []).map(id => String(id)));
-        if (typeof WorldBook !== 'undefined' && WorldBook.formatEntries) {
-            return WorldBook.formatEntries(ids, {
-                includeGlobal: true,
-                limit: opts.limit || 0,
-                maxPerEntry: opts.maxPerEntry || 700
-            });
-        }
-        if (!Array.isArray(DB.d.world)) return '';
-        let maxPerEntry = opts.maxPerEntry || 700;
-        return DB.d.world
-            .filter(w => w && w.enabled !== false && (w.isGlobal || idSet.has(String(w.id))))
-            .sort((a, b) => (Number(b.weight || 0) - Number(a.weight || 0)))
+        let entries = typeof WorldBook !== 'undefined' && WorldBook.activeEntries
+            ? WorldBook.activeEntries(ids, { includeGlobal: true })
+            : this._worldBookEntries(true).filter(w => w && (w.isGlobal || idSet.has(String(w.id))));
+        return entries
             .map(w => {
                 let title = w.key || w.title || w.name || '世界书';
-                let content = String(w.content || w.desc || '').trim().slice(0, maxPerEntry);
+                let content = String(w.content || w.desc || '').trim();
                 return content ? `[世界书条目｜${title}｜权重 ${Number(w.weight || 0)}/100｜${w.isGlobal ? '全局' : '角色绑定'}]\n${content}` : '';
             })
             .filter(Boolean)
@@ -133828,7 +133950,6 @@ const ParoTheater = {
 
     _worldlineMemoryContext(t = this._theater(), c = this._contact(t)) {
         let memories = this._worldlineStoredMemories(t, c)
-            .slice(-12)
             .map(m => {
                 let time = m.time && typeof Utils !== 'undefined' && Utils.formatDate ? Utils.formatDate(m.time) : '未知时间';
                 let content = String(m.content || '').replace(/\s+/g, ' ').trim();
@@ -135010,9 +135131,9 @@ const ParoTheater = {
 
             this.busy = true;
             this.render();
-            let userPrompt = `最近世界线内容：\n${this._transcript(t, 14)}\n\nUser 想跳过一段空白，让剧情自然换到下一拍。${hint ? `方向：${hint}` : '没有指定方向，请按当前世界线自然推进。'}\n\n要求：输出 1-3 个片段。第一段优先用 narrator 做很短过渡；线上模式用消息间隔或话题换场，不要强行线下见面。`;
+            let userPrompt = `最近世界线内容：\n${this._worldlineContext(t, c)}\n\nUser 想跳过一段空白，让剧情自然换到下一拍。${hint ? `方向：${hint}` : '没有指定方向，请按当前世界线自然推进。'}\n\n要求：输出 1-3 个片段。第一段优先用 narrator 做很短过渡；线上模式用消息间隔或话题换场，不要强行线下见面。`;
             let reply = await AIClient.call({
-                systemPrompt: this._compactSystemPrompt(t, c),
+                systemPrompt: this._systemPrompt(t, c),
                 userPrompt,
                 temperature: 0.8,
                 maxTokens: 1600,
@@ -135544,13 +135665,12 @@ const ParoTheater = {
         let char = this._mainChar(t);
         let memories = (c && c.memories || [])
             .filter(m => !/^paro-(manual|auto)-summary$/.test(String(m && m.source || '')))
-            .slice(-6)
             .map(m => m.content)
             .join('；') || '无';
         let anchors = this._anchors(t).map((a, i) => `${i + 1}. [${a.status || '未触发'}] ${a.text}`).join('\n') || '无';
         let perspective = this._perspectiveLabel(t);
         let userName = t.userName || this._ownerName(c);
-        let worldBook = this._worldBookContext(t, c, { maxPerEntry: 900 });
+        let worldBook = this._worldBookContext(t, c);
         let worldBookBlock = this._worldBookLinked(t)
             ? `关联世界书（原世界硬设定，全程生效；高权重条目优先于临时剧情猜测）：\n${worldBook || '无'}`
             : '关联世界书：已在这条世界线设置里取消关联，后续回复不读取世界书。';
@@ -135602,51 +135722,6 @@ ${worldBookBlock}
 {"items":[{"role":"narrator或assistant或npc","kind":"narration或dialogue","speaker":"旁白、角色名或NPC名","content":"内容","type":"可选，text/image/image-text/emoticon/voice/location/transfer/food"}],"anchors":[{"text":"原锚点文本","status":"未触发或推进中或已触发"}]}`;
     },
 
-    _compactSystemPrompt(t, c) {
-        this._normalizeMode(t);
-        let char = this._mainChar(t);
-        let anchors = this._anchors(t).map((a, i) => `${i + 1}. [${a.status || '未触发'}] ${a.text}`).join('\n') || '无';
-        let perspective = this._perspectiveLabel(t);
-        let userName = t.userName || this._ownerName(c);
-        let worldBook = this._worldBookContext(t, c, { maxPerEntry: 700 });
-        let worldBookBlock = this._worldBookLinked(t)
-            ? `关联世界书（原世界硬设定，全程生效；高权重条目优先于临时剧情猜测）：\n${worldBook || '无'}`
-            : '关联世界书：已在这条世界线设置里取消关联，后续回复不读取世界书。';
-        let modeInstruction = this._isOnline(t)
-            ? '线上模式：像手机聊天一样回复，以角色消息气泡为主。'
-            : (this._isSceneDialogue(t)
-                ? `现场说话：${userName} 输入的是线下面对面说出口的话。`
-                : `现场旁白：${userName} 输入的是动作、心理、场景推进或叙事指令，用${perspective}旁白承接。`);
-        return `你是“平行世界线”的对话引擎。这是另一条真实发生的世界线，但不覆盖原世界履历。
-保留原角色人设、说话习惯、关系记忆和情绪底色；只在当前世界线更换身份。
-当前模式：${this._modeLabel(t)}。${modeInstruction}
-旁白视角：${perspective}。旁白严格遵守该人称；第三人称旁白不许用“我/你”指代 ${userName}。
-只扮演原角色、NPC 或 narrator。绝对不要扮演 ${userName}，不要输出 role:"user"、speaker:"User"、speaker:"用户" 或以 ${userName} 作为说话人；不要替 ${userName} 写台词、做决定、补完内心或安排动作。${userName} 的话和选择只由用户自己输入。你只能让角色、NPC 或旁白回应已经发生的内容，并把选择空间留给用户。
-旁白和台词必须分开：narrator 只写环境/动作/镜头/时间；有人说话必须单独作为 assistant 或 npc。
-NPC 只能短句参与，不抢主角色戏份。卡片能力只在自然合适时使用，不硬塞功能。
-
-世界线：${t.title}
-世界观：${t.world}
-${userName} 身份：${t.userRole}
-角色身份：${(t.charRoles || []).map(r => `${r.name}:${r.role}`).join('；')}
-关系张力：${t.tension || '无'}
-收束锚点：
-${anchors}
-原角色：${char.name}
-原角色人设：${String(char.persona || c && c.charPersona || '无').slice(0, 900)}
-User 原设定：${String(c && (c.userPersona || c.groupUserPersona) || '无').slice(0, 500)}
-${worldBookBlock}
-
-优先输出旧版聊天格式，不要解释：
-<reply>
-  <narration>旁白、动作、环境或时间推进</narration>
-  <msg name="${char.name}">角色说出口的话</msg>
-</reply>
-
-如果模型只能输出 JSON，也兼容：
-{"items":[{"role":"narrator/assistant/npc","kind":"narration/dialogue","speaker":"旁白/角色名/NPC名","content":"内容","type":"可选 text/image/image-text/emoticon/voice/location/transfer/food"}],"anchors":[{"text":"原锚点文本","status":"未触发/推进中/已触发"}]}`;
-    },
-
     _estimateTokens(text) {
         if (typeof estimatePromptTokens === 'function') return estimatePromptTokens(text);
         let value = String(text || '');
@@ -135659,7 +135734,7 @@ ${worldBookBlock}
         if (!t || !c) return 0;
         let userName = t.userName || this._ownerName(c);
         let samplePrompt = `世界线记忆：\n${this._worldlineContext(t, c)}\n\n接住最后一条 ${userName} 输入，按当前模式继续输出 1-3 个世界线片段。只扮演原角色、NPC 或 narrator，绝对不要扮演 ${userName}。`;
-        return this._estimateTokens(`${this._compactSystemPrompt(t, c)}\n\n${samplePrompt}`);
+        return this._estimateTokens(`${this._systemPrompt(t, c)}\n\n${samplePrompt}`);
     },
 
     _parseReply(reply, t) {
@@ -135861,15 +135936,15 @@ ${worldBookBlock}
 ${formatRule}
 
 原始返回：
-${original.slice(0, 5000)}`
+${original}`
             : `上一段世界线回复为空。请基于同一世界线和最后一条输入，重新输出 1-3 个世界线片段。
 
 ${formatRule}
 
 原始请求：
-${String(userPrompt || '').slice(0, 5000)}`;
+${String(userPrompt || '')}`;
         let repaired = await AIClient.call({
-            systemPrompt: this._compactSystemPrompt(t, c),
+            systemPrompt: this._systemPrompt(t, c),
             userPrompt: repairPrompt,
             temperature: original ? 0.35 : 0.72,
             maxTokens: 1400,
@@ -135898,7 +135973,7 @@ ${String(userPrompt || '').slice(0, 5000)}`;
             let userName = t.userName || this._ownerName(c);
             let userPrompt = `世界线记忆：\n${this._worldlineContext(t, c)}\n\n接住最后一条 ${userName} 输入，按当前模式继续输出 1-3 个世界线片段。如果最后一条不是 ${userName} 输入，就让角色或旁白自然接上当前场景。只扮演原角色、NPC 或 narrator，绝对不要扮演 ${userName}；不要输出 role:"user"、speaker:"User"、speaker:"用户" 或以 ${userName} 作为说话人；不要替 ${userName} 写新台词、做选择、补完内心或安排动作。${rerollHint}`;
             let reply = await AIClient.call({
-                systemPrompt: this._compactSystemPrompt(t, c),
+                systemPrompt: this._systemPrompt(t, c),
                 userPrompt,
                 temperature: 0.82,
                 maxTokens: 1900,
@@ -154012,7 +154087,7 @@ const PhoneSnoop = {
         return `Recent chat with ${this._userDisplayForChar(c, fallback)}`;
     },
 
-    _snoopPromptMessageText(m, c, maxChars = 220) {
+    _snoopPromptMessageText(m, c, maxChars = 0) {
         if (!m) return '';
         let text = '';
         if (typeof Chat !== 'undefined' && Chat._promptBodyForMessage) {
@@ -154036,14 +154111,14 @@ const PhoneSnoop = {
             .replace(/<script[\s\S]*?<\/script>/gi, '')
             .replace(/\s+/g, ' ')
             .trim();
-        if (text.length > maxChars) text = text.slice(0, maxChars) + '…';
+        if (maxChars > 0 && text.length > maxChars) text = text.slice(0, maxChars) + '…';
         return text;
     },
 
     _snoopRecentChat(c, opts = {}) {
-        let limit = opts.limit || 8;
-        let maxPerMessage = opts.maxPerMessage || 220;
-        let maxTotal = opts.maxTotal || 1800;
+        let limit = opts.limit || 50;
+        let maxPerMessage = opts.maxPerMessage || 0;
+        let maxTotal = opts.maxTotal || 0;
         let userName = opts.userName || this._userDisplayForChar(c, '对方');
         let charName = opts.charName || (c && c.name) || 'char';
         let lines = (c && c.history || [])
@@ -154056,7 +154131,7 @@ const PhoneSnoop = {
             .filter(line => line.replace(/^[^:]+:\s*/, '').trim());
         let out = lines.join('\n');
         out = out.replace(/data:[^,\s]+;base64,[A-Za-z0-9+/=]+/g, '[base64已省略]');
-        if (out.length > maxTotal) out = '[前文已压缩]\n' + out.slice(out.length - maxTotal);
+        if (maxTotal > 0 && out.length > maxTotal) out = '[前文已压缩]\n' + out.slice(out.length - maxTotal);
         return out.trim();
     },
 
@@ -154079,16 +154154,27 @@ const PhoneSnoop = {
     _snoopInheritedPromptContext(c, opts = {}) {
         if (!c) return '';
         let blocks = [];
-        let maxPerEntry = opts.maxPerEntry || 520;
-        let limit = opts.limit || 8;
         let scope = opts.scope || `${c.name}'s phone`;
+        let persona = String(c.charPersona || c.persona || '').trim();
+        blocks.push(`Persona: ${persona || 'A normal person'}`);
+        let recentChat = this._snoopRecentChat(c);
+        blocks.push(`${this._recentConversationLabel(c)}:\n${recentChat || 'None'}`);
+        if (typeof Memory !== 'undefined' && Memory.getPassiveContext) {
+            let memoryText = String(Memory.getPassiveContext(c) || '').trim();
+            if (memoryText) {
+                let memoryBlock = (typeof Chat !== 'undefined' && Chat._memoryContext)
+                    ? Chat._memoryContext(memoryText)
+                    : memoryText;
+                if (String(memoryBlock || '').trim()) blocks.push(memoryBlock.trim());
+            }
+        }
         if (opts.includeWorld !== false) {
             let worldBlock = '';
             if (typeof Chat !== 'undefined' && Chat._worldTextForContact && Chat._worldContext) {
-                let worldText = Chat._worldTextForContact(c, { maxPerEntry, limit });
+                let worldText = Chat._worldTextForContact(c);
                 worldBlock = worldText ? Chat._worldContext(worldText) : '';
             } else if (typeof WorldBook !== 'undefined' && WorldBook.formatEntries) {
-                let worldText = WorldBook.formatEntries(c.worldIds || [], { maxPerEntry, limit });
+                let worldText = WorldBook.formatEntries(c.worldIds || [], { includeGlobal: true });
                 if (worldText) worldBlock = `[Worldbook / Canon Facts]\n${worldText}\n[/Worldbook / Canon Facts]`;
             }
             if (String(worldBlock || '').trim()) blocks.push(worldBlock.trim());
@@ -154466,13 +154552,10 @@ Content generated for ${scope} must respect the same canon and typing texture as
     },
 
     async _generateLive(c) {
-        let recentChat = this._snoopRecentChat(c, { limit: 8, maxPerMessage: 220, maxTotal: 1800 });
         let n = new Date();
         let timeStr = `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;
         let prompt = `You are simulating the live phone status of ${c.name} at this exact moment (${timeStr}).
-Persona: ${c.charPersona || 'A normal person'}
 ${this._userPromptRules(c)}
-${this._recentConversationLabel(c)}: ${recentChat || 'None'}
 
 Generate a snapshot of what they are doing RIGHT NOW. Be specific, atmospheric, and match the persona/recent mood.
 
@@ -154595,7 +154678,6 @@ Output JSON ONLY (no markdown fence). Use Simplified Chinese.
     async _generateNotifs(c) {
         let userName = this._userDisplayForChar(c, '对方');
         let prompt = `Simulate the notification bar of ${c.name}'s phone in the past few hours.
-Persona: ${c.charPersona || 'A normal person'}
 ${this._userPromptRules(c)}
 Current time: ${new Date().toLocaleString('zh-CN')}
 
@@ -154794,17 +154876,13 @@ Output 8-12 items using this tag format, no markdown fence:
         let c = DB.getContact(this._charId);
         if (!c) return;
         if (typeof this._showLoading === 'function') this._showLoading('正在同步短信', 'AI 正在读取收件箱，请稍等...');
-        let recentChat = this._snoopRecentChat(c, { limit: 8, maxPerMessage: 220, maxTotal: 1800 });
         let userDisplay = this._userDisplayForChar(c, '对方');
         let prompt = `生成 ${c.name} 手机「短信」收件箱里的 10-16 条短信。
 这不是微信聊天，不要做成连续对话；要像真实手机短信列表，混合验证码、快递/外卖、银行账单、广告垃圾短信、陌生号码、同学同事或家人发来的零散短信。
 
 角色人设：
 - Name: ${c.name}
-- Persona: ${c.charPersona || 'A normal person'}
 ${this._userPromptRules(c)}
-- 最近和 ${userDisplay} 的聊天：
-${recentChat || '无'}
 
 规则：
 1. 每条都很短，像短信预览，不要写长段落。
@@ -155039,17 +155117,13 @@ ${recentChat || '无'}
         let c = DB.getContact(this._charId);
         if (!c) return;
         if (typeof this._showLoading === 'function') this._showLoading('正在同步通话记录', 'AI 正在整理最近来电和拨出，请稍等...');
-        let recentChat = this._snoopRecentChat(c, { limit: 8, maxPerMessage: 220, maxTotal: 1800 });
         let userDisplay = this._userDisplayForChar(c, '对方');
         let prompt = `生成 ${c.name} 手机「通话」App 里的 5-9 条最近通话记录。
 这不是聊天消息，也不是通知栏；要像真实手机通话记录：未接来电、已接来电、拨出电话、快递/外卖/家人/同事/陌生号码混合。
 
 角色信息：
 - Name: ${c.name}
-- Persona: ${c.charPersona || 'A normal person'}
 ${this._userPromptRules(c)}
-- 最近和 ${userDisplay} 的聊天：
-${recentChat || '无'}
 
 规则：
 1. 不要全都围绕 ${userDisplay}，最多 1-2 条和这个人有关。
@@ -155719,7 +155793,7 @@ ${recentChat || '无'}
             lead,
             `Sender: ${sender}. Chat partner: ${(chat && chat.name) || 'friend'}. Relationship: ${(chat && chat.relation) || 'unknown'}.`,
             `Original image description: "${desc}".`,
-            char ? `Character persona hint: ${(char.charPersona || char.persona || '').slice(0, 180)}.` : '',
+            char ? `Character persona hint: ${char.charPersona || char.persona || ''}.` : '',
             realStyleHint ? `Real photo baseline: ${realStyleHint}` : '',
             subject.type === 'screenshot'
                 ? 'Render the screen content itself clearly and flatly. Do not add a hand, phone bezel, desk, room background, glare, camera perspective, or people posing around it.'
@@ -156327,7 +156401,6 @@ ${recentChat || '无'}
         this.renderCurrentSnoopChat();
         setTimeout(() => this._scrollSnoopChatEnd(), 20);
         let notes = (chat.impersonateNotes || []).slice(-6).map(n => '- ' + n.content).join('\n');
-        let persona = String(c.charPersona || c.persona || '普通人').slice(0, 900);
         let prompt = `You are continuing a private phone chat in ${c.name}'s phone.
 
 IMPORTANT SCENE:
@@ -156336,8 +156409,7 @@ IMPORTANT SCENE:
 - The contact believes the messages are from ${c.name}, unless the latest message sounds suspiciously unlike ${c.name}.
 - Do not speak as ${c.name}. Do not mention the real user unless the contact would naturally know or suspect something.
 
-${c.name}'s persona:
-${persona}
+${this._snoopInheritedPromptContext(c, { scope: `the private phone chat between ${c.name} and ${chat.name}` })}
 
 Contact:
 - Name: ${chat.name}
@@ -156747,7 +156819,6 @@ Rules:
         return `你在生成 ${c.name} 手机 Line/朋友圈里看到的“社交圈 feed”，不是聊天消息列表，也不是单条聊天预览。
 
 角色：${c.name}
-人设：${c.charPersona || c.persona || '普通人'}
 ${this._userPromptRules(c)}
 
 ${contacts && contacts.length ? `联系人列表：\n${social}` : '联系人列表：暂无，请按人设生成合理社交圈。'}
@@ -156903,9 +156974,6 @@ ${issue ? `\n上次生成失败原因：${issue}\n这次必须修正。` : ''}
 
     _deletedChatRecoveryPrompt(c, contact) {
         let userName = this._userDisplayForChar(c, '对方');
-        let persona = String(c.charPersona || c.persona || '普通人').slice(0, 900);
-        let recentChat = this._snoopRecentChat(c, { limit: 6, maxPerMessage: 100, maxTotal: 900 });
-        let inheritedPrompt = this._snoopInheritedPromptContext(c, { scope: `a deleted phone chat between ${c.name} and ${contact.name}` });
         let displayName = this._snoopContactRemark(contact) || contact.name || '联系人';
         return `You are recovering a deleted private phone chat from ${c.name}'s phone.
 
@@ -156914,11 +156982,7 @@ Scene:
 - Generate only the recovered messages, as if they already happened before being deleted.
 - Do not describe the recovery process. Do not mention the human user reading it.
 
-${c.name}'s persona:
-${persona}
-
 ${this._userPromptRules(c)}
-${inheritedPrompt}
 
 Phone contact:
 - Display name: ${displayName}
@@ -156926,9 +156990,6 @@ Phone contact:
 - Relation to ${c.name}: ${contact.relation || 'other'}
 - Contact/topic hint: ${contact.topic || contact.emptyReason || ''}
 - Deletion trace: ${contact.deletedHint || contact.emptyReason || 'chat record was cleared'}
-
-Recent real chat between ${c.name} and ${userName}:
-${recentChat || '(none)'}
 
 Generate 8-12 short messages from the deleted chat. Both sides must appear.
 Use lightweight tags, one message per line. Do not output JSON, Markdown, explanations, headings, or code fences.
@@ -157114,26 +157175,20 @@ Rules:
         DB.save();
         if (this._currentChatDetailId === chatId) $('snoop-chat-detail').innerHTML = this._renderSnoopChatMessages(chat);
 
-        let recentChat = this._snoopRecentChat(c, { limit: 3, maxPerMessage: 80, maxTotal: 500 });
-        let persona = String(c.charPersona || c.persona || '普通人').slice(0, 320);
         let userName = this._userDisplayForChar(c, '对方');
         let inheritedPrompt = this._snoopInheritedPromptContext(c, { scope: `the chat between ${c.name} and ${chat.name}` });
         let prompt = `生成 ${c.name} 手机里和「${chat.name}」这一条微信聊天记录。
-角色人设：${persona}
 机主称呼：${userName}
 ${inheritedPrompt}
 联系人关系：${chat.relation || 'other'}
 列表预览：${chat.lastMsg || ''}
 聊天主题：${chat.topic || '按关系和预览自然展开'}
-最近和 ${userName} 的聊天：${recentChat || '无'}
-
 生成 8-12 条短消息，像真实微信翻记录。${c.name} 的消息 from="char"，对方消息 from="other"。
 可以自然间接提到 ${userName}，但不要硬围绕这个人。线上聊天只写消息文本，不写括号动作。
 
 输出 JSON 数组，不要解释：
 [{"from":"char/other","type":"text","content":"短消息","time":"HH:MM"}]`;
         let simplePrompt = `返回 JSON 数组，不要解释。生成 ${c.name} 和「${chat.name}」的微信聊天记录，8-12 条短消息，不要写括号动作。
-人设：${persona}
 ${inheritedPrompt}
 关系：${chat.relation || 'other'}
 列表预览：${chat.lastMsg || ''}
@@ -157242,16 +157297,11 @@ ${inheritedPrompt}
         this._snoopSocialGenerating = true;
         Toast.show(c.name + ' 的聊天生成中（较慢，请等待）...');
         this._renderChatList(c);
-        let recentChat = this._snoopRecentChat(c, { limit: 12, maxPerMessage: 180, maxTotal: 2200 });
-
         let prompt = `You are simulating the WeChat-style chat list of ${c.name}'s phone.
 
 CHARACTER:
 - Name: ${c.name}
-- Persona: ${c.charPersona || 'A normal person'}
 ${this._userPromptRules(c)}
-- ${this._recentConversationLabel(c)}:
-${recentChat || '(none)'}
 
 TASK:
 Generate ${c.name}'s phone social circle with TWO separate lists:
@@ -157363,9 +157413,8 @@ Output JSON object only (no markdown fence):
         let c = DB.getContact(this._charId);
         if (!c) return;
         if (typeof this._showLoading === 'function') this._showLoading('正在翻草稿箱', 'AI 正在生成 ta 写了又删掉的消息...');
-        let prompt = `You are ${c.name}. Persona: ${c.charPersona || 'A normal person'}
+        let prompt = `You are ${c.name}.
 ${this._userPromptRules(c)}
-${this._recentChatLabel(c)}: ${this._snoopRecentChat(c, { limit: 5, maxPerMessage: 180, maxTotal: 1000 }) || 'None'}
 
 Generate 6-10 draft messages that ${c.name} typed but deleted or rewrote. These reveal inner thoughts — things they wanted to say but held back.
 
@@ -157446,10 +157495,8 @@ JSON array only (no markdown fence):
         if (!c) return;
         if (typeof this._showLoading === 'function') this._showLoading(c.name + ' 做梦中', 'AI 正在整理最近的梦境记录...');
         try {
-            let recentChat = this._snoopRecentChat(c, { limit: 6, maxPerMessage: 220, maxTotal: 1400 });
-            let prompt = `You are ${c.name}. Persona: ${c.charPersona || 'A normal person'}
+            let prompt = `You are ${c.name}.
 ${this._userPromptRules(c)}
-${this._recentConversationLabel(c)}: ${recentChat || 'None'}
 
 Generate 3-5 dreams ${c.name} had in the past week.
 
@@ -157573,12 +157620,8 @@ JSON array only (no markdown fence):
         if (!c) return;
         if (typeof this._showLoading === 'function') this._showLoading('正在解析潜意识', 'AI 正在整理这周最常出现的关键词...');
         try {
-            let recentChat = this._snoopRecentChat(c, { limit: 15, maxPerMessage: 120, maxTotal: 1800 });
         let prompt = `Analyze ${c.name}'s subconscious mind based on their recent thoughts.
-Persona: ${c.charPersona || 'A normal person'}
 ${this._userPromptRules(c)}
-${this._recentConversationLabel(c)}:
-${recentChat || 'None'}
 
 Generate 18-22 keywords representing what's most on ${c.name}'s mind this week.
 
@@ -157665,9 +157708,8 @@ JSON only (no markdown fence):
         let c = DB.getContact(this._charId);
         if (!c) return;
         if (typeof this._showLoading === 'function') this._showLoading('正在翻剪贴板', 'AI 正在读取最近复制过的文字...');
-        let prompt = `You are ${c.name}. Persona: ${c.charPersona || 'A normal person'}
+        let prompt = `You are ${c.name}.
 ${this._userPromptRules(c)}
-${this._recentConversationLabel(c)}: ${this._snoopRecentChat(c, { limit: 6, maxPerMessage: 180, maxTotal: 1200 }) || 'None'}
 
 Generate 8-10 items in ${c.name}'s clipboard history — things they recently copied. The mix should be ENTERTAINING: equal parts revealing emotional clues AND unhinged absurd internet brain rot. This is what we'd see if we could read ${c.name}'s mind through their pasteboard.
 
@@ -157775,9 +157817,8 @@ JSON array only, no markdown fence:
         let c = DB.getContact(this._charId);
         if (!c) return;
         if (typeof this._showLoading === 'function') this._showLoading('正在翻备忘录', 'AI 正在生成置顶备忘和普通笔记...');
-        let prompt = `You are ${c.name}. Persona: ${c.charPersona || 'A normal person'}
+        let prompt = `You are ${c.name}.
 ${this._userPromptRules(c)}
-${this._recentConversationLabel(c)}: ${this._snoopRecentChat(c, { limit: 8, maxPerMessage: 180, maxTotal: 1400 }) || 'None'}
 
 Generate ${c.name}'s private notes app content. This is their innermost notebook — things written for themself only.
 
@@ -158267,9 +158308,8 @@ Language: Simplified Chinese. JSON only, no markdown fence.`;
         if (!c) return;
         this._showLoading('翻 ' + c.name + ' 的相册...', '让 AI 想象 ta 最近截图、自拍、保存的画面');
         let ownerName = this._userDisplayForChar(c, '对方');
-        let prompt = `You are ${c.name}. Persona: ${c.charPersona || 'A normal person'}
+        let prompt = `You are ${c.name}.
 ${this._userPromptRules(c)}
-${this._recentConversationLabel(c)}: ${this._snoopRecentChat(c, { limit: 6, maxPerMessage: 180, maxTotal: 1200 }) || 'None'}
 
 Generate ${c.name}'s phone Photos album — 12-16 photos that reveal what ta saves, screenshots, or captures with their camera. This is what a snooper would see scrolling through their gallery.
 
@@ -158912,6 +158952,7 @@ JSON array only, no markdown fence:
         let ownerName = this._userDisplayForChar(c, 'ta');
         let ownerBio = c.userPersona || '';
         let plantedClues = String(c.userSnoopClues || '').trim();
+        let inheritedPrompt = this._snoopInheritedPromptContext(c, { scope: `${ownerName}'s phone viewed by ${c.name}` });
         let prompt = `Simulate what ${c.name} would see if they snooped through ${ownerName}'s phone right now. From ${ownerName}'s perspective — generate ${ownerName}'s digital snapshot.
 
 KNOWN INFO:
@@ -158919,9 +158960,7 @@ KNOWN INFO:
 - Owner self-bio: ${ownerBio || '(none)'}
 - User Persona (how ${ownerName} presents to ${c.name}): ${c.userPersona || '(not set — use neutral)'}
 - Char name (the snooper): ${c.name}
-- Char Persona: ${c.charPersona || 'A normal person'}
-- Recent conversation between ${ownerName} and ${c.name}:
-${this._snoopRecentChat(c, { limit: 10, maxPerMessage: 180, maxTotal: 1800, userName: ownerName, charName: c.name }) || 'None'}
+${inheritedPrompt}
 - Player-planted clues to weave into the fake phone snapshot:
 ${plantedClues || 'None'}
 
@@ -160544,9 +160583,8 @@ ${viewed || '（这次没看到具体内容）'}
         if (!c) return;
         if (typeof this._showLoading === 'function') this._showLoading('正在查看闹钟', 'AI 正在生成 ta 的闹钟标签...');
         let userName = this._userDisplayForChar(c, '对方');
-        let prompt = `You are ${c.name}. Persona: ${c.charPersona || 'A normal person'}
+        let prompt = `You are ${c.name}.
 ${this._userPromptRules(c)}
-${this._recentConversationLabel(c)}: ${this._snoopRecentChat(c, { limit: 5, maxPerMessage: 160, maxTotal: 900 }) || 'None'}
 
 Generate 5-7 alarms in ${c.name}'s clock app. Alarm LABELS reveal personality and inner life — that's the whole point.
 
@@ -161521,16 +161559,11 @@ JSON array only, no markdown fence:
     },
 
     _heyboxPrompt(c) {
-        let recent = this._snoopRecentChat(c, { limit: 10, maxPerMessage: 180, maxTotal: 1600 });
         return `你在生成「查手机」里的小黑盒 app 数据。小黑盒是手机软件，不是电脑软件。
 
 角色：
 - Name: ${c.name}
-- Persona: ${c.charPersona || '未设置'}
 ${this._userPromptRules(c)}
-
-最近聊天：
-${recent || '(none)'}
 
 任务：
 生成 ${c.name} 的小黑盒账号快照，包括游戏关注、动态、评测草稿、愿望单、最近评论和收藏。内容必须贴合人设、生活方式、关系状态和可能的游戏品味。可以完全不把 ta 写成资深玩家；如果人设不爱游戏，也要体现「偶尔看、被朋友带、为了某个人搜过」这种合理痕迹。
