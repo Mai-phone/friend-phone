@@ -73646,7 +73646,7 @@ body.watch-cinema-active {
             <span class="settings-version-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10"></path><path d="M7 12h7"></path><path d="M7 17h5"></path><rect x="4" y="3" width="16" height="18" rx="3"></rect></svg>
             </span>
-                    <span class="settings-row-copy"><b>当前版本</b><small><span data-app-version>v2026.07.14.32</span> · <span data-app-version-note>当前本地版本</span></small></span>
+                    <span class="settings-row-copy"><b>当前版本</b><small><span data-app-version>v2026.07.14.34</span> · <span data-app-version-note>当前本地版本</span></small></span>
         </div>
         <button class="settings-row-card" onclick="Settings.openHelp()">
             <span class="settings-row-icon">
@@ -73821,7 +73821,7 @@ body.watch-cinema-active {
         <div class="settings-help-hero">
             <div class="settings-help-hero-top">
                 <div class="settings-help-kicker">小手机更新公告</div>
-                <div class="settings-version-pill" data-app-version>v2026.07.14.32</div>
+                <div class="settings-version-pill" data-app-version>v2026.07.14.34</div>
             </div>
             <div class="settings-help-hero-title">2026-06-04 内测更新</div>
             <div class="settings-help-hero-text">这次主要更新IOS适配、相册、生图、微信/QQ 皮肤、窥视（查手机）、Ta 的电脑、资料卡和介绍一些聊天基础操作。界面更顺眼、操作更直觉，也减少低配手机上的卡顿发热（或许）</div>
@@ -74522,9 +74522,9 @@ const $ = i => document.getElementById(i);
 const createElement = (t,c,h,f) => { let e=document.createElement(t); if(c)e.className=c; if(h)e.innerHTML=h; if(f)e.onclick=f; return e; };
 
 const AppVersion = {
-    value: 'v2026.07.14.32',
+    value: 'v2026.07.14.34',
     date: '2026-07-14',
-    label: 'v2026.07.14.32',
+    label: 'v2026.07.14.34',
     note: '当前本地版本',
     apply() {
         document.querySelectorAll('[data-app-version]').forEach(el => {
@@ -93892,7 +93892,8 @@ ${(typeof Chat !== 'undefined' && Chat._guardrailsPrompt) ? Chat._guardrailsProm
                 this.updateInputState();
                 return false;
             }
-            if (!c.isGroup && !this._hasUserMessage(c)) {
+            let hasPendingAvatarReaction = this._hasPendingUserAvatarReaction(c);
+            if (!c.isGroup && !this._hasUserMessage(c) && !hasPendingAvatarReaction) {
                 return await this._requestFreshInitiative(c);
             }
             let visionOk = await this._ensureLatestUserTurnVision(c);
@@ -93949,6 +93950,16 @@ ${(typeof Chat !== 'undefined' && Chat._guardrailsPrompt) ? Chat._guardrailsProm
             queued++;
         });
         return queued;
+    },
+
+    _hasPendingUserAvatarReaction(c) {
+        return !!(
+            c
+            && !c.isGroup
+            && c.allowAvatarVision
+            && c.pendingUserAvatarReaction
+            && c.pendingUserAvatarReaction.avatar
+        );
     },
 
     async notifyAvatarChange(c, avatarDataUrl) {
@@ -94195,7 +94206,7 @@ ${(typeof Chat !== 'undefined' && Chat._guardrailsPrompt) ? Chat._guardrailsProm
         if (!c) return false;
         if ((c.isBlocked || c.isBlockedByAi) && !force) return;
         if (!force && !extraContext && !(await this._ensureWakeForChat(c, { intent: 'reply' }))) return false;
-        let pendingUserAvatarReaction = (!extraContext && !force && c.allowAvatarVision && c.pendingUserAvatarReaction && c.pendingUserAvatarReaction.avatar)
+        let pendingUserAvatarReaction = (!force && this._hasPendingUserAvatarReaction(c))
             ? c.pendingUserAvatarReaction
             : null;
         if (!extraContext) {
@@ -94372,6 +94383,18 @@ ${(typeof Chat !== 'undefined' && Chat._guardrailsPrompt) ? Chat._guardrailsProm
                     : this._buildUserImagePromptText(promptUserImages, `${imageIntro} 编号 1 是最先发送的第一张，最后一个编号是最新一张。`)
             });
         }
+        if (!extraContext) {
+            let latestUserTurn = this._latestUserTurnText(c);
+            if (latestUserTurn) {
+                msgs.push({
+                    role: 'user',
+                    content: `[SYSTEM: 当前需要回应的是 ${userDisplay} 最新发来的气泡。请直接接这些消息，不要说 ${userDisplay} 没回、没说话、没有新消息或一直沉默。]\n${latestUserTurn}`
+                });
+            }
+        }
+        if (extraContext) {
+            msgs.push({ role: 'user', content: extraContext });
+        }
         if (pendingUserAvatarReaction) {
             let avatarImageForPrompt = await this._apiImageDataUrlForChat({ content: pendingUserAvatarReaction.avatar });
             let avatarMsg = {
@@ -94388,18 +94411,6 @@ ${(typeof Chat !== 'undefined' && Chat._guardrailsPrompt) ? Chat._guardrailsProm
                 role: 'user',
                 content: avatarContent
             });
-        }
-        if (!extraContext) {
-            let latestUserTurn = this._latestUserTurnText(c);
-            if (latestUserTurn) {
-                msgs.push({
-                    role: 'user',
-                    content: `[SYSTEM: 当前需要回应的是 ${userDisplay} 最新发来的气泡。请直接接这些消息，不要说 ${userDisplay} 没回、没说话、没有新消息或一直沉默。]\n${latestUserTurn}`
-                });
-            }
-        }
-        if (extraContext) {
-            msgs.push({ role: 'user', content: extraContext });
         }
 
         let busyKey = String(currentCid);
