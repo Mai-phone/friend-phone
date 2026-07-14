@@ -73646,7 +73646,7 @@ body.watch-cinema-active {
             <span class="settings-version-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10"></path><path d="M7 12h7"></path><path d="M7 17h5"></path><rect x="4" y="3" width="16" height="18" rx="3"></rect></svg>
             </span>
-                    <span class="settings-row-copy"><b>当前版本</b><small><span data-app-version>v2026.07.14.34</span> · <span data-app-version-note>当前本地版本</span></small></span>
+                    <span class="settings-row-copy"><b>当前版本</b><small><span data-app-version>v2026.07.14.35</span> · <span data-app-version-note>当前本地版本</span></small></span>
         </div>
         <button class="settings-row-card" onclick="Settings.openHelp()">
             <span class="settings-row-icon">
@@ -73821,7 +73821,7 @@ body.watch-cinema-active {
         <div class="settings-help-hero">
             <div class="settings-help-hero-top">
                 <div class="settings-help-kicker">小手机更新公告</div>
-                <div class="settings-version-pill" data-app-version>v2026.07.14.34</div>
+                <div class="settings-version-pill" data-app-version>v2026.07.14.35</div>
             </div>
             <div class="settings-help-hero-title">2026-06-04 内测更新</div>
             <div class="settings-help-hero-text">这次主要更新IOS适配、相册、生图、微信/QQ 皮肤、窥视（查手机）、Ta 的电脑、资料卡和介绍一些聊天基础操作。界面更顺眼、操作更直觉，也减少低配手机上的卡顿发热（或许）</div>
@@ -74522,9 +74522,9 @@ const $ = i => document.getElementById(i);
 const createElement = (t,c,h,f) => { let e=document.createElement(t); if(c)e.className=c; if(h)e.innerHTML=h; if(f)e.onclick=f; return e; };
 
 const AppVersion = {
-    value: 'v2026.07.14.34',
+    value: 'v2026.07.14.35',
     date: '2026-07-14',
-    label: 'v2026.07.14.34',
+    label: 'v2026.07.14.35',
     note: '当前本地版本',
     apply() {
         document.querySelectorAll('[data-app-version]').forEach(el => {
@@ -88102,6 +88102,8 @@ if (typeof window !== 'undefined') window.AltMainNotice = AltMainNotice;
 
 const Chat = {
     cid: null, quotedMessage: null, quotedMessageContext: '', _activeAbortController: null, _activeRequestId: 0, _streamFallbackByPreset: {},
+    _mainChatRequestTimeoutMs: 200000,
+    _chatApiImageDataUrlLimit: 2.4 * 1024 * 1024,
     _imageInputFallbackByPreset: {},
     _altSessionId: '',
     _activeAccountId: undefined,
@@ -90296,8 +90298,8 @@ ${visibleReply || '（无）'}
                 let raw = await this._callChatTextWithFallback(c, this._htmlCardGeneratorMessages(c, originalText, need - cards.length, attempt), {
                     requestId: options.requestId,
                     preferStream: false,
-                    streamTimeout: options.streamTimeout || 500000,
-                    nonStreamTimeout: options.nonStreamTimeout || 500000,
+                    streamTimeout: options.streamTimeout || this._mainChatRequestTimeoutMs,
+                    nonStreamTimeout: options.nonStreamTimeout || this._mainChatRequestTimeoutMs,
                     streamIdleTimeout: options.streamIdleTimeout || 30000,
                     setTitle: options.setTitle,
                     purpose: 'chat',
@@ -91074,7 +91076,7 @@ Format exactly: <msg type="emoticon">exact_listed_name</msg>. Do not use {{emoti
         let b64 = src.slice(comma + 1).replace(/\s/g, '');
         if (!b64 || b64.length % 4 === 1 || /[^A-Za-z0-9+/=]/.test(b64)) return false;
         let bytes = (typeof Utils !== 'undefined' && Utils.dataUrlBytes) ? Utils.dataUrlBytes(src) : Math.floor(b64.length * 3 / 4);
-        return bytes > 0 && src.length <= 8 * 1024 * 1024;
+        return bytes > 0 && src.length <= this._chatApiImageDataUrlLimit;
     },
     _isUserPromptImageMessage(m) {
         return !!(
@@ -91132,7 +91134,7 @@ Format exactly: <msg type="emoticon">exact_listed_name</msg>. Do not use {{emoti
             let sourceW = img.naturalWidth || img.width;
             let sourceH = img.naturalHeight || img.height;
             if (!sourceW || !sourceH) return '';
-            let maxDataUrlLength = 7.6 * 1024 * 1024;
+            let maxDataUrlLength = this._chatApiImageDataUrlLimit;
             for (let maxSide of [1280, 1080, 960, 840, 720, 640]) {
                 let scale = Math.min(1, maxSide / Math.max(sourceW, sourceH));
                 let width = Math.max(1, Math.round(sourceW * scale));
@@ -94456,8 +94458,8 @@ ${(typeof Chat !== 'undefined' && Chat._guardrailsPrompt) ? Chat._guardrailsProm
             let fullText = await this._callChatTextWithFallback(c, msgs, {
                 requestId,
                 preferStream: false,
-                streamTimeout: 500000,
-                nonStreamTimeout: 500000,
+                streamTimeout: this._mainChatRequestTimeoutMs,
+                nonStreamTimeout: this._mainChatRequestTimeoutMs,
                 streamIdleTimeout: 30000,
                 setTitle: text => {
                     if (Chat.cid === currentCid) {
@@ -94486,8 +94488,8 @@ ${(typeof Chat !== 'undefined' && Chat._guardrailsPrompt) ? Chat._guardrailsProm
             ) {
                 let htmlCardRepairOptions = {
                     requestId,
-                    streamTimeout: 500000,
-                    nonStreamTimeout: 500000,
+                    streamTimeout: this._mainChatRequestTimeoutMs,
+                    nonStreamTimeout: this._mainChatRequestTimeoutMs,
                     streamIdleTimeout: 30000,
                     setTitle: text => {
                         if (Chat.cid === currentCid) {
