@@ -73646,7 +73646,7 @@ body.watch-cinema-active {
             <span class="settings-version-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10"></path><path d="M7 12h7"></path><path d="M7 17h5"></path><rect x="4" y="3" width="16" height="18" rx="3"></rect></svg>
             </span>
-                    <span class="settings-row-copy"><b>当前版本</b><small><span data-app-version>v2026.07.14.31</span> · <span data-app-version-note>当前本地版本</span></small></span>
+                    <span class="settings-row-copy"><b>当前版本</b><small><span data-app-version>v2026.07.14.32</span> · <span data-app-version-note>当前本地版本</span></small></span>
         </div>
         <button class="settings-row-card" onclick="Settings.openHelp()">
             <span class="settings-row-icon">
@@ -73821,7 +73821,7 @@ body.watch-cinema-active {
         <div class="settings-help-hero">
             <div class="settings-help-hero-top">
                 <div class="settings-help-kicker">小手机更新公告</div>
-                <div class="settings-version-pill" data-app-version>v2026.07.14.31</div>
+                <div class="settings-version-pill" data-app-version>v2026.07.14.32</div>
             </div>
             <div class="settings-help-hero-title">2026-06-04 内测更新</div>
             <div class="settings-help-hero-text">这次主要更新IOS适配、相册、生图、微信/QQ 皮肤、窥视（查手机）、Ta 的电脑、资料卡和介绍一些聊天基础操作。界面更顺眼、操作更直觉，也减少低配手机上的卡顿发热（或许）</div>
@@ -74522,9 +74522,9 @@ const $ = i => document.getElementById(i);
 const createElement = (t,c,h,f) => { let e=document.createElement(t); if(c)e.className=c; if(h)e.innerHTML=h; if(f)e.onclick=f; return e; };
 
 const AppVersion = {
-    value: 'v2026.07.14.31',
+    value: 'v2026.07.14.32',
     date: '2026-07-14',
-    label: 'v2026.07.14.31',
+    label: 'v2026.07.14.32',
     note: '当前本地版本',
     apply() {
         document.querySelectorAll('[data-app-version]').forEach(el => {
@@ -91582,6 +91582,10 @@ When appending the final <status>, include loc/cloth/mood/pose only as hidden co
         if (!preset) return 'default';
         return String(preset.id || `${preset.url || ''}|${preset.model || ''}` || 'default');
     },
+    _clearImageInputFallback(c) {
+        let key = this._chatStreamCacheKey(c);
+        if (this._imageInputFallbackByPreset) delete this._imageInputFallbackByPreset[key];
+    },
     _imageInputFallbackActive(c) {
         let key = this._chatStreamCacheKey(c);
         let info = this._imageInputFallbackByPreset && this._imageInputFallbackByPreset[key];
@@ -94313,7 +94317,8 @@ ${(typeof Chat !== 'undefined' && Chat._guardrailsPrompt) ? Chat._guardrailsProm
         let foodDeliveryCtx = this._foodDeliveryContext(c, userDisplay);
         let appContextCtx = this._appContext([momentsCtx, crossAppCtx, chatGamesCtx, altAccountsCtx, phoneSnoopCtx].filter(Boolean).join('\n'));
         let altIdentityCtx = this._altIdentityContext(c);
-        let chatApiSeesImages = this._activeChatApiSupportsImageInput(c);
+        if (pendingUserAvatarReaction) this._clearImageInputFallback(c);
+        let chatApiSeesImages = pendingUserAvatarReaction ? true : this._activeChatApiSupportsImageInput(c);
         let imageInputCtx = `\n[Image Input]\n如果 ${userDisplay} 在普通聊天里发来图片，${chatApiSeesImages ? '默认直接把原图交给当前聊天 API 识别。' : '当前会优先使用图片描述或只保留“发了图片”的事实，避免把当前接口拒收的原图继续塞进聊天 API。'}把它当作 ${userDisplay} 分享的生活、物品、截图或画面来回应。普通聊天图片与“允许 TA 看到我换头像”无关；只有当 ${userDisplay} 明确要求把当前或最近候选图片设为你的头像/情头时，才允许在回复末尾追加 [AVATAR_SET:n]；如果图片不是头像候选、只是截图/生活分享/聊天记录，或你拿不准，就输出 [AVATAR_SKIP] 或不输出头像指令。不要因为 ${userDisplay} 泛泛说“想换头像”就替 ta 选择旧图片。`;
         let pendingAvatarCtx = pendingUserAvatarReaction
             ? `\n[User Avatar Update]\n你已经看见了新头像。本轮必须用一句话对它作出具体反应，再继续回应最新消息；不要长篇围绕头像。\n[/User Avatar Update]`
@@ -94376,20 +94381,12 @@ ${(typeof Chat !== 'undefined' && Chat._guardrailsPrompt) ? Chat._guardrailsProm
                 time: pendingUserAvatarReaction.time || Date.now(),
                 visionDescription: pendingUserAvatarReaction.visionDescription || ''
             };
-            if (!chatApiSeesImages && !avatarMsg.visionDescription) {
-                let desc = await this.describeImageMessage(avatarMsg, c, { silent: true, skipRender: true, force: true });
-                if (desc) {
-                    avatarMsg.visionDescription = desc;
-                    pendingUserAvatarReaction.visionDescription = desc;
-                    await DB.save();
-                }
-            }
             let avatarIntro = `这张图是 ${userDisplay} 刚换的新头像。你已经看见了新头像。本轮必须用一句话对它作出具体反应，再继续回应最新消息；不要长篇围绕头像。`;
+            let avatarContent = await this._buildUserImageContentParts([avatarMsg], avatarIntro);
+            if (!this._messagesHaveImageInput([{ role: 'user', content: avatarContent }])) throw new Error('AVATAR_IMAGE_INPUT_MISSING');
             msgs.push({
                 role: 'user',
-                content: chatApiSeesImages
-                    ? await this._buildUserImageContentParts([avatarMsg], avatarIntro)
-                    : this._buildUserImagePromptText([avatarMsg], avatarIntro)
+                content: avatarContent
             });
         }
         if (!extraContext) {
@@ -94458,7 +94455,8 @@ ${(typeof Chat !== 'undefined' && Chat._guardrailsPrompt) ? Chat._guardrailsProm
                         else this._setChatRoomTitle(text);
                     }
                 },
-                purpose: 'chat'
+                purpose: 'chat',
+                retryWithoutImageInputOnInvalid: !pendingUserAvatarReaction
             });
 
             if (!fullText.trim()) {
