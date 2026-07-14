@@ -73646,7 +73646,7 @@ body.watch-cinema-active {
             <span class="settings-version-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10"></path><path d="M7 12h7"></path><path d="M7 17h5"></path><rect x="4" y="3" width="16" height="18" rx="3"></rect></svg>
             </span>
-                    <span class="settings-row-copy"><b>当前版本</b><small><span data-app-version>v2026.07.14.35</span> · <span data-app-version-note>当前本地版本</span></small></span>
+                    <span class="settings-row-copy"><b>当前版本</b><small><span data-app-version>v2026.07.14.36</span> · <span data-app-version-note>当前本地版本</span></small></span>
         </div>
         <button class="settings-row-card" onclick="Settings.openHelp()">
             <span class="settings-row-icon">
@@ -73821,7 +73821,7 @@ body.watch-cinema-active {
         <div class="settings-help-hero">
             <div class="settings-help-hero-top">
                 <div class="settings-help-kicker">小手机更新公告</div>
-                <div class="settings-version-pill" data-app-version>v2026.07.14.35</div>
+                <div class="settings-version-pill" data-app-version>v2026.07.14.36</div>
             </div>
             <div class="settings-help-hero-title">2026-06-04 内测更新</div>
             <div class="settings-help-hero-text">这次主要更新IOS适配、相册、生图、微信/QQ 皮肤、窥视（查手机）、Ta 的电脑、资料卡和介绍一些聊天基础操作。界面更顺眼、操作更直觉，也减少低配手机上的卡顿发热（或许）</div>
@@ -74522,9 +74522,9 @@ const $ = i => document.getElementById(i);
 const createElement = (t,c,h,f) => { let e=document.createElement(t); if(c)e.className=c; if(h)e.innerHTML=h; if(f)e.onclick=f; return e; };
 
 const AppVersion = {
-    value: 'v2026.07.14.35',
+    value: 'v2026.07.14.36',
     date: '2026-07-14',
-    label: 'v2026.07.14.35',
+    label: 'v2026.07.14.36',
     note: '当前本地版本',
     apply() {
         document.querySelectorAll('[data-app-version]').forEach(el => {
@@ -91135,7 +91135,7 @@ Format exactly: <msg type="emoticon">exact_listed_name</msg>. Do not use {{emoti
             let sourceH = img.naturalHeight || img.height;
             if (!sourceW || !sourceH) return '';
             let maxDataUrlLength = this._chatApiImageDataUrlLimit;
-            for (let maxSide of [1280, 1080, 960, 840, 720, 640]) {
+            for (let maxSide of [1800, 1600, 1400, 1200, 1000]) {
                 let scale = Math.min(1, maxSide / Math.max(sourceW, sourceH));
                 let width = Math.max(1, Math.round(sourceW * scale));
                 let height = Math.max(1, Math.round(sourceH * scale));
@@ -91146,7 +91146,7 @@ Format exactly: <msg type="emoticon">exact_listed_name</msg>. Do not use {{emoti
                 ctx.fillStyle = '#fff';
                 ctx.fillRect(0, 0, width, height);
                 ctx.drawImage(img, 0, 0, width, height);
-                for (let quality of [0.82, 0.74, 0.66, 0.58]) {
+                for (let quality of [0.86, 0.78, 0.7, 0.62]) {
                     let dataUrl = canvas.toDataURL('image/jpeg', quality);
                     if (dataUrl.length <= maxDataUrlLength && this._isApiSendableImageDataUrl(dataUrl)) return dataUrl;
                 }
@@ -100044,10 +100044,10 @@ const PlusMenu = {
             let file = files[i];
             let result = Utils.imageFileToChatDataUrl
                 ? await Utils.imageFileToChatDataUrl(file, {
-                    normalizeForDisplay: false,
+                    normalizeForDisplay: true,
                     outputType: 'image/jpeg',
                     preserveTransparency: false,
-                    maxDataUrlLength: 8 * 1024 * 1024
+                    maxDataUrlLength: 2.2 * 1024 * 1024
                 })
                 : { dataUrl: await new Promise(resolve => Utils.fileToBase64(file, resolve)), compressed: false };
             if (result.compressed) compressedCount++;
