@@ -73646,7 +73646,7 @@ body.watch-cinema-active {
             <span class="settings-version-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10"></path><path d="M7 12h7"></path><path d="M7 17h5"></path><rect x="4" y="3" width="16" height="18" rx="3"></rect></svg>
             </span>
-                    <span class="settings-row-copy"><b>当前版本</b><small><span data-app-version>v2026.07.14.30</span> · <span data-app-version-note>当前本地版本</span></small></span>
+                    <span class="settings-row-copy"><b>当前版本</b><small><span data-app-version>v2026.07.14.31</span> · <span data-app-version-note>当前本地版本</span></small></span>
         </div>
         <button class="settings-row-card" onclick="Settings.openHelp()">
             <span class="settings-row-icon">
@@ -73821,7 +73821,7 @@ body.watch-cinema-active {
         <div class="settings-help-hero">
             <div class="settings-help-hero-top">
                 <div class="settings-help-kicker">小手机更新公告</div>
-                <div class="settings-version-pill" data-app-version>v2026.07.14.30</div>
+                <div class="settings-version-pill" data-app-version>v2026.07.14.31</div>
             </div>
             <div class="settings-help-hero-title">2026-06-04 内测更新</div>
             <div class="settings-help-hero-text">这次主要更新IOS适配、相册、生图、微信/QQ 皮肤、窥视（查手机）、Ta 的电脑、资料卡和介绍一些聊天基础操作。界面更顺眼、操作更直觉，也减少低配手机上的卡顿发热（或许）</div>
@@ -74522,9 +74522,9 @@ const $ = i => document.getElementById(i);
 const createElement = (t,c,h,f) => { let e=document.createElement(t); if(c)e.className=c; if(h)e.innerHTML=h; if(f)e.onclick=f; return e; };
 
 const AppVersion = {
-    value: 'v2026.07.14.30',
+    value: 'v2026.07.14.31',
     date: '2026-07-14',
-    label: 'v2026.07.14.30',
+    label: 'v2026.07.14.31',
     note: '当前本地版本',
     apply() {
         document.querySelectorAll('[data-app-version]').forEach(el => {
@@ -91074,7 +91074,7 @@ Format exactly: <msg type="emoticon">exact_listed_name</msg>. Do not use {{emoti
         let b64 = src.slice(comma + 1).replace(/\s/g, '');
         if (!b64 || b64.length % 4 === 1 || /[^A-Za-z0-9+/=]/.test(b64)) return false;
         let bytes = (typeof Utils !== 'undefined' && Utils.dataUrlBytes) ? Utils.dataUrlBytes(src) : Math.floor(b64.length * 3 / 4);
-        return bytes > 0 && src.length <= 2.4 * 1024 * 1024;
+        return bytes > 0 && src.length <= 8 * 1024 * 1024;
     },
     _isUserPromptImageMessage(m) {
         return !!(
@@ -91123,13 +91123,44 @@ Format exactly: <msg type="emoticon">exact_listed_name</msg>. Do not use {{emoti
         }
         return lines.join('\n');
     },
-    _buildUserImageContentParts(images, intro) {
+    async _apiImageDataUrlForChat(m) {
+        let original = this._imageDataUrlForPrompt(m);
+        if (this._isApiSendableImageDataUrl(original)) return original;
+        if (!/^data:image\/(?:png|jpe?g|webp);base64,/i.test(original) || typeof Utils === 'undefined' || !Utils._loadImageElement) return '';
+        try {
+            let img = await Utils._loadImageElement(original);
+            let sourceW = img.naturalWidth || img.width;
+            let sourceH = img.naturalHeight || img.height;
+            if (!sourceW || !sourceH) return '';
+            let maxDataUrlLength = 7.6 * 1024 * 1024;
+            for (let maxSide of [1280, 1080, 960, 840, 720, 640]) {
+                let scale = Math.min(1, maxSide / Math.max(sourceW, sourceH));
+                let width = Math.max(1, Math.round(sourceW * scale));
+                let height = Math.max(1, Math.round(sourceH * scale));
+                let canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                let ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#fff';
+                ctx.fillRect(0, 0, width, height);
+                ctx.drawImage(img, 0, 0, width, height);
+                for (let quality of [0.82, 0.74, 0.66, 0.58]) {
+                    let dataUrl = canvas.toDataURL('image/jpeg', quality);
+                    if (dataUrl.length <= maxDataUrlLength && this._isApiSendableImageDataUrl(dataUrl)) return dataUrl;
+                }
+            }
+        } catch(e) {
+            console.warn('Unable to prepare image input for chat API', e);
+        }
+        return '';
+    },
+    async _buildUserImageContentParts(images, intro) {
         let parts = [{ type: 'text', text: intro }];
         for (let i = 0; i < images.length; i++) {
             let img = images[i];
             let desc = this._imageDescriptionForPrompt(img);
             let label = `图片 ${i + 1}${i === images.length - 1 ? '（latest）' : ''}`;
-            let dataUrl = this._imageDataUrlForPrompt(img);
+            let dataUrl = await this._apiImageDataUrlForChat(img);
             let canSendImage = this._isApiSendableImageDataUrl(dataUrl);
             parts.push({ type: 'text', text: desc ? `${label} 已有识图描述：${desc}` : (canSendImage ? label : `${label}：用户发来了一张图片，当前只能作为图片消息事实传入。`) });
             if (canSendImage) {
@@ -94332,15 +94363,16 @@ ${(typeof Chat !== 'undefined' && Chat._guardrailsPrompt) ? Chat._guardrailsProm
             msgs.push({
                 role: 'user',
                 content: chatApiSeesImages
-                    ? this._buildUserImageContentParts(promptUserImages, `${imageIntro} 编号 1 是最先发送的第一张，最后一个编号是最新一张。`)
+                    ? await this._buildUserImageContentParts(promptUserImages, `${imageIntro} 编号 1 是最先发送的第一张，最后一个编号是最新一张。`)
                     : this._buildUserImagePromptText(promptUserImages, `${imageIntro} 编号 1 是最先发送的第一张，最后一个编号是最新一张。`)
             });
         }
         if (pendingUserAvatarReaction) {
+            let avatarImageForPrompt = await this._apiImageDataUrlForChat({ content: pendingUserAvatarReaction.avatar });
             let avatarMsg = {
                 role: 'user',
                 type: 'image',
-                content: pendingUserAvatarReaction.avatar,
+                content: avatarImageForPrompt || pendingUserAvatarReaction.avatar,
                 time: pendingUserAvatarReaction.time || Date.now(),
                 visionDescription: pendingUserAvatarReaction.visionDescription || ''
             };
@@ -94356,7 +94388,7 @@ ${(typeof Chat !== 'undefined' && Chat._guardrailsPrompt) ? Chat._guardrailsProm
             msgs.push({
                 role: 'user',
                 content: chatApiSeesImages
-                    ? this._buildUserImageContentParts([avatarMsg], avatarIntro)
+                    ? await this._buildUserImageContentParts([avatarMsg], avatarIntro)
                     : this._buildUserImagePromptText([avatarMsg], avatarIntro)
             });
         }
@@ -100001,10 +100033,10 @@ const PlusMenu = {
             let file = files[i];
             let result = Utils.imageFileToChatDataUrl
                 ? await Utils.imageFileToChatDataUrl(file, {
-                    normalizeForDisplay: true,
+                    normalizeForDisplay: false,
                     outputType: 'image/jpeg',
                     preserveTransparency: false,
-                    maxDataUrlLength: 2.2 * 1024 * 1024
+                    maxDataUrlLength: 8 * 1024 * 1024
                 })
                 : { dataUrl: await new Promise(resolve => Utils.fileToBase64(file, resolve)), compressed: false };
             if (result.compressed) compressedCount++;
