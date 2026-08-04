@@ -59514,6 +59514,86 @@ body.keyboard-open.keyboard-target-form #sub-group-member-edit.active .edit-poli
     color: #B4232C;
 }
 
+.background-push-page .push-contact-card {
+    gap: 0 !important;
+    padding: 0 !important;
+}
+
+.background-push-page .push-contact-heading {
+    padding: 13px 14px 11px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    border-bottom: 1px solid var(--phone-ui-line);
+}
+
+.background-push-page .push-contact-heading b,
+.background-push-page .push-contact-row b {
+    color: var(--phone-ui-ink);
+    font-size: calc(13px * var(--app-font-scale));
+    font-weight: 760;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+.background-push-page .push-contact-heading small,
+.background-push-page .push-contact-empty {
+    color: var(--phone-ui-sub);
+    font-size: calc(11px * var(--app-font-scale));
+    font-weight: 540;
+    line-height: 1.45;
+}
+
+.background-push-page .push-contact-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.background-push-page .push-contact-row {
+    min-height: 52px;
+    padding: 8px 14px;
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr) 22px;
+    align-items: center;
+    gap: 10px;
+}
+
+.background-push-page .push-contact-row:not(:last-child) {
+    border-bottom: 1px solid var(--phone-ui-line);
+}
+
+.background-push-page .push-contact-avatar {
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 50%;
+    background: var(--phone-ui-soft);
+    color: var(--phone-ui-sub);
+    font-size: calc(13px * var(--app-font-scale));
+    font-weight: 760;
+}
+
+.background-push-page .push-contact-avatar img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+.background-push-page .push-contact-row input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
+    margin: 0;
+    accent-color: var(--accent, #3D8BFF);
+}
+
+.background-push-page .push-contact-empty {
+    padding: 14px;
+}
+
 .background-push-page .push-quiet-inputs {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
@@ -71097,7 +71177,7 @@ body:has(#sub-music-together.active.music-skin-dark) #global-status-bar {
     min-width: 40px;
     min-height: 40px;
     border: 1px solid rgba(51, 45, 48, 0.11);
-    border-radius: 14px;
+    border-radius: 8px;
     background: rgba(255, 255, 255, 0.58);
     color: #242126;
     font: inherit;
@@ -71129,9 +71209,9 @@ body:has(#sub-music-together.active.music-skin-dark) #global-status-bar {
     display: grid;
     place-items: center;
     overflow: hidden;
-    border-radius: 22px;
-    background: rgba(255, 255, 255, 0.52);
-    box-shadow: 0 20px 48px rgba(46, 35, 40, 0.18), 0 1px 0 rgba(255, 255, 255, 0.72) inset;
+    border-radius: 4px;
+    background: #17191D;
+    box-shadow: 0 18px 42px rgba(35, 29, 32, 0.24);
 }
 
 .music-ticket-canvas {
@@ -71139,22 +71219,6 @@ body:has(#sub-music-together.active.music-skin-dark) #global-status-bar {
     width: 100%;
     height: 100%;
     object-fit: contain;
-}
-
-.music-ticket-loading,
-.music-ticket-error {
-    position: absolute;
-    inset: 0;
-    display: grid;
-    place-items: center;
-    padding: 24px;
-    text-align: center;
-    color: rgba(36, 33, 38, 0.68);
-    background: rgba(246, 241, 242, 0.82);
-}
-
-.music-ticket-error {
-    color: #8B3D48;
 }
 
 .music-ticket-controls {
@@ -71272,7 +71336,7 @@ body:has(#sub-music-together.active.music-skin-dark) #global-status-bar {
 
     .music-ticket-canvas-wrap {
         width: min(100%, calc((100vh - 238px) * 0.75), 286px);
-        border-radius: 18px;
+        border-radius: 4px;
     }
 
     .music-ticket-controls {
@@ -71285,7 +71349,7 @@ body:has(#sub-music-together.active.music-skin-dark) #global-status-bar {
     .music-ticket-sheet {
         height: min(100%, 844px);
         align-self: center;
-        border-radius: 28px;
+        border-radius: 8px;
     }
 }
 
@@ -75040,14 +75104,13 @@ body.watch-cinema-active {
 }
 
 .rpg-character-bubble {
-    background: color-mix(in srgb, var(--accent, #3f556d) 7%, var(--bubble-ai, #fff)) !important;
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #3f556d) 17%, transparent) !important;
+    background: var(--line-bubble-ai) !important;
+    color: var(--line-text-ai) !important;
 }
 
 .msg-block.me .rpg-character-bubble {
-    background: color-mix(in srgb, var(--accent, #3f556d) 17%, #ffffff) !important;
-    color: var(--text-main, #0f141a) !important;
-    border: 1px solid color-mix(in srgb, var(--accent, #3f556d) 24%, transparent) !important;
+    background: var(--line-bubble-me) !important;
+    color: var(--line-text-me) !important;
 }
 
 .rpg-ooc-bubble {
@@ -77985,7 +78048,7 @@ body.watch-cinema-active {
             <span class="settings-version-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10"></path><path d="M7 12h7"></path><path d="M7 17h5"></path><rect x="4" y="3" width="16" height="18" rx="3"></rect></svg>
             </span>
-                        <span class="settings-row-copy"><b>当前版本</b><small><span data-app-version>v2026.08.04.6</span> · <span data-app-version-note>当前本地版本</span></small></span>
+                        <span class="settings-row-copy"><b>当前版本</b><small><span data-app-version>v2026.08.04.7</span> · <span data-app-version-note>当前本地版本</span></small></span>
         </div>
         <button class="settings-row-card" onclick="Settings.openHelp()">
             <span class="settings-row-icon">
@@ -78012,6 +78075,16 @@ body.watch-cinema-active {
                     <span><b>允许后台推送</b><small>正在使用小手机时不会调用 API</small></span>
                     <div id="push-enabled-toggle" class="snoop-toggle settings-api-switch" role="switch" aria-checked="false"></div>
                 </button>
+            </div>
+        </section>
+
+        <section class="secondary-section">
+            <div class="secondary-card push-contact-card">
+                <div class="push-contact-heading">
+                    <b>允许推送的角色</b>
+                    <small>只有勾选的角色会在你离开小手机后联系你。</small>
+                </div>
+                <div id="push-contact-list" class="push-contact-list"></div>
             </div>
         </section>
 
@@ -78318,7 +78391,7 @@ https://你的-worker地址/v1/config</code></pre>
         <div class="settings-help-hero">
             <div class="settings-help-hero-top">
                 <div class="settings-help-kicker">小手机更新公告</div>
-            <div class="settings-version-pill" data-app-version>v2026.08.04.6</div>
+            <div class="settings-version-pill" data-app-version>v2026.08.04.7</div>
             </div>
             <div class="settings-help-hero-title">2026-06-04 内测更新</div>
             <div class="settings-help-hero-text">这次主要更新IOS适配、相册、生图、微信/QQ 皮肤、窥视（查手机）、Ta 的电脑、资料卡和介绍一些聊天基础操作。界面更顺眼、操作更直觉，也减少低配手机上的卡顿发热（或许）</div>
@@ -79035,9 +79108,9 @@ const $ = i => document.getElementById(i);
 const createElement = (t,c,h,f) => { let e=document.createElement(t); if(c)e.className=c; if(h)e.innerHTML=h; if(f)e.onclick=f; return e; };
 
 const AppVersion = {
-    value: 'v2026.08.04.6',
+    value: 'v2026.08.04.7',
     date: '2026-08-04',
-    label: 'v2026.08.04.6',
+    label: 'v2026.08.04.7',
     note: '当前本地版本',
     apply() {
         document.querySelectorAll('[data-app-version]').forEach(el => {
@@ -97548,20 +97621,17 @@ const Chat = {
         if (sendBtn) {
             let rpgBusy = !!(c && c.isGroup && typeof GroupRpg !== 'undefined' && GroupRpg.isBusy && GroupRpg.isBusy(c));
             let canStopReply = !!(busy && c && (!c.isGroup || rpgBusy));
-            let rpgReceive = !!(c && c.isGroup && typeof GroupRpg !== 'undefined' && GroupRpg.canReceive && GroupRpg.canReceive(c));
-            let buttonMode = canStopReply ? 'stop' : (rpgReceive && !hasText ? 'receive' : 'send');
+            let buttonMode = canStopReply ? 'stop' : 'send';
             if (sendBtn.dataset.mode !== buttonMode) {
                 sendBtn.dataset.mode = buttonMode;
                 sendBtn.innerHTML = canStopReply
                     ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" style="width:16px"><rect x="7" y="7" width="10" height="10" rx="1.8" fill="currentColor" stroke="none"></rect></svg>'
-                    : (buttonMode === 'receive'
-                        ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:17px"><path d="M12 4v12"></path><path d="m7 11 5 5 5-5"></path><path d="M5 20h14"></path></svg>'
-                        : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" style="width:16px"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>');
+                    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" style="width:16px"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>';
             }
             sendBtn.disabled = busy && !hasText && !canStopReply;
             sendBtn.classList.toggle('api-busy', busy && !hasText && !canStopReply);
             sendBtn.classList.toggle('reply-stop', canStopReply);
-            let buttonHint = canStopReply ? '点击取消回复' : (rpgReceive && !hasText ? '接收回复' : (selfBlocked && !hasText ? '接收一条拦截消息' : ''));
+            let buttonHint = canStopReply ? '点击取消回复' : (selfBlocked && !hasText ? '接收一条拦截消息' : '');
             sendBtn.title = buttonHint;
             sendBtn.setAttribute('aria-label', buttonHint || '发送');
         }
@@ -129156,16 +129226,35 @@ ${recentRoom || '（刚进入房间）'}
     _ticketTopSong(snapshot) {
         return (snapshot && Array.isArray(snapshot.songs) ? snapshot.songs.slice() : []).sort((a, b) => (Number(b.playedMs) || 0) - (Number(a.playedMs) || 0))[0] || null;
     },
+    _ticketHasWords(value) {
+        let text = String(value || '').replace(/\s+/g, ' ').trim();
+        if (!text) return false;
+        return text.replace(/[\s.…,，。!！?？~～·•—–_\-'"“”‘’()（）\[\]{}<>《》:：;；/\\|]+/g, '').length > 0;
+    },
+    _ticketConversationPages(snapshot, pageSize = 2) {
+        let size = Math.max(1, Math.min(3, Math.floor(Number(pageSize) || 2)));
+        let transcript = (snapshot && Array.isArray(snapshot.transcript) ? snapshot.transcript : [])
+            .filter(item => item && (item.role === 'user' || item.role === 'assistant') && this._ticketHasWords(item.content))
+            .map(item => ({
+                role: item.role,
+                content: String(item.content || '').replace(/\s+/g, ' ').trim().slice(0, 240),
+                time: Number(item.time) || 0
+            }))
+            .slice(-12);
+        let pages = [];
+        for (let index = 0; index < transcript.length; index += size) pages.push(transcript.slice(index, index + size));
+        return pages;
+    },
     _parseMusicTicketCopy(raw) {
-        let text = AIClient.stripCodeFence(raw), moments = [], match;
+        let text = AIClient.stripCodeFence(String(raw || '')), moments = [], match;
         let re = /<\s*moment\s*>([\s\S]*?)<\s*\/\s*moment\s*>/gi;
         while ((match = re.exec(text)) && moments.length < 3) {
             let value = this._cleanCharText(match[1], '');
-            if (value) moments.push(value);
+            if (this._ticketHasWords(value)) moments.push(value);
         }
         let echoMatch = text.match(/<\s*echo\s*>([\s\S]*?)<\s*\/\s*echo\s*>/i);
         let echo = echoMatch ? this._cleanCharText(echoMatch[1], '') : '';
-        if (!moments.length || !echo) throw new Error('AI 没有返回可用的纪念票内容');
+        if (!this._ticketHasWords(echo)) throw new Error('AI 没有返回可用的纪念票内容');
         return { moments, echo };
     },
     async _requestMusicTicketCopy(c, snapshot) {
@@ -129186,6 +129275,33 @@ ${transcript}`;
         ctx.beginPath(); ctx.moveTo(x + radius, y); ctx.arcTo(x + w, y, x + w, y + h, radius); ctx.arcTo(x + w, y + h, x, y + h, radius); ctx.arcTo(x, y + h, x, y, radius); ctx.arcTo(x, y, x + w, y, radius); ctx.closePath();
         if (fill) { ctx.fillStyle = fill; ctx.fill(); }
     },
+    _ticketCouponPath(ctx, x, y, w, h, cutY, notch = 18, radius = 22) {
+        let right = x + w, bottom = y + h, r = Math.min(radius, w / 2, h / 2);
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.lineTo(right - r, y); ctx.quadraticCurveTo(right, y, right, y + r);
+        ctx.lineTo(right, cutY - notch);
+        ctx.quadraticCurveTo(right - notch, cutY - notch, right - notch, cutY);
+        ctx.quadraticCurveTo(right - notch, cutY + notch, right, cutY + notch);
+        ctx.lineTo(right, bottom - r); ctx.quadraticCurveTo(right, bottom, right - r, bottom);
+        ctx.lineTo(x + r, bottom); ctx.quadraticCurveTo(x, bottom, x, bottom - r);
+        ctx.lineTo(x, cutY + notch);
+        ctx.quadraticCurveTo(x + notch, cutY + notch, x + notch, cutY);
+        ctx.quadraticCurveTo(x + notch, cutY - notch, x, cutY - notch);
+        ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y);
+        ctx.closePath();
+    },
+    _ticketDrawBarcode(ctx, x, y, w, h, seed, color) {
+        let value = String(seed || 'music-ticket'), cursor = x, index = 0;
+        ctx.save(); ctx.fillStyle = color;
+        while (cursor < x + w) {
+            let code = value.charCodeAt(index % value.length) || 1;
+            let bar = 2 + (code % 4), gap = 2 + ((code >> 2) % 3);
+            ctx.fillRect(cursor, y, Math.min(bar, x + w - cursor), h);
+            cursor += bar + gap; index += 1;
+        }
+        ctx.restore();
+    },
     _ticketWrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 3) {
         let lines = [], line = '';
         Array.from(String(text || '')).forEach(char => { let next = line + char; if (line && ctx.measureText(next).width > maxWidth) { lines.push(line); line = char; } else line = next; });
@@ -129194,17 +129310,59 @@ ${transcript}`;
         lines.forEach((value, index) => ctx.fillText(value, x, y + index * lineHeight));
         return lines.length * lineHeight;
     },
-    async _ticketLoadImage(src) {
+    async _ticketLoadImage(src, draft = this._ticketDraft) {
         src = String(src || '').trim();
         if (!src) return null;
-        let objectUrl = '';
-        try {
-            let imageSrc = src;
-            if (/^https?:/i.test(src)) { let response = await fetch(src); if (!response.ok) return null; objectUrl = URL.createObjectURL(await response.blob()); imageSrc = objectUrl; }
-            let image = await new Promise((resolve, reject) => { let img = new Image(); img.onload = () => resolve(img); img.onerror = reject; img.src = imageSrc; });
-            if (objectUrl) URL.revokeObjectURL(objectUrl);
-            return image;
-        } catch (_) { if (objectUrl) URL.revokeObjectURL(objectUrl); return null; }
+        if (!draft || draft.assetsReleased) return null;
+        if (!(draft.assetImages instanceof Map)) draft.assetImages = new Map();
+        if (!(draft.assetPromises instanceof Map)) draft.assetPromises = new Map();
+        if (!Array.isArray(draft.assetObjectUrls)) draft.assetObjectUrls = [];
+        if (draft.assetImages.has(src)) return draft.assetImages.get(src);
+        if (draft.assetPromises.has(src)) return draft.assetPromises.get(src);
+        let promise = (async () => {
+            let objectUrl = '', imageSrc = src;
+            try {
+                if (/^https?:/i.test(src)) {
+                    let controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+                    let abortTimer = controller ? setTimeout(() => controller.abort(), 12000) : 0;
+                    let response;
+                    try { response = await fetch(src, controller ? { signal: controller.signal } : undefined); }
+                    finally { if (abortTimer) clearTimeout(abortTimer); }
+                    if (!response.ok) return null;
+                    objectUrl = URL.createObjectURL(await response.blob());
+                    imageSrc = objectUrl;
+                }
+                let image = await new Promise((resolve, reject) => {
+                    let img = new Image(), timer = setTimeout(() => reject(new Error('image timeout')), 12000);
+                    img.onload = () => { clearTimeout(timer); resolve(img); };
+                    img.onerror = error => { clearTimeout(timer); reject(error); };
+                    img.src = imageSrc;
+                });
+                if (typeof image.decode === 'function') await image.decode().catch(() => {});
+                if (draft.assetsReleased) {
+                    if (objectUrl) URL.revokeObjectURL(objectUrl);
+                    return null;
+                }
+                if (objectUrl) draft.assetObjectUrls.push(objectUrl);
+                draft.assetImages.set(src, image);
+                return image;
+            } catch (_) {
+                if (objectUrl) URL.revokeObjectURL(objectUrl);
+                draft.assetImages.set(src, null);
+                return null;
+            }
+        })();
+        draft.assetPromises.set(src, promise);
+        promise.finally(() => draft.assetPromises.delete(src));
+        return promise;
+    },
+    _releaseMusicTicketAssets(draft) {
+        if (!draft) return;
+        draft.assetsReleased = true;
+        (draft.assetObjectUrls || []).forEach(url => { try { URL.revokeObjectURL(url); } catch (_) {} });
+        draft.assetObjectUrls = [];
+        if (draft.assetImages instanceof Map) draft.assetImages.clear();
+        if (draft.assetPromises instanceof Map) draft.assetPromises.clear();
     },
     _ticketDrawCover(ctx, image, x, y, w, h) {
         if (!image) return;
@@ -129217,45 +129375,143 @@ ${transcript}`;
         else { ctx.fillStyle = '#FFF'; ctx.font = '700 34px system-ui'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(String(fallback || '·').slice(0, 1), x + size / 2, y + size / 2); }
         ctx.restore();
     },
+    _paintMusicTicketCanvas(draft, images) {
+        let canvas = document.createElement('canvas'), ctx = canvas.getContext('2d');
+        let W = canvas.width = 840, H = canvas.height = 1120, snapshot = draft.snapshot, dark = draft.skin === 'dark';
+        let ticket = { x: 46, y: 38, w: 748, h: 1044, cutY: 884 };
+        let paper = dark ? '#1C1E22' : '#F7F3EA', ink = dark ? '#F7F4EC' : '#20242A';
+        let muted = dark ? 'rgba(247,244,236,.58)' : '#6D7278', line = dark ? 'rgba(255,255,255,.16)' : 'rgba(41,45,49,.16)';
+        let rose = dark ? '#C9A7B3' : '#9C6177', snapshotSeed = `${snapshot.startedAt || ''}${snapshot.id || ''}`;
+        let bg = ctx.createLinearGradient(0, 0, W, H);
+        bg.addColorStop(0, dark ? '#17191D' : '#D9CDD1'); bg.addColorStop(1, dark ? '#090A0C' : '#BFC9CF');
+        ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+        if (images[0]) {
+            this._ticketDrawCover(ctx, images[0], 0, 0, W, H);
+            ctx.fillStyle = dark ? 'rgba(7,8,10,.66)' : 'rgba(35,30,34,.48)'; ctx.fillRect(0, 0, W, H);
+        }
+
+        ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.28)'; ctx.shadowBlur = 26; ctx.shadowOffsetY = 14;
+        this._ticketCouponPath(ctx, ticket.x, ticket.y, ticket.w, ticket.h, ticket.cutY, 18, 20);
+        ctx.fillStyle = paper; ctx.fill(); ctx.restore();
+        this._ticketCouponPath(ctx, ticket.x, ticket.y, ticket.w, ticket.h, ticket.cutY, 18, 20);
+        ctx.strokeStyle = dark ? 'rgba(255,255,255,.12)' : 'rgba(43,39,35,.14)'; ctx.lineWidth = 2; ctx.stroke();
+
+        ctx.save(); this._ticketCouponPath(ctx, ticket.x, ticket.y, ticket.w, ticket.h, ticket.cutY, 18, 20); ctx.clip();
+        let header = ctx.createLinearGradient(ticket.x, ticket.y, ticket.x + ticket.w, ticket.y + 212);
+        header.addColorStop(0, dark ? '#39333A' : '#925F72'); header.addColorStop(1, dark ? '#24282C' : '#5E7079');
+        ctx.fillStyle = header; ctx.fillRect(ticket.x, ticket.y, ticket.w, 178);
+        if (images[0]) {
+            this._ticketDrawCover(ctx, images[0], ticket.x, ticket.y, ticket.w, 178);
+            ctx.fillStyle = 'rgba(16,15,18,.58)'; ctx.fillRect(ticket.x, ticket.y, ticket.w, 178);
+        }
+        for (let y = ticket.y + 10; y < ticket.y + 178; y += 12) {
+            ctx.fillStyle = 'rgba(255,255,255,.025)'; ctx.fillRect(ticket.x, y, ticket.w, 1);
+        }
+        ctx.restore();
+
+        ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'left'; ctx.fillStyle = '#FFFFFF'; ctx.font = '800 38px system-ui';
+        ctx.fillText('共听纪念票', 82, 94);
+        let started = new Date(snapshot.startedAt || Date.now()), ended = new Date(snapshot.endedAt || Date.now());
+        ctx.fillStyle = 'rgba(255,255,255,.72)'; ctx.font = '600 19px system-ui';
+        ctx.fillText(`${started.toLocaleDateString('zh-CN')}  ${started.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })} - ${ended.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}`, 82, 132);
+        ctx.textAlign = 'right'; ctx.font = '600 16px ui-monospace, monospace'; ctx.fillText(String(snapshot.startedAt || Date.now()).slice(-10), 756, 92);
+        this._ticketDrawBarcode(ctx, 620, 118, 136, 22, snapshotSeed, 'rgba(255,255,255,.68)');
+
+        let people = draft.swapped
+            ? [{ img: images[2], name: draft.charName, fill: '#59616B' }, { img: images[1], name: draft.userName, fill: '#C58EA3' }]
+            : [{ img: images[1], name: draft.userName, fill: '#C58EA3' }, { img: images[2], name: draft.charName, fill: '#59616B' }];
+        people.forEach((person, index) => {
+            let x = index ? 626 : 122;
+            this._ticketDrawAvatar(ctx, person.img, x, 220, 92, person.name, person.fill);
+            ctx.fillStyle = ink; ctx.font = '700 20px system-ui'; ctx.textAlign = 'center'; ctx.fillText(person.name, x + 46, 342, 150);
+        });
+        ctx.textAlign = 'center'; ctx.fillStyle = ink; ctx.font = '800 56px system-ui'; ctx.fillText(this._ticketFormatDuration(snapshot.durationSec), W / 2, 286);
+        ctx.fillStyle = muted; ctx.font = '700 17px system-ui'; ctx.fillText('一起听了这么久', W / 2, 324);
+
+        ctx.strokeStyle = line; ctx.lineWidth = 2; ctx.setLineDash([7, 8]); ctx.beginPath(); ctx.moveTo(82, 378); ctx.lineTo(758, 378); ctx.stroke(); ctx.setLineDash([]);
+        if (images[3]) {
+            ctx.save(); this._ticketRoundRect(ctx, 92, 410, 148, 148, 7); ctx.clip(); this._ticketDrawCover(ctx, images[3], 92, 410, 148, 148); ctx.restore();
+        } else {
+            this._ticketRoundRect(ctx, 92, 410, 148, 148, 7, dark ? '#2B2E33' : '#E5DED3');
+            this._ticketDrawBarcode(ctx, 112, 455, 108, 58, snapshotSeed, dark ? 'rgba(255,255,255,.3)' : 'rgba(31,35,39,.38)');
+        }
+        let topSong = this._ticketTopSong(snapshot);
+        ctx.textAlign = 'left'; ctx.fillStyle = muted; ctx.font = '700 17px system-ui'; ctx.fillText('听得最多', 274, 432);
+        ctx.fillStyle = ink; ctx.font = '800 28px system-ui'; this._ticketWrapText(ctx, topSong ? topSong.title : '—', 274, 476, 450, 35, 2);
+        ctx.fillStyle = muted; ctx.font = '600 19px system-ui'; ctx.fillText(topSong ? topSong.artist : '', 274, 548, 450);
+
+        let first = this._ticketSongByKey(snapshot, snapshot.firstSongKey), last = this._ticketSongByKey(snapshot, snapshot.lastSongKey);
+        ctx.font = '650 18px system-ui'; ctx.fillStyle = muted; ctx.textAlign = 'left'; ctx.fillText(`第一首  ${first ? first.title : '—'}`, 92, 612, 300);
+        ctx.textAlign = 'right'; ctx.fillText(`最后一首  ${last ? last.title : '—'}`, 748, 612, 300);
+        ctx.strokeStyle = line; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(92, 650); ctx.lineTo(748, 650); ctx.stroke();
+
+        let pages = Array.isArray(draft.conversationPages) ? draft.conversationPages : [];
+        let conversation = pages[draft.momentIndex] || [];
+        conversation.forEach((message, index) => {
+            let isChar = message.role === 'assistant', y = 688 + index * 96, name = isChar ? draft.charName : draft.userName;
+            ctx.fillStyle = isChar ? rose : muted; ctx.beginPath(); ctx.arc(101, y - 5, 5, 0, Math.PI * 2); ctx.fill();
+            ctx.textAlign = 'left'; ctx.fillStyle = isChar ? rose : muted; ctx.font = '700 17px system-ui'; ctx.fillText(name, 118, y, 160);
+            ctx.fillStyle = ink; ctx.font = '650 21px system-ui'; this._ticketWrapText(ctx, message.content, 118, y + 34, 594, 29, 2);
+        });
+        let nudge = (snapshot.lyricNudges || []).slice(-1)[0];
+        if (nudge && nudge.text && conversation.length < 2) {
+            ctx.fillStyle = muted; ctx.font = '600 16px system-ui'; ctx.textAlign = 'left';
+            this._ticketWrapText(ctx, `戳过的歌词  ${nudge.text}`, 118, 810, 594, 24, 1);
+        }
+
+        ctx.strokeStyle = dark ? 'rgba(255,255,255,.26)' : 'rgba(46,48,49,.28)'; ctx.lineWidth = 2; ctx.setLineDash([10, 9]);
+        ctx.beginPath(); ctx.moveTo(ticket.x + 28, ticket.cutY); ctx.lineTo(ticket.x + ticket.w - 28, ticket.cutY); ctx.stroke(); ctx.setLineDash([]);
+        if (this._ticketHasWords(draft.echo)) {
+            ctx.textAlign = 'left'; ctx.fillStyle = ink; ctx.font = '650 20px system-ui'; this._ticketWrapText(ctx, draft.echo, 84, 936, 520, 29, 3);
+        }
+        this._ticketDrawBarcode(ctx, 640, 922, 112, 70, snapshotSeed.split('').reverse().join(''), dark ? 'rgba(255,255,255,.45)' : 'rgba(31,35,39,.48)');
+        ctx.textAlign = 'left'; ctx.fillStyle = muted; ctx.font = '600 17px system-ui';
+        ctx.fillText(`${snapshot.distinctSongCount || 0} 首歌 · ${snapshot.messageCounts ? snapshot.messageCounts.total : 0} 条对话`, 84, 1040);
+        ctx.textAlign = 'right'; ctx.font = '600 15px ui-monospace, monospace'; ctx.fillText(String(snapshot.id || '').slice(-18), 752, 1040);
+        return canvas;
+    },
+    _commitMusicTicketCanvas(source, draft, token) {
+        let canvas = document.getElementById('music-ticket-canvas');
+        if (!canvas || !canvas.isConnected || this._ticketDraft !== draft || token !== this._ticketBuildToken) return false;
+        canvas.width = source.width; canvas.height = source.height;
+        let ctx = canvas.getContext('2d'); ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.drawImage(source, 0, 0);
+        draft.canvasReady = true;
+        let saveButton = document.querySelector('#music-ticket-overlay .music-ticket-primary');
+        if (saveButton) saveButton.disabled = !!draft.saving;
+        return true;
+    },
     async _drawMusicTicketCanvas() {
         let draft = this._ticketDraft, canvas = document.getElementById('music-ticket-canvas');
-        if (!draft || !canvas) return;
+        if (!draft || !canvas) return false;
         let token = ++this._ticketBuildToken, snapshot = draft.snapshot, topSong = this._ticketTopSong(snapshot);
         let bgSrc = draft.background === 'room' ? draft.roomWallpaper : (draft.background === 'cover' && topSong ? topSong.cover : '');
-        let images = await Promise.all([bgSrc, draft.userAvatar, draft.charAvatar, topSong && topSong.cover].map(src => this._ticketLoadImage(src)));
-        if (token !== this._ticketBuildToken || !this._ticketDraft || !canvas.isConnected) return;
-        let ctx = canvas.getContext('2d'), W = canvas.width = 840, H = canvas.height = 1120, dark = draft.skin === 'dark';
-        let bg = ctx.createLinearGradient(0, 0, W, H); bg.addColorStop(0, dark ? '#25272B' : '#F3DDE5'); bg.addColorStop(1, dark ? '#111316' : '#DDE5EA'); ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
-        if (images[0]) { this._ticketDrawCover(ctx, images[0], 0, 0, W, H); ctx.fillStyle = dark ? 'rgba(8,10,13,.52)' : 'rgba(247,244,247,.42)'; ctx.fillRect(0, 0, W, H); }
-        this._ticketRoundRect(ctx, 42, 42, 756, 1036, 34, dark ? 'rgba(24,26,30,.84)' : 'rgba(255,255,255,.84)');
-        ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; ctx.fillStyle = dark ? '#FFF' : '#20242A'; ctx.font = '800 38px system-ui'; ctx.fillText('共听纪念票', 82, 112);
-        let started = new Date(snapshot.startedAt || Date.now()), ended = new Date(snapshot.endedAt || Date.now());
-        ctx.fillStyle = dark ? 'rgba(255,255,255,.62)' : '#6B737D'; ctx.font = '600 20px system-ui'; ctx.fillText(`${started.toLocaleDateString('zh-CN')}  ${started.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })} - ${ended.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}`, 82, 150);
-        let people = draft.swapped ? [{ img: images[2], name: draft.charName, fill: '#59616B' }, { img: images[1], name: draft.userName, fill: '#C58EA3' }] : [{ img: images[1], name: draft.userName, fill: '#C58EA3' }, { img: images[2], name: draft.charName, fill: '#59616B' }];
-        people.forEach((person, index) => { let x = index ? 606 : 112; this._ticketDrawAvatar(ctx, person.img, x, 188, 122, person.name, person.fill); ctx.fillStyle = dark ? '#F8F8F8' : '#25292F'; ctx.font = '700 22px system-ui'; ctx.textAlign = 'center'; ctx.fillText(person.name, x + 61, 338); });
-        ctx.textAlign = 'center'; ctx.fillStyle = dark ? '#FFF' : '#24282E'; ctx.font = '800 64px system-ui'; ctx.fillText(this._ticketFormatDuration(snapshot.durationSec), W / 2, 266); ctx.fillStyle = dark ? 'rgba(255,255,255,.58)' : '#737B85'; ctx.font = '700 18px system-ui'; ctx.fillText('一起听了这么久', W / 2, 304);
-        this._ticketRoundRect(ctx, 82, 382, 676, 210, 24, dark ? 'rgba(255,255,255,.08)' : 'rgba(238,242,245,.82)');
-        if (images[3]) { ctx.save(); this._ticketRoundRect(ctx, 108, 408, 158, 158, 18); ctx.clip(); this._ticketDrawCover(ctx, images[3], 108, 408, 158, 158); ctx.restore(); }
-        ctx.textAlign = 'left'; ctx.fillStyle = dark ? 'rgba(255,255,255,.58)' : '#727A84'; ctx.font = '700 18px system-ui'; ctx.fillText('听得最多', 298, 430); ctx.fillStyle = dark ? '#FFF' : '#20242A'; ctx.font = '800 29px system-ui'; this._ticketWrapText(ctx, topSong ? topSong.title : '—', 298, 477, 410, 36, 2); ctx.fillStyle = dark ? 'rgba(255,255,255,.66)' : '#68717B'; ctx.font = '600 20px system-ui'; ctx.fillText(topSong ? topSong.artist : '', 298, 552);
-        let first = this._ticketSongByKey(snapshot, snapshot.firstSongKey), last = this._ticketSongByKey(snapshot, snapshot.lastSongKey);
-        ctx.font = '650 19px system-ui'; ctx.fillStyle = dark ? 'rgba(255,255,255,.68)' : '#626B75'; ctx.fillText(`第一首  ${first ? first.title : '—'}`, 94, 635); ctx.textAlign = 'right'; ctx.fillText(`最后一首  ${last ? last.title : '—'}`, 746, 635);
-        ctx.textAlign = 'left'; this._ticketRoundRect(ctx, 82, 674, 676, 210, 24, dark ? 'rgba(255,255,255,.08)' : 'rgba(255,255,255,.72)'); ctx.fillStyle = dark ? '#FFF' : '#22262C'; ctx.font = '700 25px system-ui'; this._ticketWrapText(ctx, draft.moments[draft.momentIndex] || '', 112, 728, 616, 38, 3);
-        let nudge = (snapshot.lyricNudges || []).slice(-1)[0]; if (nudge && nudge.text) { ctx.fillStyle = dark ? 'rgba(255,255,255,.54)' : '#737B85'; ctx.font = '600 18px system-ui'; this._ticketWrapText(ctx, `戳过的歌词  ${nudge.text}`, 112, 846, 616, 26, 1); }
-        ctx.fillStyle = dark ? 'rgba(255,255,255,.68)' : '#56606B'; ctx.font = '650 22px system-ui'; this._ticketWrapText(ctx, draft.echo, 102, 944, 636, 33, 3); ctx.fillStyle = dark ? 'rgba(255,255,255,.42)' : '#8A929B'; ctx.font = '600 17px system-ui'; ctx.fillText(`${snapshot.distinctSongCount || 0} 首歌 · ${snapshot.messageCounts ? snapshot.messageCounts.total : 0} 条对话`, 102, 1032);
+        let sources = [bgSrc, draft.userAvatar, draft.charAvatar, topSong && topSong.cover].map(src => String(src || ''));
+        let cached = sources.map(src => src && draft.assetImages instanceof Map ? (draft.assetImages.get(src) || null) : null);
+        if (!this._commitMusicTicketCanvas(this._paintMusicTicketCanvas(draft, cached), draft, token)) return false;
+        let images = await Promise.all(sources.map(src => this._ticketLoadImage(src, draft)));
+        if (typeof document !== 'undefined' && document.fonts && document.fonts.ready) await document.fonts.ready.catch(() => {});
+        if (token !== this._ticketBuildToken || this._ticketDraft !== draft) return false;
+        return this._commitMusicTicketCanvas(this._paintMusicTicketCanvas(draft, images), draft, token);
     },
     _renderMusicTicketOverlay() {
         let draft = this._ticketDraft, old = document.getElementById('music-ticket-overlay');
         if (!draft) { if (old) old.remove(); return; }
         let root = old || document.createElement('div');
         root.id = 'music-ticket-overlay'; root.className = `music-ticket-overlay ${draft.skin === 'dark' ? 'music-ticket-dark' : 'music-ticket-pink'}`;
-        let hasCopy = draft.moments.length && draft.echo;
-        root.innerHTML = `<section class="music-ticket-sheet"><div class="music-ticket-toolbar"><b>共听纪念票</b></div><div class="music-ticket-preview"><div class="music-ticket-canvas-wrap"><canvas id="music-ticket-canvas" class="music-ticket-canvas" width="840" height="1120"></canvas>${draft.loading ? '<div class="music-ticket-loading"><i></i></div>' : ''}</div></div><div class="music-ticket-controls"><div class="music-ticket-segment"><button type="button" onclick="MusicTogether.swapMusicTicketAvatars()">交换头像</button><button type="button" class="${draft.background === 'room' ? 'active' : ''}" onclick="MusicTogether.setMusicTicketBackground('room')">房间壁纸</button><button type="button" class="${draft.background === 'cover' ? 'active' : ''}" onclick="MusicTogether.setMusicTicketBackground('cover')">歌曲封面</button><button type="button" class="${draft.background === 'color' ? 'active' : ''}" onclick="MusicTogether.setMusicTicketBackground('color')">纯色</button></div>${draft.moments.length > 1 ? `<div class="music-ticket-segment"><button type="button" onclick="MusicTogether.stepMusicTicketMoment(-1)">上一段</button><button type="button" onclick="MusicTogether.stepMusicTicketMoment(1)">下一段</button></div>` : ''}<div class="music-ticket-actions"><button type="button" class="music-ticket-skip" onclick="MusicTogether.finishMusicTicket(false)">跳过</button><button type="button" class="music-ticket-primary" onclick="MusicTogether.finishMusicTicket(true)" ${draft.loading || !hasCopy || draft.saving ? 'disabled' : ''}>保存图片</button></div></div></section>`;
-        if (!old) document.body.appendChild(root);
-        this._drawMusicTicketCanvas();
+        let pageCount = Array.isArray(draft.conversationPages) ? draft.conversationPages.length : 0;
+        let controls = `<div class="music-ticket-segment"><button type="button" onclick="MusicTogether.swapMusicTicketAvatars()">交换头像</button><button type="button" class="${draft.background === 'room' ? 'active' : ''}" onclick="MusicTogether.setMusicTicketBackground('room')">房间壁纸</button><button type="button" class="${draft.background === 'cover' ? 'active' : ''}" onclick="MusicTogether.setMusicTicketBackground('cover')">歌曲封面</button><button type="button" class="${draft.background === 'color' ? 'active' : ''}" onclick="MusicTogether.setMusicTicketBackground('color')">纯色</button></div>${pageCount > 1 ? `<div class="music-ticket-segment"><button type="button" onclick="MusicTogether.stepMusicTicketMoment(-1)">上一段</button><button type="button" onclick="MusicTogether.stepMusicTicketMoment(1)">下一段</button></div>` : ''}<div class="music-ticket-actions"><button type="button" class="music-ticket-skip" onclick="MusicTogether.finishMusicTicket(false)">跳过</button><button type="button" class="music-ticket-primary" onclick="MusicTogether.finishMusicTicket(true)" ${draft.saving || !draft.canvasReady ? 'disabled' : ''}>保存图片</button></div>`;
+        if (!old) {
+            root.innerHTML = `<section class="music-ticket-sheet"><div class="music-ticket-toolbar"><b>共听纪念票</b></div><div class="music-ticket-preview"><div class="music-ticket-canvas-wrap"><canvas id="music-ticket-canvas" class="music-ticket-canvas" width="840" height="1120"></canvas></div></div><div class="music-ticket-controls">${controls}</div></section>`;
+            document.body.appendChild(root);
+        } else {
+            let controlRoot = root.querySelector('.music-ticket-controls');
+            if (controlRoot) controlRoot.innerHTML = controls;
+        }
+        this._drawMusicTicketCanvas().catch(error => console.error('music ticket render failed', error));
     },
     swapMusicTicketAvatars() { if (this._ticketDraft) { this._ticketDraft.swapped = !this._ticketDraft.swapped; this._renderMusicTicketOverlay(); } },
     setMusicTicketBackground(mode) { if (this._ticketDraft && ['room', 'cover', 'color'].includes(mode)) { this._ticketDraft.background = mode; this._renderMusicTicketOverlay(); } },
-    stepMusicTicketMoment(direction) { let d = this._ticketDraft; if (d && d.moments.length > 1) { d.momentIndex = (d.momentIndex + direction + d.moments.length) % d.moments.length; this._renderMusicTicketOverlay(); } },
+    stepMusicTicketMoment(direction) { let d = this._ticketDraft, pages = d && Array.isArray(d.conversationPages) ? d.conversationPages : []; if (d && pages.length > 1) { d.momentIndex = (d.momentIndex + direction + pages.length) % pages.length; this._renderMusicTicketOverlay(); } },
     _archiveMusicTicketSnapshot(snapshot) {
         if (!snapshot) return;
         let stored = JSON.parse(JSON.stringify(snapshot));
@@ -129270,24 +129526,27 @@ ${transcript}`;
     async _openMusicTicket(snapshot, c, song) {
         let s = this._session(), userName = (typeof getDisplayUserName === 'function') ? getDisplayUserName(c, '机主') : ((c && c.userName) || '机主');
         let roomWallpaper = String(s.roomWallpapers && s.roomWallpapers[s.liveSkin === 'dark' ? 'dark' : 'pink'] || '');
-        this._ticketDraft = { snapshot, contactId: c && c.id, song, userName, charName: c ? (c.remark || c.name || 'ta') : 'ta', userAvatar: this._getUserAvatar(c && c.id, c), charAvatar: c && c.avatar || Utils.defaultAvatar, skin: s.liveSkin === 'dark' ? 'dark' : 'pink', roomWallpaper, background: roomWallpaper ? 'room' : ((this._ticketTopSong(snapshot) || {}).cover ? 'cover' : 'color'), swapped: false, moments: [], momentIndex: 0, echo: '', loading: true, saving: false };
+        let conversationPages = this._ticketConversationPages(snapshot);
+        let draft = this._ticketDraft = { snapshot, contactId: c && c.id, song, userName, charName: c ? (c.remark || c.name || 'ta') : 'ta', userAvatar: this._getUserAvatar(c && c.id, c), charAvatar: c && c.avatar || Utils.defaultAvatar, skin: s.liveSkin === 'dark' ? 'dark' : 'pink', roomWallpaper, background: roomWallpaper ? 'room' : ((this._ticketTopSong(snapshot) || {}).cover ? 'cover' : 'color'), swapped: false, conversationPages, momentIndex: Math.max(0, conversationPages.length - 1), echo: '', aiLoading: conversationPages.length > 0, canvasReady: false, saving: false, assetsReleased: false, assetImages: new Map(), assetPromises: new Map(), assetObjectUrls: [] };
         this._renderMusicTicketOverlay();
-        try { let copy = await this._requestMusicTicketCopy(c, snapshot); if (this._ticketDraft) { this._ticketDraft.moments = copy.moments; this._ticketDraft.echo = copy.echo; } }
-        catch (error) { if (typeof ErrorReporter !== 'undefined') ErrorReporter.toastAndShow('AI 响应失败', error); }
-        finally { if (this._ticketDraft) { this._ticketDraft.loading = false; this._renderMusicTicketOverlay(); } }
+        if (!conversationPages.length) { draft.aiLoading = false; return; }
+        try { let copy = await this._requestMusicTicketCopy(c, snapshot); if (this._ticketDraft === draft) draft.echo = copy.echo; }
+        catch (error) { if (this._ticketDraft === draft && !draft.saving && typeof ErrorReporter !== 'undefined') ErrorReporter.toastAndShow('AI 响应失败', error); }
+        finally { if (this._ticketDraft === draft) { draft.aiLoading = false; if (!draft.saving) this._renderMusicTicketOverlay(); } }
     },
     async finishMusicTicket(saveImage = false) {
         let draft = this._ticketDraft;
         if (!draft || draft.saving) return;
         if (saveImage) {
-            if (!draft.moments.length || !draft.echo) return;
             draft.saving = true; this._renderMusicTicketOverlay();
-            try { await this._drawMusicTicketCanvas(); let canvas = document.getElementById('music-ticket-canvas'); if (!canvas) throw new Error('纪念票画布不可用'); if (typeof ImageClient === 'undefined' || !ImageClient.saveImage) throw new Error('图片保存功能不可用'); await ImageClient.saveImage(canvas.toDataURL('image/png'), `共听纪念票_${draft.snapshot.startedAt || Date.now()}.png`); }
+            try { let rendered = await this._drawMusicTicketCanvas(); let canvas = document.getElementById('music-ticket-canvas'); if (!rendered || !canvas) throw new Error('纪念票画布不可用'); if (typeof ImageClient === 'undefined' || !ImageClient.saveImage) throw new Error('图片保存功能不可用'); await ImageClient.saveImage(canvas.toDataURL('image/png'), `共听纪念票_${draft.snapshot.startedAt || Date.now()}.png`); }
             catch (error) { draft.saving = false; this._renderMusicTicketOverlay(); if (typeof ErrorReporter !== 'undefined') ErrorReporter.toastAndShow('保存失败', error); return; }
         }
-        draft.snapshot.moments = draft.moments.slice(0, 3); draft.snapshot.echo = draft.echo; draft.snapshot.savedImage = !!saveImage;
+        let selectedConversation = (draft.conversationPages[draft.momentIndex] || []).slice(0, 3);
+        draft.snapshot.moments = selectedConversation.map(item => item.content); draft.snapshot.echo = draft.echo; draft.snapshot.savedImage = !!saveImage;
         this._archiveMusicTicketSnapshot(draft.snapshot);
         this._finalizeStoppedMusicSession(draft.snapshot.endedAt || Date.now(), draft.song, draft.contactId, draft.snapshot.durationSec);
+        this._releaseMusicTicketAssets(draft);
         this._ticketDraft = null; this._renderMusicTicketOverlay();
     },
     _finalizeStoppedMusicSession(now, song, contactId, duration = 0) {
@@ -158571,18 +158830,58 @@ const Settings = {
         }
         if ($('push-quiet-start')) $('push-quiet-start').value = this._pushMinuteToTime(state.quietStartMinute === undefined ? 1380 : state.quietStartMinute);
         if ($('push-quiet-end')) $('push-quiet-end').value = this._pushMinuteToTime(state.quietEndMinute === undefined ? 540 : state.quietEndMinute);
+        this._renderPushContacts(state);
         this._refreshPushControls();
+    },
+    _pushContactCandidates() {
+        if (typeof PushService !== 'undefined' && PushService.contactCandidates) return PushService.contactCandidates();
+        return (DB.d.contacts || []).filter(c =>
+            c && !c.isGroup && !c.isBlocked && !c.isBlockedByAi
+            && Array.isArray(c.history) && c.history.length
+        );
+    },
+    _renderPushContacts(state = this._pushState()) {
+        let root = $('push-contact-list');
+        if (!root) return;
+        let selected = new Set((Array.isArray(state.contactIds) ? state.contactIds : []).map(id => String(id)));
+        let contacts = this._pushContactCandidates();
+        if (!contacts.length) {
+            root.innerHTML = '<div class="push-contact-empty">至少选择一个推送角色</div>';
+            return;
+        }
+        root.innerHTML = contacts.map(c => {
+            let id = String(c.id);
+            let name = String(c.remark || c.name || '');
+            let initial = Array.from(name.trim())[0] || '·';
+            let avatar = String(c.avatar || '').trim();
+            let avatarHtml = avatar
+                ? `<img src="${Utils.escapeHtml(avatar)}" alt="">`
+                : `<span aria-hidden="true">${Utils.escapeHtml(initial)}</span>`;
+            return `<label class="push-contact-row">
+                <span class="push-contact-avatar">${avatarHtml}</span>
+                <b>${Utils.escapeHtml(name)}</b>
+                <input type="checkbox" data-push-contact-id="${Utils.escapeHtml(id)}" ${selected.has(id) ? 'checked' : ''} onchange="Settings.savePushSettings(false)">
+            </label>`;
+        }).join('');
+    },
+    _selectedPushContactIds() {
+        let root = $('push-contact-list');
+        if (!root) return [];
+        return Array.from(root.querySelectorAll('input[data-push-contact-id]:checked'))
+            .map(input => String(input.dataset.pushContactId || ''))
+            .filter(Boolean);
     },
     _refreshPushControls() {
         let state = this._pushState();
         let enabled = !!state.enabled;
+        let hasContacts = Array.isArray(state.contactIds) && state.contactIds.length > 0;
         let toggle = $('push-enabled-toggle');
         if (toggle) {
             toggle.classList.toggle('on', enabled);
             toggle.setAttribute('aria-checked', enabled ? 'true' : 'false');
         }
         let testButton = $('push-test-button');
-        if (testButton) testButton.disabled = !enabled || this._pushTestRunning === true;
+        if (testButton) testButton.disabled = !enabled || !hasContacts || this._pushTestRunning === true;
         let checkButton = $('push-check-button');
         if (checkButton) checkButton.disabled = this._currentPushStatus() === 'connecting';
         let iosNote = $('push-ios-note');
@@ -158595,6 +158894,7 @@ const Settings = {
         return {
             workerUrl: (($('push-worker-url') && $('push-worker-url').value) || current.workerUrl || '').trim().replace(/\/+$/, ''),
             token: (($('push-worker-token') && $('push-worker-token').value) || current.token || '').trim(),
+            contactIds: this._selectedPushContactIds(),
             dailyLimit: Math.max(1, Math.min(20, Math.round(Number(($('push-daily-limit') && $('push-daily-limit').value) || current.dailyLimit || 3)))),
             minimumGapMs: Math.max(5 * 60 * 1000, Math.min(24 * 60 * 60 * 1000, Number(($('push-minimum-gap') && $('push-minimum-gap').value) || current.minimumGapMs || 7200000))),
             quietStartMinute: this._pushTimeToMinute($('push-quiet-start') && $('push-quiet-start').value, Number(current.quietStartMinute || 1380)),
@@ -158604,11 +158904,13 @@ const Settings = {
     async savePushSettings(render = true) {
         let state = this._pushState();
         let next = this._readPushSettingsForm();
+        let wasEnabled = !!state.enabled;
         let credentialsChanged = next.workerUrl !== String(state.workerUrl || '') || next.token !== String(state.token || '');
         if (credentialsChanged && state.enabled && typeof PushService !== 'undefined') {
             await PushService.disable();
         }
         Object.assign(state, next);
+        let contactsRemoved = wasEnabled && !state.contactIds.length;
         if (credentialsChanged) {
             state.enabled = false;
             state.registered = false;
@@ -158617,10 +158919,18 @@ const Settings = {
             state.lastError = '';
             DB.d.allowBackgroundMessages = false;
             this._pushConnectionStatus = 'idle';
+        } else if (contactsRemoved) {
+            state.enabled = false;
+            DB.d.allowBackgroundMessages = false;
+            state.lastError = 'push-contact-required';
+            if (typeof PushService !== 'undefined' && PushService._stopHeartbeat) PushService._stopHeartbeat();
+            if (typeof window.AndroidPush !== 'undefined' && window.AndroidPush.setEnabled) window.AndroidPush.setEnabled(false);
         }
         await DB.save();
         if (!credentialsChanged && state.enabled && typeof PushService !== 'undefined') {
-            await PushService.sync({ active: document.visibilityState === 'visible' });
+            await PushService.sync({ active: document.visibilityState === 'visible', includeCapsule: true, forceCapsule: true });
+        } else if (!credentialsChanged && contactsRemoved && typeof PushService !== 'undefined') {
+            await PushService.sync({ active: true, includeCapsule: true, forceCapsule: true });
         }
         if (render) this.renderPushSettings();
         else this._refreshPushControls();
@@ -158630,6 +158940,7 @@ const Settings = {
         let code = String(error && error.message || error || '');
         if (code.includes('ios-pwa-install-required')) return '需要先把小手机添加到主屏幕，再从桌面打开，才能开启推送。';
         if (code.includes('push-service-not-configured')) return '先按部署教程获取后端地址和连接口令';
+        if (code.includes('push-contact-required')) return '至少选择一个推送角色';
         if (code.includes('notification-permission-required')) return '请允许小手机发送通知';
         if (/delivery-not-configured|web-push-server-not-configured|firebase-client-not-configured|firebase-options|firebase-token|native-push|web-push-unsupported/i.test(code)) {
             return '后端还没有配置当前设备的推送方式';
@@ -158701,6 +159012,11 @@ const Settings = {
             this._pushConnectionStatus = state.registered && state.serverConfig ? 'connected' : 'idle';
             this.renderPushSettings();
             return true;
+        }
+        if (!Array.isArray(state.contactIds) || !state.contactIds.length) {
+            Toast.show('至少选择一个推送角色');
+            this._refreshPushControls();
+            return false;
         }
         if (typeof PushService === 'undefined' || !PushService.configured()) {
             this._setPushConnectionStatus('failed');
@@ -173726,6 +174042,12 @@ const PushService = {
         if (!Number.isFinite(Number(state.minimumGapMs))) state.minimumGapMs = 7200000;
         if (!Number.isFinite(Number(state.quietStartMinute))) state.quietStartMinute = 1380;
         if (!Number.isFinite(Number(state.quietEndMinute))) state.quietEndMinute = 540;
+        if (!Array.isArray(state.contactIds)) {
+            state.contactIds = (DB.d.contacts || []).filter(c =>
+                c && !c.isGroup && c.allowInitiate && !c.isBlocked && !c.isBlockedByAi
+                && Array.isArray(c.history) && c.history.length
+            ).map(c => String(c.id));
+        }
         DB.d.allowBackgroundMessages = !!state.enabled;
         return state;
     },
@@ -173880,7 +174202,8 @@ const PushService = {
             this._workerUrl(),
             JSON.stringify(firebase.options),
             state.installId,
-            state.deviceSecret
+            state.deviceSecret,
+            true
         );
         let deadline = Date.now() + 20000;
         while (Date.now() < deadline) {
@@ -173908,13 +174231,27 @@ const PushService = {
         return 0;
     },
 
+    contactCandidates() {
+        return (DB.d.contacts || []).filter(c =>
+            c && !c.isGroup && !c.isBlocked && !c.isBlockedByAi
+            && Array.isArray(c.history) && c.history.length
+        );
+    },
+
+    selectedContactIds() {
+        let available = new Set(this.contactCandidates().map(c => String(c.id)));
+        return this.state().contactIds.map(id => String(id)).filter(id => available.has(id));
+    },
+
     buildCapsule() {
         if (typeof Chat === 'undefined' || !Chat.buildRemotePushContact) return { version: 1, contacts: [] };
-        let contacts = (DB.d.contacts || []).filter(c =>
-            c && !c.isGroup && c.allowInitiate && !c.isBlocked && !c.isBlockedByAi
-            && Array.isArray(c.history) && c.history.length
-        ).slice(0, 80).map(c => Chat.buildRemotePushContact(c)).filter(Boolean);
-        return { version: 1, contacts };
+        let selected = new Set(this.selectedContactIds());
+        let contacts = this.contactCandidates()
+            .filter(c => selected.has(String(c.id)))
+            .slice(0, 80)
+            .map(c => Chat.buildRemotePushContact(Object.assign({}, c, { allowInitiate: true })))
+            .filter(Boolean);
+        return { version: 2, contacts };
     },
 
     _capsuleKey(capsule) {
@@ -174094,30 +174431,41 @@ const PushService = {
     async enable() {
         let state = this.state();
         if (!this.configured()) throw new Error('push-service-not-configured');
-        await this.register(true);
-        let delivery = await this.ensureDelivery({ requestPermission: true });
-        state.enabled = true;
-        DB.d.allowBackgroundMessages = true;
-        state.lastError = '';
-        await DB.save();
-        let synced = await this.sync({ active: true, includeCapsule: true, forceCapsule: true, delivery });
-        if (!synced) {
-            let message = state.lastError || 'push-sync-failed';
+        if (!this.buildCapsule().contacts.length) throw new Error('push-contact-required');
+        let delivery = null;
+        try {
+            await this.register(true);
+            delivery = await this.ensureDelivery({ requestPermission: true });
+            state.enabled = true;
+            DB.d.allowBackgroundMessages = true;
+            state.lastError = '';
+            await DB.save();
+            let synced = await this.sync({ active: true, includeCapsule: true, forceCapsule: true, delivery });
+            if (!synced) throw new Error(state.lastError || 'push-sync-failed');
+            await this.receiveInbox();
+            this._startHeartbeat();
+            return true;
+        } catch(error) {
             state.enabled = false;
             DB.d.allowBackgroundMessages = false;
+            state.lastError = String(error && error.message || error);
+            if (typeof window.AndroidPush !== 'undefined' && window.AndroidPush.setEnabled) {
+                window.AndroidPush.setEnabled(false);
+            }
+            this._stopHeartbeat();
             await DB.save();
-            await this.sync({ active: true, delivery }).catch(() => false);
-            throw new Error(message);
+            if (delivery) await this.sync({ active: true, delivery }).catch(() => false);
+            throw error;
         }
-        await this.receiveInbox();
-        this._startHeartbeat();
-        return true;
     },
 
     async disable() {
         let state = this.state();
         state.enabled = false;
         DB.d.allowBackgroundMessages = false;
+        if (typeof window.AndroidPush !== 'undefined' && window.AndroidPush.setEnabled) {
+            window.AndroidPush.setEnabled(false);
+        }
         this._stopHeartbeat();
         await DB.save();
         if (this.configured() && state.registered) await this.sync({ active: true });
@@ -174128,6 +174476,7 @@ const PushService = {
         let state = this.state();
         if (!this.configured()) throw new Error('push-service-not-configured');
         if (!state.enabled) throw new Error('push-service-disabled');
+        if (!this.buildCapsule().contacts.length) throw new Error('push-contact-required');
         if (!state.registered) await this.register();
         let delivery = await this.ensureDelivery({ requestPermission: true });
         let synced = await this.sync({
@@ -174146,7 +174495,20 @@ const PushService = {
     },
 
     async init() {
-        this.state();
+        let initialState = this.state();
+        if (typeof window.AndroidPush !== 'undefined' && window.AndroidPush.setEnabled) {
+            window.AndroidPush.setEnabled(!!initialState.enabled);
+        }
+        let missingContacts = initialState.enabled && !this.buildCapsule().contacts.length;
+        if (missingContacts) {
+            initialState.enabled = false;
+            initialState.lastError = 'push-contact-required';
+            DB.d.allowBackgroundMessages = false;
+            if (typeof window.AndroidPush !== 'undefined' && window.AndroidPush.setEnabled) {
+                window.AndroidPush.setEnabled(false);
+            }
+            await DB.save();
+        }
         if (!this._nativeOpenBound) {
             this._nativeOpenBound = true;
             this._nativeOpenHandler = event => {
@@ -174165,6 +174527,9 @@ const PushService = {
         if (!this.configured()) return;
         try {
             await this.register();
+            if (missingContacts) {
+                await this.sync({ active: true, includeCapsule: true, forceCapsule: true });
+            }
             if (this.state().enabled) {
                 let delivery = null;
                 try { delivery = await this.ensureDelivery({ requestPermission: false }); } catch(e) {}
